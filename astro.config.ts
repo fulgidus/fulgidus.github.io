@@ -6,7 +6,6 @@ import UnoCSS from 'unocss/astro'
 
 export default defineConfig({
   site: 'https://fulgidus.github.io/fulgidus', // This is your full site URL
-
   base: '', //'/fulgidus', // This ensures it works from the root and not a subpath
   server: {
     port: 1987,
