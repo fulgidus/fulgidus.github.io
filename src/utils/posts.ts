@@ -12,14 +12,11 @@ export function sortPostsByDate(posts: Array<CollectionEntry<'blog'>>) {
 }
 
 export async function getPosts(path?: string, collection: PostKey = 'blog') {
-    return sortPostsByDate(await getCollection(collection, (post) => {
+    return sortPostsByDate(await getCollection(collection, (post: { data: { draft: boolean }; slug: string | string[] }) => {
         if (import.meta.env.PROD) {
             if (post.data.draft) {
                 return false
             }
-        }
-        if (post.data.unlisted) {
-            return false
         }
         if (path) {
             if (!post.slug.includes(path)) {

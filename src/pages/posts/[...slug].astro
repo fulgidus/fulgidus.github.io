@@ -21,8 +21,17 @@ export async function getStaticPaths() {
 type Props = { post: CollectionPosts };
 
 const { post } = Astro.props;
-const { title, image, imageAlt, description, pubDate, duration, tags, lang } =
-  post.data;
+const {
+  title,
+  image,
+  imageAlt,
+  description,
+  pubDate,
+  duration,
+  tags,
+  lang,
+  unlisted,
+} = post.data;
 
 const { Content } = await post.render();
 
@@ -57,14 +66,21 @@ const articleImage = {
     <h1>
       {title}
     </h1>
-    <p h-initial op-50 class="flex flex-wrap flex-gap-1">
+    <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
+      {
+        unlisted && (
+          <code important-m-0 important-p-0>---UNLISTED---</code>
+        )
+      }
+    </div>
+    <p h-initial class="flex flex-wrap flex-gap-1">
       {pubDate && <time datetime={getDate(pubDate)}>{pubDate.split(",")}</time>}
       {duration && <span>· {duration}</span>}
       <LanguageFlag lang={lang} client:only="vue" verbose />
       {
         tags && tags.length > 0 && (
           <span class="flex flex-wrap flex-gap-1">
-            <TagsList tags={tags} link={true} verbose/>
+            <TagsList tags={tags} link={true} verbose />
           </span>
         )
       }
@@ -72,11 +88,7 @@ const articleImage = {
     {
       image && (
         <p>
-          <Image
-            src={image}
-            alt={imageAlt || ""}
-            loading="lazy"
-          />
+          <Image src={image} alt={imageAlt || ""} loading="lazy" />
         </p>
       )
     }
