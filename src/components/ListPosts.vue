@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import LanguageFlag from './LanguageFlag.vue';
 import TagsList from './TagsList.vue';
+import { Image } from '@unpic/vue'
 
 interface Post {
     id: string
@@ -77,8 +78,7 @@ function getYear(date: DateStringNumber) {
                 <div flex="~ col md:row gap-2 md:items-center">
                     <div flex="~ gap-2 items-center text-wrap">
                         <span lh-normal>
-                            <i v-if="post.data.draft" text-red-700 vertical-mid aria-label="Draft"
-                                i-ri-draft-line />
+                            <i v-if="post.data.draft" text-red-700 vertical-mid aria-label="Draft" i-ri-draft-line />
                             <i v-if="post.data.tags?.includes('made-with-ai')" text-violet-600 vertical-mid
                                 aria-label="Made with AI" i-ri-bard-line />
                             {{ post.data.title }}
@@ -91,7 +91,7 @@ function getYear(date: DateStringNumber) {
                         <i v-if="post.data.recording || post.data.video" text-base i-ri:film-line />
                         <time v-if="post.data.pubDate" :datetime="getDate(post.data.pubDate)">{{
                             post.data.pubDate.split(',')[0]
-                            }}</time>
+                        }}</time>
                         <span v-if="post.data.duration">· {{ post.data.duration }}</span>
                         <TagsList :tags="post.data.tags" />
                         <LanguageFlag :lang="post.data.lang" />
@@ -99,10 +99,12 @@ function getYear(date: DateStringNumber) {
                 </div>
                 <div opacity-50 text-sm>
                     <span v-if="post.data.image !== undefined">
-                        <img v-if="index % 2 === 0" :src="post.data.image?.src" :alt="post.data.imageAlt"
-                            class="float-left mb-4 mr-4 opacity-100 max-h-6rem sm-max-h-12rem max-w-50% sm-max-w-30%" />
-                        <img v-else :src="post.data.image?.src" :alt="post.data.imageAlt"
-                            class="float-right mb-4 ml-4 opacity-100 max-h-6rem sm-max-h-12rem max-w-50% sm-max-w-30%" />
+                        <Image v-if="index % 2 === 0" :src="post.data.image?.src" :alt="post.data.imageAlt"
+                            class="float-left mb-4 mr-4 opacity-100 max-h-6rem sm-max-h-12rem max-w-50% sm-max-w-30%"
+                            :loading="`${index < 2 ? 'eager' : 'lazy'}`" />
+                        <Image v-else :src="post.data.image?.src" :alt="post.data.imageAlt"
+                            class="float-right mb-4 ml-4 opacity-100 max-h-6rem sm-max-h-12rem max-w-50% sm-max-w-30%"
+                            :loading="`${index < 2 ? 'eager' : 'lazy'}`" />
                     </span>
                     {{ post.data.description }}
                 </div>
