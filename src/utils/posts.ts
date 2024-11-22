@@ -31,6 +31,8 @@ export async function getLastTenPosts(path?: string, collection: PostKey = 'blog
     return (await getPosts(path, collection)).slice(0, 10)
 }
 
+
+
 /** Note: this function filters out draft posts based on the environment */
 export async function getAllPosts() {
     return await getCollection('blog', ({ data }) => {

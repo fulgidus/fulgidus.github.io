@@ -1,14 +1,25 @@
+import siteConfig from "@/site-config";
+import { getCollection } from "astro:content";
+
 interface Context {
   site: string
 }
 
-export function GET(context: Context) {
+
+export async function generateDisallowedPaths() {
+    const blogPosts = await getCollection('blog', p => p.data.unlisted || p.data.draft);
+    return blogPosts.map(p => `Disallow: ${siteConfig.basePath}posts/${p.slug}`).join('\n');
+}
+
+export async function GET(context: Context) {
   const robots = `
+
 User-agent: *
 Allow: /
-  
-Sitemap: ${new URL('sitemap-index.xml', context.site).href}`.trim()
+${await generateDisallowedPaths()}
+Sitemap: ${new URL('sitemap-index.xml', context.site).href}
 
+`.trim()
   return new Response(robots, {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   })
