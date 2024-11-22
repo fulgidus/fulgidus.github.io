@@ -12,7 +12,7 @@ tags:
   - tutorial
 imageAlt: Email obfuscation article header
 imageSize: md
-duration: 8min
+duration: 8m
 draft: false
 lang: en
 redirect: ""

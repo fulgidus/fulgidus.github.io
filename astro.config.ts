@@ -28,4 +28,5 @@ export default defineConfig({
             wrap: true,
         },
     },
+    compressHTML: import.meta.env.PROD
 })

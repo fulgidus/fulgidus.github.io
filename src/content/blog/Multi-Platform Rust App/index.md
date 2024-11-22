@@ -5,7 +5,7 @@ image: "1.png"
 imageAlt: "A clean and minimalistic vector illustration representing multi-platform software development using Rust"
 imageSize: "md"
 pubDate: 2024-03-29
-duration: 13min
+duration: 13m
 tags:
   - made-with-obsidian
   - rust

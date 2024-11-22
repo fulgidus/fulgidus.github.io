@@ -5,7 +5,7 @@ image: testing.png
 imageAlt: "A laptop with code editor windows open, a magnifying\rglass symbolizing scrutiny, and icons representing unit tests and TDD cycles (e.g., green checkmarks and red Xs)"
 imageSize: md
 pubDate: 2024-11-21T21:20:46
-duration: 4min
+duration: 4m
 tags:
   - made-with-obsidian
   - made-with-ai
