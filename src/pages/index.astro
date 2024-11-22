@@ -3,6 +3,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import siteConfig from "@/site-config";
 import EmailObfuscator from "@/components/EmailObfuscator.vue";
 import PokerPic from "@/components/PokerPic.astro";
+import meImg from '/public/img/me.jpg';
 
 // Convert email to HTML entities
 const email = "alessio.corsi@gmail.com";
@@ -20,7 +21,7 @@ const emailEntities = Array.from(email)
       <h2 class="heading-element" dir="auto" text-nowrap>👨&zwj;💻 About Me</h2>
     </div>
     <PokerPic
-      src="/img/me.jpg"
+      img={meImg}
       alt="Alessio Corsi a.k.a. Fulgidus with suspenders"
       class="flex m-x-auto w-50% sm-w-33% aspect-ratio-square m-2 sm-float-end clear-both"
     />

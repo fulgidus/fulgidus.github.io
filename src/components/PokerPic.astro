@@ -1,11 +1,12 @@
 ---
 import type { HTMLAttributes } from "astro/types";
+import Image from "astro/components/Image.astro";
 
-type Props = HTMLAttributes<"img"> & {
-  src: String;
-  alt: String;
+type Props = HTMLAttributes<any> & {
+  img: ImageMetadata;
+  alt: string;
 };
-const { src, alt } = Astro.props;
+const { img, alt } = Astro.props;
 
 const spanClasses = `
 aspect-ratio-square relative inline-block b-rd-full overflow-hidden
@@ -17,9 +18,7 @@ const imgClasses = `important-m-0 w-full h-full b-rd-full`;
 ---
 
 <span {...Astro.props} bg-hex-380541 b-rd-full p-1>
-  <span
-    class={spanClasses}
-  >
-    <img src={src} alt={alt} class={imgClasses} />
+  <span class={spanClasses}>
+    <Image src={img} alt={alt} class={imgClasses} />
   </span>
 </span>
