@@ -4,7 +4,7 @@ import TagsList from "@/components/TagsList.vue";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { type CollectionPosts } from "@/types";
 import { getPosts } from "@/utils/posts";
-import { Image } from "@unpic/astro";
+import Image from "astro/components/Image.astro";
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -64,7 +64,7 @@ const articleImage = {
       {
         tags && tags.length > 0 && (
           <span class="flex flex-wrap flex-gap-1">
-            <TagsList tags={tags} link={true} verbose />
+            <TagsList tags={tags} link={true} verbose/>
           </span>
         )
       }
@@ -72,7 +72,11 @@ const articleImage = {
     {
       image && (
         <p>
-          <Image src={image} alt={imageAlt || ""} loading="eager" />
+          <Image
+            src={image}
+            alt={imageAlt || ""}
+            loading="lazy"
+          />
         </p>
       )
     }
