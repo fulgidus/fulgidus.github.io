@@ -1,0 +1,85 @@
+---
+import LanguageFlag from "@/components/LanguageFlag.vue";
+import TagsList from "@/components/TagsList.vue";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { type CollectionPosts } from "@/types";
+import { getPosts } from "@/utils/posts";
+import Image from "astro/components/Image.astro";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post: { slug: any }) => {
+    return {
+      params: { slug: post.slug },
+      props: {
+        post,
+      },
+    };
+  });
+}
+
+type Props = { post: CollectionPosts };
+
+const { post } = Astro.props;
+const { title, image, imageAlt, description, pubDate, duration, tags, lang } =
+  post.data;
+
+const { Content } = await post.render();
+
+function getDate(date: string) {
+  return new Date(date).toISOString();
+}
+
+const articleImage = {
+  src: image?.src ?? "",
+  alt: imageAlt,
+};
+---
+
+<!-- ACTUAL POST RENDERER -->
+<BaseLayout
+  title={title}
+  description={description}
+  image={articleImage}
+  pageType="article"
+>
+  <a
+    title="Back"
+    href="javascript:history.back()"
+    style="button"
+    float-end
+    m-s-10
+    m-t-1
+  >
+    <i aria-label="Go back" i-ri-arrow-go-back-line></i>
+  </a>
+  <article class="prose">
+    <h1>
+      {title}
+    </h1>
+    <p h-initial op-50 class="flex flex-wrap flex-gap-1">
+      {pubDate && <time datetime={getDate(pubDate)}>{pubDate.split(",")}</time>}
+      {duration && <span>· {duration}</span>}
+      <LanguageFlag lang={lang} client:only="vue" verbose />
+      {
+        tags && tags.length > 0 && (
+          <span class="flex flex-wrap flex-gap-1">
+            <TagsList tags={tags} link={true} verbose/>
+          </span>
+        )
+      }
+    </p>
+    {
+      image && (
+        <p>
+          <Image
+            src={image}
+            alt={imageAlt || ""}
+            loading="lazy"
+          />
+        </p>
+      )
+    }
+    <Content />
+  </article>
+</BaseLayout>

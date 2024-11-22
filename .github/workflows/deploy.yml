@@ -1,0 +1,49 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Trigger the workflow every time you push to the `main` branch
+  # Replace `main` with your branch name if it's different
+  push:
+    branches: [main]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Permissions required to deploy to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Install, build, and prepare the site for deployment
+      - name: Install, build, and upload your site
+        uses: withastro/action@v3
+        with:
+          # Adjust if your project root is different
+          path: .
+          node-version: 20 # Default version of Node.js to use
+          package-manager: pnpm@latest # Use pnpm as the package manager
+
+  deploy:
+    # Deploy job depends on the build job
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # Step 1: Disable Jekyll to avoid conflicts
+      #  - name: Disable Jekyll
+      #    run: echo "" > dist/.nojekyll
+
+      # Step 2: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

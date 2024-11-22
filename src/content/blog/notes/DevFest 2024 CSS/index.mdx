@@ -1,0 +1,102 @@
+---
+title: Didn’t know CSS could do that
+description: Your blog description, which is long text, can be an introduction to the post or a paragraph of the post.
+image: 1.jpg
+imageAlt: A picture of the first slide and Matteo Fogli starting the talk
+imageSize: "md"
+pubDate: 2024-10-19
+duration: 2m
+tags:
+  - made-with-obsidian
+draft: false
+lang: en
+redirect: ""
+video: false
+---
+
+import closingPic from "./2.jpg";
+
+## Summary:
+
+- ### CSS Capabilities Beyond Basic Styling:
+  - Discovered that CSS offers advanced features like `:has` and `text-wrap`, among others, which can significantly enhance web design capabilities.
+
+- ### Order of Trying Out New Features:
+  1. **HTML:** Start with HTML to structure content.
+  2. **CSS:** Use CSS for styling and advanced features like `:has` selector.
+  3. **JS:** Incorporate JavaScript for dynamic behavior and interactivity.
+
+- ### Advanced CSS Selectors:
+
+  - #### `:has` Selector:
+    - Allows selecting an element based on its state or the presence of specific children.
+    Examples:
+      ```css
+      element:has(.child) {
+      }
+      element:has(> .direct-child) {
+      }
+      element:has(:state) {
+      }
+      element:has(:state) .child {
+      }
+      ```
+    - Supports boolean logic:
+      ```css
+      element:has(:not(:state)) {
+      }
+      element:has(.logical, .or) {
+      }
+      element:has(.logical):has(.and) {
+      }
+      ```
+    - **❗ Feature Detection:**
+      ```css
+      @supports selector(figure:has(caption)) {
+        figure:has(caption) {
+          // define stuff
+        }
+      }
+      ```
+    - **⚠️ Caveats:**
+      - Not forgiving; use `:where` for more lenient selection.
+      - Takes the highest specificity of argument selectors.
+      - Keep selectors as specific as possible to avoid performance issues.
+
+    - #### `:range` Selector:
+    - Utilizes `:nth-child(n + B)` and `:nth(-n + B)` to count elements based on specific conditions.
+      Example:
+        ```css
+        :nth-child(An + B of .selector) {
+        }
+        ```
+    - Can also use division to count with `An` and `:last-child`.
+
+- ### Text Wrapping Enhancements:
+
+  - #### Typographically Accurate Text Wrapping:
+    - `text-wrap: balance;`: Aligns line ends to maintain a rectangular shape.
+    - `text-wrap: pretty;`: Avoids single-word orphans in the last line of paragraphs.
+
+- ### Scroll-Driven Animations:
+  - Explore scroll-driven animations using resources like [scroll-driven-animations.style](https://scroll-driven-animations.style) (best viewed in Chrome).
+  - How to implement:
+    1. Remove time component from animation.
+    2. Make easing linear.
+    3. Add `animation-timeline: scroll(block root);`.
+  - #### ❗ Scroll Direction Detection:
+    - Check out [Pecus's CodePen](https://codepen.io/pecus/) for examples.
+
+<img src={closingPic.src} alt="The closing slide containing contact info" width="80%" style="display: block; margin-left: auto; margin-right: auto;"/>
+
+## Resources:
+
+- ### Baseline Project:
+  - Use [MDN CanIUse](https://caniuse.com/) and [web.dev](https://web.dev/) to check feature support.
+
+- ### Additional Resources:
+  - [scroll-driven-animations.style](https://scroll-driven-animations.style)
+  - [Pecus's CodePen](https://codepen.io/pecus/)
+
+> ℹ️
+> This notes page covers new CSS features and provides guidance on how to implement them effectively, along with important considerations for performance and browser compatibility.

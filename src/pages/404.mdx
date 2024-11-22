@@ -1,0 +1,32 @@
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import dark from '../../public/img/404-dark.gif'
+import light from '../../public/img/404-light.gif'
+import Picture from "astro/components/Picture.astro";
+import DottieErrorNumber from '@/components/error-numbers/LottieErrorNumber.vue'
+
+<BaseLayout title="Not Found" description="Sorry, we couldn't find what you were looking for.">
+  <article class="prose">
+    <Picture
+            src={dark}
+            alt="404 Error animation"
+            formats={["webp"]}
+            fallbackFormat="gif"
+            loading="lazy"
+            class="m-auto hidden dark:block"
+          />
+    <Picture
+            src={light}
+            alt="404 Error animation"
+            formats={["webp"]}
+            fallbackFormat="gif"
+            loading="lazy"
+            class="m-auto block dark:hidden"
+          />
+    <h2>
+        Page Not Found
+    </h2>
+    <p>
+        Sorry, we couldn't find what you were looking for!
+    </p>
+  </article>
+</ BaseLayout>
