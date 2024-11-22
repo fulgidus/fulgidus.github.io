@@ -77,8 +77,7 @@ function getYear(date: DateStringNumber) {
                 <div flex="~ col md:row gap-2 md:items-center">
                     <div flex="~ gap-2 items-center text-wrap">
                         <span lh-normal>
-                            <i v-if="post.data.draft" text-red-700 vertical-mid aria-label="Draft"
-                                i-ri-draft-line />
+                            <i v-if="post.data.draft" text-red-700 vertical-mid aria-label="Draft" i-ri-draft-line />
                             <i v-if="post.data.tags?.includes('made-with-ai')" text-violet-600 vertical-mid
                                 aria-label="Made with AI" i-ri-bard-line />
                             {{ post.data.title }}
@@ -99,10 +98,24 @@ function getYear(date: DateStringNumber) {
                 </div>
                 <div opacity-50 text-sm>
                     <span v-if="post.data.image !== undefined">
-                        <img v-if="index % 2 === 0" :src="post.data.image?.src" :alt="post.data.imageAlt"
-                            class="float-left mb-4 mr-4 opacity-100 max-h-6rem sm-max-h-12rem max-w-50% sm-max-w-30%" />
-                        <img v-else :src="post.data.image?.src" :alt="post.data.imageAlt"
-                            class="float-right mb-4 ml-4 opacity-100 max-h-6rem sm-max-h-12rem max-w-50% sm-max-w-30%" />
+                        <span v-if="post.data.imageSize === 'md'">
+                            <img v-if="index % 2 === 0" :src="post.data.image?.src" :alt="post.data.imageAlt"
+                                class="float-left mb-4 mr-4 opacity-100 max-h-6rem sm-max-h-12rem max-w-50% sm-max-w-30%" />
+                            <img v-else :src="post.data.image?.src" :alt="post.data.imageAlt"
+                                class="float-right mb-4 ml-4 opacity-100 max-h-6rem sm-max-h-12rem max-w-50% sm-max-w-30%" />
+                        </span>
+                        <span v-if="post.data.imageSize === 'sm'">
+                            <img v-if="index % 2 === 0" :src="post.data.image?.src" :alt="post.data.imageAlt"
+                                class="float-left mb-4 mr-4 opacity-100 max-h-4rem sm-max-h-8rem max-w-30% sm-max-w-25%" />
+                            <img v-else :src="post.data.image?.src" :alt="post.data.imageAlt"
+                                class="float-right mb-4 ml-4 opacity-100 max-h-4rem sm-max-h-8rem max-w-30% sm-max-w-25%" />
+                        </span>
+                        <span v-if="post.data.imageSize === 'xs'">
+                            <img v-if="index % 2 === 0" :src="post.data.image?.src" :alt="post.data.imageAlt"
+                                class="float-left mb-4 mr-4 opacity-100 max-h-3rem sm-max-h-6rem max-w-25% sm-max-w-25%" />
+                            <img v-else :src="post.data.image?.src" :alt="post.data.imageAlt"
+                                class="float-right mb-4 ml-4 opacity-100 max-h-3rem sm-max-h-6rem max-w-25% sm-max-w-25%" />
+                        </span>
                     </span>
                     {{ post.data.description }}
                 </div>

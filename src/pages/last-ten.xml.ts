@@ -7,7 +7,7 @@ interface Context {
 }
 
 export async function GET(context: Context) {
-    const posts = await getLastTenPosts()
+    const posts = (await getLastTenPosts()).filter((p) => !p.data.unlisted && !p.data.draft)
 
     return rss({
         title: siteConfig.title,

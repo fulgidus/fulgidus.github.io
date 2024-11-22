@@ -25,6 +25,7 @@ const {
   title,
   image,
   imageAlt,
+  imageSize,
   description,
   pubDate,
   duration,
@@ -69,7 +70,9 @@ const articleImage = {
     <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
       {
         unlisted && (
-          <code important-m-0 important-p-0>---UNLISTED---</code>
+          <code important-m-0 important-p-0>
+            ---UNLISTED---
+          </code>
         )
       }
     </div>
@@ -86,10 +89,28 @@ const articleImage = {
       }
     </p>
     {
-      image && (
-        <p>
-          <Image src={image} alt={imageAlt || ""} loading="lazy" />
-        </p>
+      image && imageSize === "md" && (
+        <Image src={image} alt={imageAlt || ""} loading="lazy" class="hero"/>
+      )
+    }
+    {
+      image && imageSize === "sm" && (
+        <Image
+          src={image}
+          alt={imageAlt || ""}
+          loading="lazy"
+          class="float-right w50%"
+        />
+      )
+    }
+    {
+      image && imageSize === "xs" && (
+        <Image
+          src={image}
+          alt={imageAlt || ""}
+          loading="lazy"
+          class="float-right w25%"
+        />
       )
     }
     <Content />

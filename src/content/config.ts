@@ -19,7 +19,7 @@ const blog = defineCollection({
     title: z.string(),
     description: z.string().optional(),
     duration: z.string().optional(),
-    image: image().refine(img => img.width >= 800, {
+    image: image().refine(img => img.width >= 800 || img.format === 'svg', {
       message: 'Cover image must be at least 800 pixels wide!',
     }).optional(),
     imageAlt: z.string().optional(),

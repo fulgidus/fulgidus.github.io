@@ -60,9 +60,12 @@
   left: 0.25em;
 }
 .prose hr {
-  border-color: rgba(125, 125, 125, 0.3);
-  margin-top: 3em;
-  margin-bottom: 3em;
+  border: 2px solid rgba(125, 125, 125, .2);
+  margin: auto;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  width: 50%;
+  border-radius: 2px;
 }
 .prose blockquote {
   font-weight: 500;
@@ -196,9 +199,13 @@
   margin-top: 1.25em;
   margin-bottom: 1.25em;
 }
+.prose img.hero {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
 .prose img {
-  margin-top: 2em;
-  margin-bottom: 2em;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 .prose video {
   margin-top: 2em;
