@@ -4,9 +4,9 @@ import LanguageFlag from "@/components/LanguageFlag.vue";
 import TagsList from "@/components/TagsList.vue";
 import type { ImageSize } from "@/content/config";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { type CollectionPosts } from "@/types";
+import { type CollectionPost } from "@/types";
 import { getPosts } from "@/utils/posts";
-import Image from "astro/components/Image.astro";
+import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -20,7 +20,7 @@ export async function getStaticPaths() {
   });
 }
 
-type Props = { post: CollectionPosts };
+type Props = { post: CollectionPost };
 
 const { post } = Astro.props;
 const {
@@ -87,9 +87,7 @@ function composeImageSizeClasses(size: ImageSize): string {
     <i aria-label="Go back" i-ri-arrow-go-back-line></i>
   </a>
   <article class="prose">
-    <div
-      class="max-w-4xl mx-auto relative"
-    >
+    <div class="max-w-4xl mx-auto relative">
       <h1>
         {title}
       </h1>

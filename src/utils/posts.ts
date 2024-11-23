@@ -1,9 +1,31 @@
 import { getCollection } from 'astro:content'
 import type { CollectionEntry } from 'astro:content'
-import type { CollectionPosts, PostKey } from '@/types'
+import type { CollectionPost, PostKey } from '@/types'
+
+// import type { ImageSize } from '@/content/config'
+// import type { ImageMetadata } from 'astro'
+// export interface BlogPost {
+//     id: string;
+//     slug: string;
+//     body: string;
+//     data: {
+//         title: string;
+//         description: string;
+//         pubDate: DateStringNumber;
+//         image: ImageMetadata;
+//         imageAlt: string | null;
+//         imageSize: ImageSize;
+//         tags: string[];
+//         redirect?: string;
+//         // ... other properties of post.data
+//         [key: string]: unknown; // Allows other arbitrary properties
+//     };
+//     collection: string;
+//     render: () => void;
+// }
 
 //Actual function that orders posts in /blog
-export function postSortingFunction(itemA: CollectionPosts, itemB: CollectionPosts) {
+export function postSortingFunction(itemA: CollectionPost, itemB: CollectionPost) {
     return new Date(itemB.data.pubDate).getTime() - new Date(itemA.data.pubDate).getTime()
 }
 
@@ -61,4 +83,24 @@ export function getUniqueTagsWithCount(
             new Map<string, number>()
         )
     ].sort((a, b) => b[1] - a[1])
+}
+
+export type DateStringNumber = Date | string | number;
+
+export function getDate(date: DateStringNumber) {
+    return new Date(date).toISOString();
+}
+
+export function getHref(post: CollectionPost): string {
+    if (post.data.redirect) {
+        return post.data.redirect;
+    }
+    return `/posts/${post.slug}`;
+}
+
+export function getTarget(post: CollectionPost) {
+    if (post.data.redirect) {
+        return "_blank";
+    }
+    return "_self";
 }

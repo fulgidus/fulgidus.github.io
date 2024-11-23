@@ -1,59 +1,32 @@
 ---
-import type { ImageSize } from "@/content/config";
 import LanguageFlag from "./LanguageFlag.vue";
 import TagsList from "./TagsList.vue";
-import Image from "astro/components/Image.astro";
-
-interface Post {
-  id: string;
-  slug: string;
-  body: string;
-  data: {
-    imageSize: ImageSize;
-    // ... other properties of post.data
-    [key: string]: any; // Allows other arbitrary properties
-  };
-  collection: string;
-  render: () => void;
-}
+import { Image } from "astro:assets";
+import {
+  getDate,
+  getHref,
+  getTarget,
+  type DateStringNumber,
+} from "@/utils/posts";
+import type { CollectionPost } from "@/types";
 
 // temp TODO remove export
 export interface Props {
-  list: Post[];
+  list: CollectionPost[];
 }
 
 const { list = [] } = Astro.props;
 
-function purgePostsFromUnlisted(l: Post[]) {
+function purgePostsFromUnlisted(l: CollectionPost[]) {
   const sorted = l.reduce((acc, element) => {
     if (element.data.unlisted) {
       return [element, ...acc];
     }
     return [...acc, element];
-  }, [] as Post[]);
+  }, [] as CollectionPost[]);
 
   return sorted;
 }
-
-function getDate(date: string) {
-  return new Date(date).toISOString();
-}
-
-function getHref(post: Post) {
-  if (post.data.redirect) {
-    return post.data.redirect;
-  }
-  return `/posts/${post.slug}`;
-}
-
-function getTarget(post: Post) {
-  if (post.data.redirect) {
-    return "_blank";
-  }
-  return "_self";
-}
-
-type DateStringNumber = Date | string | number;
 
 function isSameYear(a: DateStringNumber, b: DateStringNumber) {
   return a && b && getYear(a) === getYear(b);
@@ -63,7 +36,7 @@ function getYear(date: DateStringNumber) {
   return new Date(date).getFullYear();
 }
 
-function composeImageSizeClasses(post: Post): string {
+function composeImageSizeClasses(post: CollectionPost): string {
   const { imageSize: size } = post.data;
   if (size === "xl") {
     return "max-w-100%";
@@ -89,7 +62,10 @@ function composeImageSizeClasses(post: Post): string {
   {
     purgePostsFromUnlisted(list).map((post, index) => (
       <li class="mb-8">
-        {!isSameYear(post.data.pubDate, list[index - 1]?.data.pubDate) && (
+        {!isSameYear(
+          post.data.pubDate,
+          list[index - 1]?.data.pubDate ?? NaN
+        ) && (
           <div class="select-none relative h18 pointer-events-none">
             <span class="text-7em color-transparent font-bold text-stroke-2 text-stroke-hex-aaa op14 absolute top--0.2em font-title">
               {getYear(post.data.pubDate)}
@@ -129,12 +105,12 @@ function composeImageSizeClasses(post: Post): string {
           <div class="flex flex-col md:flex-row flex-gap-2 md:flex-items-center">
             <div class="opacity-50 text-sm flex flex-gap-1 flex-wrap">
               {post.data.redirect && <i text-base i-ri-external-link-line />}
-              {(post.data.recording || post.data.video) && (
+              {(post.data.video) && (
                 <i text-base i-ri:film-line />
               )}
               {post.data.pubDate && (
                 <time datetime={getDate(post.data.pubDate)}>
-                  {post.data.pubDate.split(",")[0]}
+                  {`${post.data.pubDate}`.split(",")[0]}
                 </time>
               )}
               {post.data.duration && <span>· {post.data.duration}</span>}
@@ -146,7 +122,7 @@ function composeImageSizeClasses(post: Post): string {
             {post.data.image !== undefined && (
               <Image
                 src={post.data.image}
-                alt={post.data.imageAlt}
+                alt={post.data.imageAlt ?? null}
                 class={`${index % 2 === 0 ? "float-left mr-4" : "float-right ml-4"} mb-4 opacity-100 object-cover aspect-ratio-square ${composeImageSizeClasses(post)}`}
               />
             )}

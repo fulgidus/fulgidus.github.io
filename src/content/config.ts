@@ -47,12 +47,12 @@ const blog = defineCollection({
       .string()
       .or(z.date())
       .transform((val: string | number | Date) => new Date(val).toLocaleDateString(siteConfig.date.locale, siteConfig.date.options)),
-    draft: z.boolean().default(false).optional(),
-    unlisted: z.boolean().default(false).optional(),
+    draft: z.boolean().default(false),
+    unlisted: z.boolean().default(false),
     lang: supportedLanguagesSchema,
-    tags: z.array(z.string()).default([]).optional(),
+    tags: z.array(z.string()).default([]),
     redirect: z.string().optional(),
-    video: z.boolean().default(false).optional(),
+    video: z.boolean().default(false),
   }),
 })
 

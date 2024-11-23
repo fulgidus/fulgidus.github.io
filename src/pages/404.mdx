@@ -1,12 +1,12 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import dark from '../../public/img/404-dark.gif'
 import light from '../../public/img/404-light.gif'
-import Picture from "astro/components/Picture.astro";
+import { Image } from "astro:assets";
 import DottieErrorNumber from '@/components/error-numbers/LottieErrorNumber.vue'
 
 <BaseLayout title="Not Found" description="Sorry, we couldn't find what you were looking for.">
   <article class="prose">
-    <Picture
+    <Image
             src={dark}
             alt="404 Error animation"
             formats={["webp"]}
@@ -14,7 +14,7 @@ import DottieErrorNumber from '@/components/error-numbers/LottieErrorNumber.vue'
             loading="lazy"
             class="m-auto hidden dark:block"
           />
-    <Picture
+    <Image
             src={light}
             alt="404 Error animation"
             formats={["webp"]}
