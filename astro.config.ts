@@ -29,5 +29,4 @@ export default defineConfig({
         },
     },
     compressHTML: import.meta.env.PROD,
-    prefetch: true,
 })
