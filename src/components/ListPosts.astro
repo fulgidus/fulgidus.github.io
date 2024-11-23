@@ -105,9 +105,7 @@ function composeImageSizeClasses(post: CollectionPost): string {
           <div class="flex flex-col md:flex-row flex-gap-2 md:flex-items-center">
             <div class="opacity-50 text-sm flex flex-gap-1 flex-wrap">
               {post.data.redirect && <i text-base i-ri-external-link-line />}
-              {(post.data.video) && (
-                <i text-base i-ri:film-line />
-              )}
+              {post.data.video && <i text-base i-ri:film-line />}
               {post.data.pubDate && (
                 <time datetime={getDate(post.data.pubDate)}>
                   {`${post.data.pubDate}`.split(",")[0]}
@@ -124,6 +122,7 @@ function composeImageSizeClasses(post: CollectionPost): string {
                 src={post.data.image}
                 alt={post.data.imageAlt ?? null}
                 class={`${index % 2 === 0 ? "float-left mr-4" : "float-right ml-4"} mb-4 opacity-100 object-cover aspect-ratio-square ${composeImageSizeClasses(post)}`}
+                format="webp"
               />
             )}
             <span>{post.data.description}</span>

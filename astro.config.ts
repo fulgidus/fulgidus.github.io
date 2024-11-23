@@ -15,7 +15,7 @@ export default defineConfig({
         vue(), 
         sitemap(),
         UnoCSS({
-            injectReset: true,
+            injectReset: true, 
             envMode: import.meta.env.PROD ? 'build' : 'dev'
         })
     ],
@@ -28,5 +28,5 @@ export default defineConfig({
             wrap: true,
         },
     },
-    compressHTML: import.meta.env.PROD,
+    compressHTML: import.meta.env.PROD,i
 })

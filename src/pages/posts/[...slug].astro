@@ -50,7 +50,7 @@ const articleImage = {
 function composeImageSizeClasses(size: ImageSize): string {
   const r = Math.random();
   if (size === `xl`) {
-    return `w-screen ml-[calc(-50vw--1.5rem)] left-50% block mx1 relative`;
+    return `w-100%`;
   }
   if (size === `lg`) {
     return `w-100%`;
@@ -124,6 +124,7 @@ function composeImageSizeClasses(size: ImageSize): string {
           alt={imageAlt || ""}
           loading="lazy"
           class={composeImageSizeClasses(imageSize)}
+          format="webp"
         />
       )
     }
