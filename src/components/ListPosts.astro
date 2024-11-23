@@ -1,6 +1,7 @@
 ---
 import LanguageFlag from "./LanguageFlag.vue";
 import TagsList from "./TagsList.vue";
+import Image from "astro/components/Image.astro";
 
 interface Post {
   id: string;
@@ -12,7 +13,7 @@ interface Post {
 }
 
 // temp TODO remove export
-export type Props = {
+export interface Props {
   list: Post[];
 };
 
@@ -134,8 +135,8 @@ function composeImageSizeClasses(size: "md" | "sm" | "xs"): string {
           </div>
           <div opacity-50 text-sm>
             {post.data.image !== undefined && (
-                <img
-                  src={post.data.image?.src}
+                <Image
+                  src={post.data.image}
                   alt={post.data.imageAlt}
                   class={`float-${index%2===0?'left mr-4':'right ml-4'} mb-4 opacity-100 ${composeImageSizeClasses(post.data.imageSize)}`}
                 />
