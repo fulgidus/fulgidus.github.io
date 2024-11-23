@@ -27,7 +27,7 @@ const sorted = props.tags.toSorted();
         <span v-if="i === 0 && !props.verbose">·</span>
         <span>&nbsp;</span>
         <span v-if="tag === 'made-with-ai'">
-            <a v-if="props.link" :href="`/tags/${tag}`">
+            <a v-if="props.link" :href="`/tags/${tag}`" data-astro-prefetch>
                 <span bg-violet-400 font-800>#{{ tag }}</span>
             </a>
             <template v-else>
@@ -35,7 +35,7 @@ const sorted = props.tags.toSorted();
             </template>
         </span>
         <span v-else>
-            <a v-if="props.link" :href="`/tags/${tag}`">
+            <a v-if="props.link" :href="`/tags/${tag}`" data-astro-prefetch>
                 <span>#{{ tag }}</span>
             </a>
             <template v-else>

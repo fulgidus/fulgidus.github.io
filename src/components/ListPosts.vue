@@ -73,7 +73,7 @@ function getYear(date: DateStringNumber) {
                 </span>
             </div>
             <a text-lg lh-tight nav-link flex="~ col gap-2" :aria-label="post.data.title" :target="getTarget(post)"
-                :href="getHref(post)">
+                :href="getHref(post)" data-astro-prefetch>
                 <div flex="~ col md:row gap-2 md:items-center">
                     <div flex="~ gap-2 items-center text-wrap">
                         <span lh-normal>

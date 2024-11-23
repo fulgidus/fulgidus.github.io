@@ -1,4 +1,5 @@
 ---
+import GoBackToBlog from "@/components/GoBackToBlog.vue";
 import LanguageFlag from "@/components/LanguageFlag.vue";
 import TagsList from "@/components/TagsList.vue";
 import BaseLayout from "@/layouts/BaseLayout.astro";
@@ -67,15 +68,15 @@ const articleImage = {
     <h1>
       {title}
     </h1>
-    <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
-      {
-        unlisted && (
+    {
+      unlisted && (
+        <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
           <code important-m-0 important-p-0>
             ---UNLISTED---
           </code>
-        )
-      }
-    </div>
+        </div>
+      )
+    }
     <p h-initial class="flex flex-wrap flex-gap-1">
       {pubDate && <time datetime={getDate(pubDate)}>{pubDate.split(",")}</time>}
       {duration && <span>· {duration}</span>}
@@ -90,7 +91,7 @@ const articleImage = {
     </p>
     {
       image && imageSize === "md" && (
-        <Image src={image} alt={imageAlt || ""} loading="lazy" class="hero"/>
+        <Image src={image} alt={imageAlt || ""} loading="lazy" class="hero" />
       )
     }
     {
@@ -114,5 +115,7 @@ const articleImage = {
       )
     }
     <Content />
+
+    <GoBackToBlog client:only="vue" />
   </article>
 </BaseLayout>
