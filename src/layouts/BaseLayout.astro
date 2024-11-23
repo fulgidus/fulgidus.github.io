@@ -8,12 +8,14 @@ import ScrollToTop from "@/components/ScrollToTop.vue";
 interface Props {
   title?: string;
   description?: string;
+  imageSize?: string;
   image?: { src: string; alt?: string };
   pageType?: "website" | "article";
-  pageNav?:boolean;
-  pageOperate?:boolean;
+  pageNav?: boolean;
+  pageOperate?: boolean;
 }
 const { ...head } = Astro.props;
+const { imageSize } = Astro.props;
 ---
 
 <!doctype html>
@@ -25,13 +27,15 @@ const { ...head } = Astro.props;
   <body class="bg-main text-main min-h-screen font-sans w-full bg-dot">
     <Header client:load />
     <main
-      class="grow max-w-3xl mx-auto sm:pt-36 pt-26 pb-16 px-6 relative"
+      class=`grow ${imageSize === 'xl' ? 'max-w-100vw':'max-w-4xl'} mx-auto sm:pt-36 pt-26 pb-16 px-6 relative`
       transition:animate={fade({ duration: "0.4s" })}
       text-pretty
     >
       <slot />
       <ScrollToTop client:only="vue" />
-      <Footer />
+      <div class="max-w-4xl mx-auto sm:pt-36 pt-26 pb-16 px-6 relative">
+        <Footer />
+      </div>
     </main>
   </body>
 </html>

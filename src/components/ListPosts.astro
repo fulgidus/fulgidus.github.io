@@ -1,4 +1,5 @@
 ---
+import type { ImageSize } from "@/content/config";
 import LanguageFlag from "./LanguageFlag.vue";
 import TagsList from "./TagsList.vue";
 import Image from "astro/components/Image.astro";
@@ -7,7 +8,11 @@ interface Post {
   id: string;
   slug: string;
   body: string;
-  data: Record<string, any>;
+  data: {
+    imageSize: ImageSize;
+    // ... other properties of post.data
+    [key: string]: any; // Allows other arbitrary properties
+  };
   collection: string;
   render: () => void;
 }
@@ -15,7 +20,7 @@ interface Post {
 // temp TODO remove export
 export interface Props {
   list: Post[];
-};
+}
 
 const { list = [] } = Astro.props;
 
@@ -58,24 +63,30 @@ function getYear(date: DateStringNumber) {
   return new Date(date).getFullYear();
 }
 
-function composeImageSizeClasses(size: "md" | "sm" | "xs"): string {
-    //${post.data.imageSize === 'md' ? '12' : post.data.imageSize === 'sm' ? '9': '6'}
-    if (size === 'md'){
-        return 'max-h-6rem sm-max-h-12rem max-w-50% sm-max-w-30%'
-    }
-    if (size === 'sm'){
-        return 'max-h-4rem sm-max-h-8rem max-w-30% sm-max-w-25%'
-    }
-    if (size === 'xs'){
-        return 'max-h-3rem sm-max-h-6rem max-w-25% sm-max-w-25%'
-    }
-    return size
+function composeImageSizeClasses(post: Post): string {
+  const { imageSize: size } = post.data;
+  if (size === "xl") {
+    return "max-w-100%";
+  }
+  if (size === "lg") {
+    return "max-w-60% sm-max-w-60%";
+  }
+  if (size === "md") {
+    return "max-w-24 sm-max-w-48";
+  }
+  if (size === "sm") {
+    return "max-w-18 sm-max-w-36";
+  }
+  if (size === "xs") {
+    return "max-w-12 m-1 sm-max-w-18";
+  }
+  return "max-w-24 sm-max-w-48";
 }
 ---
 
 <ul sm:min-h-38 min-h-28 mb-18>
   <template v-if="!list || list.length === 0">
-    <div my-12 opacity-50>nothing here yet.</div>
+    <div my-12>nothing here yet.</div>
   </template>
   {
     purgePostsFromUnlisted(list).map((post, index) => (
@@ -133,15 +144,15 @@ function composeImageSizeClasses(size: "md" | "sm" | "xs"): string {
               <LanguageFlag lang={post.data.lang} verbose={false} />
             </div>
           </div>
-          <div opacity-50 text-sm>
+          <div text-sm>
             {post.data.image !== undefined && (
-                <Image
-                  src={post.data.image}
-                  alt={post.data.imageAlt}
-                  class={`float-${index%2===0?'left mr-4':'right ml-4'} mb-4 opacity-100 ${composeImageSizeClasses(post.data.imageSize)}`}
-                />
+              <Image
+                src={post.data.image}
+                alt={post.data.imageAlt}
+                class={`${index % 2 === 0 ? "float-left mr-4" : "float-right ml-4"} mb-4 opacity-100 object-cover aspect-ratio-square ${composeImageSizeClasses(post)}`}
+              />
             )}
-            {post.data.description}
+            <span>{post.data.description}</span>
           </div>
         </a>
       </li>

@@ -2,6 +2,7 @@
 import GoBackToBlog from "@/components/GoBackToBlog.vue";
 import LanguageFlag from "@/components/LanguageFlag.vue";
 import TagsList from "@/components/TagsList.vue";
+import type { ImageSize } from "@/content/config";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { type CollectionPosts } from "@/types";
 import { getPosts } from "@/utils/posts";
@@ -45,6 +46,26 @@ const articleImage = {
   src: image?.src ?? "",
   alt: imageAlt,
 };
+
+function composeImageSizeClasses(size: ImageSize): string {
+  const r = Math.random();
+  if (size === `xl`) {
+    return `w-screen ml-[calc(-50vw--1.5rem)] left-50% block mx1 relative`;
+  }
+  if (size === `lg`) {
+    return `w-100%`;
+  }
+  if (size === `md`) {
+    return `${r < 0.5 ? "float-left mr6" : "float-right ml6"} mb6 w-100%`;
+  }
+  if (size === `sm`) {
+    return `${r < 0.5 ? "float-left mr4" : "float-right ml4"} mb4 w-75%`;
+  }
+  if (size === `xs`) {
+    return `${r < 0.5 ? "float-left mr4" : "float-right ml4"} mb4 w-50%`;
+  }
+  return `${r < 0.5 ? "float-left mr6" : "float-right ml6"} mb6 w-100%`;
+}
 ---
 
 <!-- ACTUAL POST RENDERER -->
@@ -53,6 +74,7 @@ const articleImage = {
   description={description}
   image={articleImage}
   pageType="article"
+  imageSize={imageSize}
 >
   <a
     title="Back"
@@ -65,52 +87,45 @@ const articleImage = {
     <i aria-label="Go back" i-ri-arrow-go-back-line></i>
   </a>
   <article class="prose">
-    <h1>
-      {title}
-    </h1>
-    {
-      unlisted && (
-        <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
-          <code important-m-0 important-p-0>
-            ---UNLISTED---
-          </code>
-        </div>
-      )
-    }
-    <p h-initial class="flex flex-wrap flex-gap-1">
-      {pubDate && <time datetime={getDate(pubDate)}>{pubDate.split(",")}</time>}
-      {duration && <span>· {duration}</span>}
-      <LanguageFlag lang={lang} client:only="vue" verbose />
+    <div
+      class="max-w-4xl mx-auto relative"
+    >
+      <h1>
+        {title}
+      </h1>
       {
-        tags && tags.length > 0 && (
-          <span class="flex flex-wrap flex-gap-1">
-            <TagsList tags={tags} link={true} verbose />
-          </span>
+        unlisted && (
+          <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
+            <code important-m-0 important-p-0>
+              ---UNLISTED---
+            </code>
+          </div>
         )
       }
-    </p>
+      <p h-initial class="flex flex-wrap flex-gap-1">
+        {
+          pubDate && (
+            <time datetime={getDate(pubDate)}>{pubDate.split(",")}</time>
+          )
+        }
+        {duration && <span>· {duration}</span>}
+        <LanguageFlag lang={lang} client:only="vue" verbose />
+        {
+          tags && tags.length > 0 && (
+            <span class="flex flex-wrap flex-gap-1">
+              <TagsList tags={tags} link={true} verbose />
+            </span>
+          )
+        }
+      </p>
+    </div>
     {
-      image && imageSize === "md" && (
-        <Image src={image} alt={imageAlt || ""} loading="lazy" class="hero" />
-      )
-    }
-    {
-      image && imageSize === "sm" && (
+      image && (
         <Image
           src={image}
           alt={imageAlt || ""}
           loading="lazy"
-          class="float-right w50%"
-        />
-      )
-    }
-    {
-      image && imageSize === "xs" && (
-        <Image
-          src={image}
-          alt={imageAlt || ""}
-          loading="lazy"
-          class="float-right w25%"
+          class={composeImageSizeClasses(imageSize)}
         />
       )
     }
