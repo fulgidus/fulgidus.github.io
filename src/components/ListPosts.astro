@@ -1,0 +1,150 @@
+---
+import LanguageFlag from "./LanguageFlag.vue";
+import TagsList from "./TagsList.vue";
+
+interface Post {
+  id: string;
+  slug: string;
+  body: string;
+  data: Record<string, any>;
+  collection: string;
+  render: () => void;
+}
+
+// temp TODO remove export
+export type Props = {
+  list: Post[];
+};
+
+const { list = [] } = Astro.props;
+
+function purgePostsFromUnlisted(l: Post[]) {
+  const sorted = l.reduce((acc, element) => {
+    if (element.data.unlisted) {
+      return [element, ...acc];
+    }
+    return [...acc, element];
+  }, [] as Post[]);
+
+  return sorted;
+}
+
+function getDate(date: string) {
+  return new Date(date).toISOString();
+}
+
+function getHref(post: Post) {
+  if (post.data.redirect) {
+    return post.data.redirect;
+  }
+  return `/posts/${post.slug}`;
+}
+
+function getTarget(post: Post) {
+  if (post.data.redirect) {
+    return "_blank";
+  }
+  return "_self";
+}
+
+type DateStringNumber = Date | string | number;
+
+function isSameYear(a: DateStringNumber, b: DateStringNumber) {
+  return a && b && getYear(a) === getYear(b);
+}
+
+function getYear(date: DateStringNumber) {
+  return new Date(date).getFullYear();
+}
+
+function composeImageSizeClasses(size: "md" | "sm" | "xs"): string {
+    //${post.data.imageSize === 'md' ? '12' : post.data.imageSize === 'sm' ? '9': '6'}
+    if (size === 'md'){
+        return 'max-h-6rem sm-max-h-12rem max-w-50% sm-max-w-30%'
+    }
+    if (size === 'sm'){
+        return 'max-h-4rem sm-max-h-8rem max-w-30% sm-max-w-25%'
+    }
+    if (size === 'xs'){
+        return 'max-h-3rem sm-max-h-6rem max-w-25% sm-max-w-25%'
+    }
+    return size
+}
+---
+
+<ul sm:min-h-38 min-h-28 mb-18>
+  <template v-if="!list || list.length === 0">
+    <div my-12 opacity-50>nothing here yet.</div>
+  </template>
+  {
+    purgePostsFromUnlisted(list).map((post, index) => (
+      <li class="mb-8">
+        {!isSameYear(post.data.pubDate, list[index - 1]?.data.pubDate) && (
+          <div class="select-none relative h18 pointer-events-none">
+            <span class="text-7em color-transparent font-bold text-stroke-2 text-stroke-hex-aaa op14 absolute top--0.2em font-title">
+              {getYear(post.data.pubDate)}
+            </span>
+          </div>
+        )}
+        <a
+          class="text-lg lh-tight nav-link flex flex-col flex-gap-2"
+          aria-label={post.data.title}
+          target={getTarget(post)}
+          href={getHref(post)}
+          data-astro-prefetch
+        >
+          <div class="flex flex-col md:flex-row flex-gap-2 md:flex-items-center">
+            <div class="flex flex-gap-2 flex-items-center text-wrap">
+              <span lh-normal>
+                {post.data.draft && (
+                  <i
+                    text-red-700
+                    vertical-mid
+                    aria-label="Draft"
+                    i-ri-draft-line
+                  />
+                )}
+                {post.data.tags?.includes("made-with-ai") && (
+                  <i
+                    text-violet-600
+                    vertical-mid
+                    aria-label="Made with AI"
+                    i-ri-bard-line
+                  />
+                )}
+                {post.data.title}
+              </span>
+            </div>
+          </div>
+          <div class="flex flex-col md:flex-row flex-gap-2 md:flex-items-center">
+            <div class="opacity-50 text-sm flex flex-gap-1 flex-wrap">
+              {post.data.redirect && <i text-base i-ri-external-link-line />}
+              {(post.data.recording || post.data.video) && (
+                <i text-base i-ri:film-line />
+              )}
+              {post.data.pubDate && (
+                <time datetime={getDate(post.data.pubDate)}>
+                  {post.data.pubDate.split(",")[0]}
+                </time>
+              )}
+              {post.data.duration && <span>· {post.data.duration}</span>}
+              <TagsList tags={post.data.tags} link={false} verbose={false} />
+              <LanguageFlag lang={post.data.lang} verbose={false} />
+            </div>
+          </div>
+          <div opacity-50 text-sm>
+            {post.data.image !== undefined && (
+                <img
+                  v-if="index % 2 === 0"
+                  src={post.data.image?.src}
+                  alt={post.data.imageAlt}
+                  class={`float-${index%2===0?'left mr-4':'right ml-4'} mb-4 opacity-100 ${composeImageSizeClasses(post.data.imageSize)}`}
+                />
+            )}
+            {post.data.description}
+          </div>
+        </a>
+      </li>
+    ))
+  }
+</ul>
