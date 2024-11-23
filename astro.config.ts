@@ -3,9 +3,6 @@ import sitemap from '@astrojs/sitemap'
 import vue from '@astrojs/vue'
 import { defineConfig } from 'astro/config'
 import UnoCSS from 'unocss/astro'
-import compressor from 'astro-compressor'
-
-import min from 'astro-min';
 
 export default defineConfig({
     site: 'https://fulgidus.github.io/fulgidus', // This is your full site URL
@@ -16,18 +13,10 @@ export default defineConfig({
     integrations: [
         mdx(), 
         vue(), 
-        sitemap(), 
-        compressor({
-            brotli: true,
-            fileExtensions: ['.css', '.js', '.html']
-        }),
+        sitemap(),
         UnoCSS({
             injectReset: true,
             envMode: import.meta.env.PROD ? 'build' : 'dev'
-        }),
-        min({
-            minify_js: true,
-            minify_css: true,
         })
     ],
     markdown: {
