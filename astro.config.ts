@@ -3,6 +3,7 @@ import sitemap from '@astrojs/sitemap'
 import vue from '@astrojs/vue'
 import { defineConfig } from 'astro/config'
 import UnoCSS from 'unocss/astro'
+import compressor from 'astro-compressor'
 
 export default defineConfig({
     site: 'https://fulgidus.github.io/fulgidus', // This is your full site URL
@@ -14,6 +15,10 @@ export default defineConfig({
         mdx(),
         vue(),
         sitemap(),
+        compressor({
+            brotli: true,
+            fileExtensions: ['.css', '.js', '.html']
+        }),
         UnoCSS({
             injectReset: true,
             envMode: import.meta.env.PROD ? 'build' : 'dev'

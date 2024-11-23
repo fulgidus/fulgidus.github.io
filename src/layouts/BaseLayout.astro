@@ -27,7 +27,7 @@ const { imageSize } = Astro.props;
   <body class="bg-main text-main min-h-screen font-sans w-full bg-dot">
     <Header client:load />
     <main
-      class=`grow ${imageSize === 'xl' ? 'max-w-100vw':'max-w-4xl'} mx-auto sm:pt-36 pt-26 pb-16 px-6 relative`
+      class=`grow ${imageSize === 'xl' ? 'max-w-100vw':'max-w-4xl'} mx-auto sm:pt-36 pt-26 pb-16 px-6 relative important:print:max-w-100vw important:print:p0`
       transition:animate={fade({ duration: "0.4s" })}
       text-pretty
     >

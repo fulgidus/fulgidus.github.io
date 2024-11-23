@@ -85,9 +85,7 @@ function composeImageSizeClasses(post: Post): string {
 ---
 
 <ul sm:min-h-38 min-h-28 mb-18>
-  <template v-if="!list || list.length === 0">
-    <div my-12>nothing here yet.</div>
-  </template>
+  {(!list || list.length === 0) && <div my-12>nothing here yet.</div>}
   {
     purgePostsFromUnlisted(list).map((post, index) => (
       <li class="mb-8">
@@ -99,7 +97,7 @@ function composeImageSizeClasses(post: Post): string {
           </div>
         )}
         <a
-          class="text-lg lh-tight nav-link flex flex-col flex-gap-2"
+          class="text-lg lh-tight nav-link p-3 b-rd-2 flex flex-col flex-gap-2"
           aria-label={post.data.title}
           target={getTarget(post)}
           href={getHref(post)}
