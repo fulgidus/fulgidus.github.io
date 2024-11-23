@@ -135,7 +135,6 @@ function composeImageSizeClasses(size: "md" | "sm" | "xs"): string {
           <div opacity-50 text-sm>
             {post.data.image !== undefined && (
                 <img
-                  v-if="index % 2 === 0"
                   src={post.data.image?.src}
                   alt={post.data.imageAlt}
                   class={`float-${index%2===0?'left mr-4':'right ml-4'} mb-4 opacity-100 ${composeImageSizeClasses(post.data.imageSize)}`}
