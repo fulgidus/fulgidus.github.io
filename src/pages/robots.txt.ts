@@ -7,14 +7,20 @@ interface Context {
 
 
 export async function generateDisallowedPaths() {
-    const blogPosts = await getCollection('blog', p => p.data.unlisted || p.data.draft);
+    const blogPosts = await getCollection('blog', p => p.data.unlisted);
     return blogPosts.map(p => `
 
 User-agent: *
 Disallow: ${siteConfig.basePath ?? '/'}posts/${p.slug}
 
-User-agent: AdsBot
+User-agent: AdsBot-Google
 Disallow: ${siteConfig.basePath ?? '/'}posts/${p.slug}
+
+User-agent: AdsBot-Google-Mobile
+Disallow: ${siteConfig.basePath ?? '/'}posts/${p.slug}
+
+User-agent: *
+Allow: /
 
 `.trim()).join('\n\n');
 }
