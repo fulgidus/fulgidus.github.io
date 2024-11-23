@@ -8,17 +8,22 @@ interface Context {
 
 export async function generateDisallowedPaths() {
     const blogPosts = await getCollection('blog', p => p.data.unlisted || p.data.draft);
-    return blogPosts.map(p => `User-agent: *\nDisallow: ${siteConfig.basePath ?? '/'}posts/${p.slug}`).join('\n\n');
+    return blogPosts.map(p => `
+
+User-agent: *
+Disallow: ${siteConfig.basePath ?? '/'}posts/${p.slug}
+
+User-agent: AdsBot
+Disallow: ${siteConfig.basePath ?? '/'}posts/${p.slug}
+
+`.trim()).join('\n\n');
 }
 
 export async function GET(context: Context) {
     const robots = `
 
 User-agent: *
-Allow: /*
-
-User-agent: AdsBot
-Disallow: /*
+Disallow: 
 
 ${await generateDisallowedPaths()}
 
