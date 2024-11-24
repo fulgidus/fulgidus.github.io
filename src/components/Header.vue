@@ -1,6 +1,7 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script lang="ts" setup>
 import { useEventListener, useWindowScroll } from '@vueuse/core'
-import { computed, onMounted, ref, unref, watchEffect } from 'vue'
+import { computed, onMounted, ref, watchEffect } from 'vue'
 import ThemeToggle from './ThemeToggle.vue'
 import { getLinkTarget } from '@/utils/link'
 import siteConfig from '@/site-config'
