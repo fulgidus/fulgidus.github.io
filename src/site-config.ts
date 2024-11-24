@@ -52,11 +52,11 @@ export const siteConfig = {
         },
         navLinks: [
             {
-                text: 'Blog',
+                text: 'nav.blog',
                 href: '/blog',
             },
             {
-                text: 'Notes',
+                text: 'nav.notes',
                 href: '/blog/notes',
             },
             /* {
@@ -64,7 +64,7 @@ export const siteConfig = {
               href: '/blog/talks',
             }, */
             {
-                text: 'Projects',
+                text: 'nav.projects',
                 href: '/projects',
             },
         ],

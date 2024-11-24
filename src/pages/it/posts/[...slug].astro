@@ -1,0 +1,135 @@
+---
+import GoBackToBlog from "@/components/GoBackToBlog.vue";
+import LanguageFlag from "@/components/LanguageFlag.vue";
+import TagsList from "@/components/TagsList.vue";
+import type { ImageSize } from "@/content/config";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { type CollectionPost } from "@/types";
+import { getPosts } from "@/utils/posts";
+import { Image } from "astro:assets";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post: { slug: any }) => {
+    return {
+      params: { slug: post.slug },
+      props: {
+        post,
+      },
+    };
+  });
+}
+
+type Props = { post: CollectionPost };
+
+const { post } = Astro.props;
+const {
+  title,
+  image,
+  imageAlt,
+  imageSize,
+  description,
+  pubDate,
+  duration,
+  tags,
+  lang,
+  unlisted,
+} = post.data;
+
+const { Content } = await post.render();
+
+function getDate(date: string) {
+  return new Date(date).toISOString();
+}
+
+const articleImage = {
+  src: image?.src ?? "",
+  alt: imageAlt,
+};
+
+function composeImageSizeClasses(size: ImageSize): string {
+  const r = Math.random();
+  if (size === `xl`) {
+    return `w-100%`;
+  }
+  if (size === `lg`) {
+    return `w-100%`;
+  }
+  if (size === `md`) {
+    return `${r < 0.5 ? "float-left mr6" : "float-right ml6"} mb6 w-100%`;
+  }
+  if (size === `sm`) {
+    return `${r < 0.5 ? "float-left mr4" : "float-right ml4"} mb4 w-75%`;
+  }
+  if (size === `xs`) {
+    return `${r < 0.5 ? "float-left mr4" : "float-right ml4"} mb4 w-50%`;
+  }
+  return `${r < 0.5 ? "float-left mr6" : "float-right ml6"} mb6 w-100%`;
+}
+---
+
+<!-- ACTUAL POST RENDERER -->
+<BaseLayout
+  title={title}
+  description={description}
+  image={articleImage}
+  pageType="article"
+  imageSize={imageSize}
+>
+  <a
+    title="Back"
+    href="javascript:history.back()"
+    style="button"
+    float-end
+    m-s-10
+    m-t-1
+  >
+    <i aria-label="Go back" i-ri-arrow-go-back-line></i>
+  </a>
+  <article class="prose">
+    <div class="max-w-4xl mx-auto relative">
+      <h1>
+        {title}
+      </h1>
+      {
+        unlisted && (
+          <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
+            <code important-m-0 important-p-0>
+              ---UNLISTED---
+            </code>
+          </div>
+        )
+      }
+      <p h-initial class="flex flex-wrap flex-gap-1">
+        {
+          pubDate && (
+            <time datetime={getDate(pubDate)}>{pubDate.split(",")}</time>
+          )
+        }
+        {duration && <span>· {duration}</span>}
+        <LanguageFlag lang={lang} client:only="vue" verbose />
+        {
+          tags && tags.length > 0 && (
+            <span class="flex flex-wrap flex-gap-1">
+              <TagsList tags={tags} link={true} verbose />
+            </span>
+          )
+        }
+      </p>
+    </div>
+    {
+      image && (
+        <Image
+          src={image}
+          alt={imageAlt || ""}
+          loading="lazy"
+          class={composeImageSizeClasses(imageSize)}
+          format="webp"
+        />
+      )
+    }
+    <Content />
+
+    <GoBackToBlog client:only="vue" />
+  </article>
+</BaseLayout>
