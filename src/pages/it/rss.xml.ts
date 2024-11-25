@@ -13,7 +13,6 @@ export async function GET(context: Context) {
         xmlns: {
             // <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
             atom: 'http://www.w3.org/2005/Atom',
-            version: '2.0',
         },
         title: siteConfig.title,
         description: siteConfig.description,
@@ -29,5 +28,10 @@ export async function GET(context: Context) {
                 categories: item.data.tags,
             }
         }),
+        customData: [
+            '<language>it-IT</language>',
+            `<atom:link href="${new URL('rss.xml', context.site)}" rel="self" type="application/rss+xml" />`
+        ].join(''),
+        stylesheet: '/pretty-feed-v3-it.xsl',
     })
 }
