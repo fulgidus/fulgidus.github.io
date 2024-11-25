@@ -5,7 +5,7 @@ import { computed, onMounted, ref, watchEffect } from 'vue'
 import ThemeToggle from './ThemeToggle.vue'
 import { getLinkTarget } from '@/utils/link'
 import siteConfig from '@/site-config'
-import { getLangFromUrl, useTranslations, useTranslatedPath } from '../i18n/utils';
+import { getLangFromUrl, useTranslations, useTranslatedPath, useStripLangFromPath } from '../i18n/utils';
 import { defaultLang, ui } from '@/i18n/ui'
 
 const navLinks = siteConfig.header.navLinks || []
@@ -45,12 +45,15 @@ const currentLang = ref(defaultLang);
 let url: URL | undefined
 let t: (key: string) => string // Simplified type
 let tp: (path: string, lang?: string) => string // Simplified type
+let sp: (path: string, lang?: string) => string // Simplified type
 
 onMounted(() => {
     url = new URL(window.location.href);
     currentLang.value = getLangFromUrl(url); // Update currentLang reactively
     t = useTranslations(currentLang.value as keyof typeof ui);
+    console.log(`Header onMounted currentLang: ${currentLang.value}`)
     tp = useTranslatedPath(currentLang.value as keyof typeof ui);
+    sp = useStripLangFromPath(currentLang.value as keyof typeof ui);
 
     useEventListener('scroll', () => {
         const currentScrollPosition = scroll.value;
@@ -106,6 +109,9 @@ onMounted(() => {
 watchEffect(() => {
     t = useTranslations(currentLang.value as keyof typeof ui);
     tp = useTranslatedPath(currentLang.value as keyof typeof ui);
+    sp = useStripLangFromPath(currentLang.value as keyof typeof ui);
+
+    console.log(`Header watchEffect currentLang: ${currentLang.value}`)
 });
 
 
@@ -148,7 +154,7 @@ function toggleNavDrawer() {
                 <!-- Language selection -->
                 <a v-for="([lang, label]) in languages" :key="lang" :aria-label="`${label}`"
                     :class="{ 'underline font-bold' : lang === currentLang}"
-                    :href="lang !== defaultLang ? `/${lang}/` : '/'" nav-link>{{label}}</a>
+                    :href="tp(url !== undefined ? sp(url.pathname) : '/', lang)" nav-link>{{label}}</a>
 
                 <a nav-link target="_blank" href="/rss.xml" i-ri-rss-line aria-label="RSS" />
                 <ThemeToggle />

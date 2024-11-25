@@ -3,13 +3,19 @@ import GoBackToBlog from "@/components/GoBackToBlog.vue";
 import LanguageFlag from "@/components/LanguageFlag.vue";
 import TagsList from "@/components/TagsList.vue";
 import type { ImageSize } from "@/content/config";
+import { ui } from "@/i18n/ui";
+import {
+  getLangFromUrl,
+  useTranslatedPath,
+  useTranslations,
+} from "@/i18n/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { type CollectionPost } from "@/types";
 import { getPosts } from "@/utils/posts";
 import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
-  const posts = await getPosts();
+  const posts = await getPosts({ lang: "en", withUnlisted: true });
   return posts.map((post: CollectionPost) => {
     return {
       params: { slug: post.slug },
@@ -67,7 +73,12 @@ export function composeImageSizeClasses(size: ImageSize): string {
   return `${r < 0.5 ? "float-left mr6" : "float-right ml6"} mb6 w-100%`;
 }
 
-const SLUG_DEFAULT_DISPLAYED_LANG = "en";
+const currentLang = getLangFromUrl(Astro.url.pathname);
+// Dynamically construct languages array based on available translations
+// const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
+// const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
+const t = useTranslations(currentLang as keyof typeof ui);
+// const tp = useTranslatedPath(currentLang as keyof typeof ui);
 ---
 
 <!-- ACTUAL POST RENDERER -->
@@ -97,7 +108,7 @@ const SLUG_DEFAULT_DISPLAYED_LANG = "en";
         unlisted && (
           <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
             <code important-m-0 important-p-0>
-              ---UNLISTED---
+              {t("slug.unlisted")}
             </code>
           </div>
         )
@@ -110,11 +121,7 @@ const SLUG_DEFAULT_DISPLAYED_LANG = "en";
         }
         {duration && <span>· {duration}</span>}
         {"· "}
-        <LanguageFlag
-          lang={lang ?? SLUG_DEFAULT_DISPLAYED_LANG}
-          client:only="vue"
-          verbose
-        />
+        <LanguageFlag lang={lang} client:only="vue" verbose />
         {
           tags && tags.length > 0 && (
             <span class="flex flex-wrap flex-gap-1">
@@ -136,8 +143,7 @@ const SLUG_DEFAULT_DISPLAYED_LANG = "en";
       )
     }
     <Content />
-    </ul>
-
-    <GoBackToBlog client:only="vue" />
   </article>
+
+  <GoBackToBlog client:only="vue" />
 </BaseLayout>

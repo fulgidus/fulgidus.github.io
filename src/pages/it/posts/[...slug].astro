@@ -2,7 +2,8 @@
 import GoBackToBlog from "@/components/GoBackToBlog.vue";
 import LanguageFlag from "@/components/LanguageFlag.vue";
 import TagsList from "@/components/TagsList.vue";
-import { getLangFromUrl } from "@/i18n/utils";
+import { ui } from "@/i18n/ui";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { composeImageSizeClasses } from "@/pages/posts/[...slug].astro";
 import { type CollectionPost } from "@/types";
@@ -10,17 +11,8 @@ import { getPosts } from "@/utils/posts";
 import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
-  const lang = 'it';
-  const posts = await getPosts({ lang });
-  console.log(`
-------------------------------------------------------------------------------------------------------
-${JSON.stringify(posts.map((p) => p.slug))}
--------------
-| LANG : ${lang} |
--------------
-------------------------------------------------------------------------------------------------------
-  `);
-  return posts.map((post: { slug: any }) => {
+  const posts = await getPosts({ lang: "it", withUnlisted: true });
+  return posts.map((post: CollectionPost) => {
     return {
       params: { slug: post.slug },
       props: {
@@ -56,7 +48,12 @@ const articleImage = {
   src: image?.src ?? "",
   alt: imageAlt,
 };
-const SLUG_DEFAULT_DISPLAYED_LANG = "it";
+const currentLang = getLangFromUrl(Astro.url.pathname);
+// Dynamically construct languages array based on available translations
+// const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
+// const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
+const t = useTranslations(currentLang as keyof typeof ui);
+// const tp = useTranslatedPath(currentLang as keyof typeof ui);
 ---
 
 <!-- ACTUAL POST RENDERER -->
@@ -85,9 +82,9 @@ const SLUG_DEFAULT_DISPLAYED_LANG = "it";
       {
         unlisted && (
           <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
-            <code important-m-0 important-p-0>
-              ---UNLISTED---
-            </code>
+            <span class="important-m-0 important-p-0 underline text-red" >
+              {t("slug.unlisted")}
+            </span>
           </div>
         )
       }
@@ -99,11 +96,7 @@ const SLUG_DEFAULT_DISPLAYED_LANG = "it";
         }
         {duration && <span>· {duration}</span>}
         {"· "}
-        <LanguageFlag
-          lang={lang ?? SLUG_DEFAULT_DISPLAYED_LANG}
-          client:only="vue"
-          verbose
-        />
+        <LanguageFlag lang={lang} client:only="vue" verbose />
         {
           tags && tags.length > 0 && (
             <span class="flex flex-wrap flex-gap-1">

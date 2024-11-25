@@ -63,7 +63,7 @@ function composeImageSizeClasses(post: CollectionPost): string {
   return "max-w-24 sm-max-w-48";
 }
 const currentLang = getLangFromUrl(Astro.url.pathname);
-// Dynamically iconstruct languages array based on available translations
+// Dynamically construct languages array based on available translations
 // const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
 // const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
 // const t = useTranslations(currentLang as keyof typeof ui);

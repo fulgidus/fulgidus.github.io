@@ -21,6 +21,9 @@ export const ui = {
         'nav.instagram': 'Instagram',
         'nav.youtube': 'YouTube',
         'nav.x': 'X',
+        'slug.unlisted': 'Not indexed (No PostsList, No RSS, No robots.txt)',
+        'rss.titleAll': 'All posts in English',
+        'rss.titleLastTen': 'Last 10 posts in English',
     },
     it: {
         'language': 'Italiano',
@@ -29,13 +32,18 @@ export const ui = {
         'nav.notes': 'Note',
         'nav.projects': 'Progetti',
         'nav.about': 'Informazioni',
+        'nav.twitter': 'Twitter',
+        'nav.github': 'GitHub',
+        'nav.linkedin': 'LinkedIn',
+        'nav.instagram': 'Instagram',
+        'nav.youtube': 'YouTube',
+        'nav.x': 'X',
+        'slug.unlisted': 'Non indicizzato (No PostsList, No RSS, No robots.txt)',
+        'rss.titleAll': 'Tutti i post in Italiano',
+        'rss.titleLastTen': 'Ultimi 10 post in Italiano',
     },
 } as const;
 
 export function getLangLabel(lang: keyof typeof ui) {
     return ui[lang].language;
 }
-
-
-
-export const showDefaultLang = false;

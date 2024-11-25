@@ -1,14 +1,15 @@
 ---
-title: IT
-description: Italy
-pubDate: 2024-11-24T19:51:59
+title: test-it
+description: ""
+pubDate: 2024-11-25T10:15:24
 duration: 0m
 tags:
   - made-with-obsidian
-draft: false
+draft: true
 redirect: ""
-unlisted: false
+unlisted: true
 video: false
 lang: it
+imageSize: md
 ---
 # MD coded IT

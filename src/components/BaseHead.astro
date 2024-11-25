@@ -3,6 +3,14 @@ import siteConfig from "@/site-config";
 import "@/styles/global.css";
 import "@/styles/prose.css";
 import "@/styles/dot.css";
+import { defaultLang, ui } from "@/i18n/ui";
+import {
+  getLangFromUrl,
+  useSpecificPath,
+  useSpecificTranslation,
+  useTranslatedPath,
+  useTranslations,
+} from "@/i18n/utils";
 
 interface Props {
   title?: string;
@@ -34,6 +42,13 @@ function formatCanonicalURL(url: string | URL) {
   if (hasQueryParams) path.replace(/\/?$/, "");
   return path.replace(/\/?$/, hasQueryParams ? "" : "/");
 }
+
+const currentLang = getLangFromUrl(Astro.url.pathname);
+// Dynamically construct languages array based on available translations
+const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
+// const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
+const t = useTranslations(currentLang as keyof typeof ui);
+const tp = useTranslatedPath(currentLang as keyof typeof ui);
 ---
 
 <!-- High Priority Global Metadata -->
@@ -50,13 +65,39 @@ function formatCanonicalURL(url: string | URL) {
   type="application/rss+xml"
   href={"/rss.xml"}
   title="All articles"
+  lang="en"
 />
 <link
   rel="alternate"
   type="application/rss+xml"
   href={"/last-ten.xml"}
   title="Last ten articles"
+  lang="en"
 />
+{
+  availableLanguages.map((lang) => {
+    if (lang !== defaultLang) {
+      return (
+        <>
+          <link
+            rel="alternate"
+            type="application/rss+xml"
+            href={useSpecificPath(lang, `/rss.xml`)}
+            title={useSpecificTranslation(lang, "rss.titleAll")}
+            lang={lang}
+            />
+          <link
+            rel="alternate"
+            type="application/rss+xml"
+            href={useSpecificPath(lang, `/last-ten.xml`)}
+            title={useSpecificTranslation(lang, "rss.titleLastTen")}
+            lang={lang}
+          />
+        </>
+      );
+    }
+  })
+}
 
 <!-- Page Metadata -->
 <link rel="canonical" href={formatCanonicalURL(canonicalURL)} />

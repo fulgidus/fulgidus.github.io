@@ -34,12 +34,12 @@ export function sortPostsByDate(posts: Array<CollectionEntry<'blog'>>) {
     return posts.sort(postSortingFunction)
 }
 
-export async function getPosts(params: { path?: string, lang?: keyof typeof ui, collection?: PostKey } = {}) {
-    const { path, lang = defaultLang, collection = 'blog' } = params;
+export async function getPosts(params: { path?: string, lang?: keyof typeof ui, collection?: PostKey, withUnlisted?: boolean } = {}) {
+    const { path, lang = defaultLang, collection = 'blog', withUnlisted= false } = params;
     return sortPostsByDate(await getCollection(collection, (post) => {
         if ((import.meta.env.PROD && post.data.draft)
             || (post.data.lang && post.data.lang !== lang)
-            || (post.data.unlisted) // FAIL if unlisted
+            || (!withUnlisted && post.data.unlisted) // FAIL if unlisted
             || (path && !post.slug.includes(path))) { // Fail if it doesn't match search
             return false
         }
