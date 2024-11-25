@@ -11,7 +11,11 @@ import { getPosts } from "@/utils/posts";
 import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
-  const posts = await getPosts({ lang: "it", withUnlisted: true }); // This need to be with unlisted, otherwise they won't ever exist in SSG
+  const posts = await getPosts({
+    lang: "it",
+    withUnlisted: true,
+    withDrafts: true,
+  }); // This need to be with unlisted, otherwise they won't ever exist in SSG
   return posts.map((post: CollectionPost) => {
     return {
       params: { slug: post.slug },

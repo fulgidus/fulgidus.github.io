@@ -34,8 +34,16 @@ export function sortPostsByDate(posts: Array<CollectionEntry<'blog'>>) {
     return posts.sort(postSortingFunction)
 }
 
-export async function getPosts(params: { path?: string, lang?: keyof typeof ui, collection?: PostKey, withUnlisted?: boolean } = {}) {
-    const { path, lang = defaultLang, collection = 'blog', withUnlisted= false } = params;
+type GetPostsParams = {
+    path?: string
+    lang?: keyof typeof ui
+    collection?: PostKey
+    withUnlisted?: boolean
+    withDrafts?: boolean
+}
+
+export async function getPosts(params: GetPostsParams = {}) {
+    const { path, lang = defaultLang, collection = 'blog', withUnlisted = false, withDrafts = true } = params;
     console.log(`
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 getPosts filtering by
@@ -46,6 +54,7 @@ withUnlisted: ${withUnlisted}
 `)
     return sortPostsByDate(await getCollection(collection, (post) => {
         if ((import.meta.env.PROD && post.data.draft)
+            || (!withDrafts && post.data.draft) // FAIL when wihtout draft and it's a draft
             || (post.data.lang && post.data.lang !== lang)
             || (!withUnlisted && post.data.unlisted) // FAIL if unlisted
             || (path && !post.slug.includes(path))) { // Fail if it doesn't match search
@@ -55,7 +64,8 @@ withUnlisted: ${withUnlisted}
     }))
 }
 
-export async function getLastTenPosts(params: { path?: string, lang?: keyof typeof ui, collection?: PostKey } = {}) {
+
+export async function getLastTenPosts(params: GetPostsParams = {}) {
     return (await getPosts(params)).slice(0, 10)
 }
 

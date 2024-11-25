@@ -7,7 +7,7 @@ interface Context {
 }
 
 export async function GET(context: Context) {
-    const posts = (await getPosts()).filter((p) => !p.data.unlisted && !p.data.draft)
+    const posts = (await getPosts({withDrafts: false, withUnlisted: false}))
 
     return rss({
         title: siteConfig.title,
@@ -16,7 +16,7 @@ export async function GET(context: Context) {
         items: posts.map((item) => {
             return {
                 ...item.data,
-                link: `${context.site}/posts/${item.slug}/`,
+                link: `${context.site}posts/${item.slug}`,
                 pubDate: new Date(item.data.pubDate),
                 description: item.data.description,
                 content: item.body,
