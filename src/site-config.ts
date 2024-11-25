@@ -70,20 +70,36 @@ export const siteConfig = {
         ],
     },
     page: {
-        blogLinks: [
-            {
-                text: 'Blog',
-                href: '/blog',
-            },
-            {
-                text: 'Notes',
-                href: '/blog/notes',
-            },
-            /* {
-              text: 'Talks',
-              href: '/blog/talks',
-            }, */
-        ],
+        blogLinks: {
+            en: [
+                {
+                    text: 'Blog',
+                    href: '/blog',
+                },
+                {
+                    text: 'Notes',
+                    href: '/blog/notes',
+                },
+                /* {
+                  text: 'Talks',
+                  href: '/blog/talks',
+                }, */
+            ],
+            it: [
+                {
+                    text: 'Blog',
+                    href: '/it/blog',
+                },
+                {
+                    text: 'Note',
+                    href: '/it/blog/notes',
+                },
+                /* {
+                  text: 'Talks',
+                  href: '/blog/talks',
+                }, */
+            ]
+        },
     },
     footer: {
         navLinks: [

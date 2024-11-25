@@ -107,11 +107,14 @@ onMounted(() => {
 
 // Watch currentLang for changes and update translations
 watchEffect(() => {
+    url = new URL(window.location.href);
     t = useTranslations(currentLang.value as keyof typeof ui);
     tp = useTranslatedPath(currentLang.value as keyof typeof ui);
     sp = useStripLangFromPath(currentLang.value as keyof typeof ui);
 
-    console.log(`Header watchEffect currentLang: ${currentLang.value}`)
+    console.log(`Header watchEffect currentLang: ${currentLang.value}
+url: ${url?.pathname}
+`)
 });
 
 
@@ -156,7 +159,7 @@ function toggleNavDrawer() {
                     :class="{ 'underline font-bold' : lang === currentLang}"
                     :href="tp(url !== undefined ? sp(url.pathname) : '/', lang)" nav-link>{{label}}</a>
 
-                <a nav-link target="_blank" href="/rss.xml" i-ri-rss-line aria-label="RSS" />
+                <a nav-link target="_blank" :href="tp('/rss.xml')" i-ri-rss-line aria-label="RSS" />
                 <ThemeToggle />
             </div>
         </header>

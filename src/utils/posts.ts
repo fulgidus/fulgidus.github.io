@@ -36,6 +36,14 @@ export function sortPostsByDate(posts: Array<CollectionEntry<'blog'>>) {
 
 export async function getPosts(params: { path?: string, lang?: keyof typeof ui, collection?: PostKey, withUnlisted?: boolean } = {}) {
     const { path, lang = defaultLang, collection = 'blog', withUnlisted= false } = params;
+    console.log(`
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+getPosts filtering by
+lang: ${lang}
+path: ${path}
+collection: ${collection}
+withUnlisted: ${withUnlisted}
+`)
     return sortPostsByDate(await getCollection(collection, (post) => {
         if ((import.meta.env.PROD && post.data.draft)
             || (post.data.lang && post.data.lang !== lang)

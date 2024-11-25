@@ -30,10 +30,12 @@ export function useSpecificPath(lang: keyof typeof ui, path: string) {
 
 export function useStripLangFromPath(lang: keyof typeof ui) {
     return function strippedPath(path: string, l: string = lang): string {
-        const [possibleLang, remainingPath] = (path).split('/'); // search for a prepended language
-        console.log(`lang: ${l} || possibleLang:"${possibleLang}" remainingPath: "${remainingPath}" path: "${path}" | possible result /${l}/${remainingPath} | fallback: /${l}${path}`)
+        const [, possibleLang, ...remainingPath] = (path).split('/'); // search for a prepended language
+        console.log(`
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+lang: ${l} || path: ${path} | (path).split('/'): ${path.split('/')} | possibleLang:"${possibleLang}" | remainingPath: "/${remainingPath.join(' /')}" | path: "${path}"`)
         if (possibleLang in ui) { // Found prepended language
-            return l === defaultLang ? remainingPath : `/${l}/${remainingPath}`
+            return `/${remainingPath.join('/')}`
         }
         return path
     }
