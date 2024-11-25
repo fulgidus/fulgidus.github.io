@@ -5,8 +5,9 @@ import { computed, onMounted, ref, watchEffect } from 'vue'
 import ThemeToggle from './ThemeToggle.vue'
 import { getLinkTarget } from '@/utils/link'
 import siteConfig from '@/site-config'
-import { getLangFromUrl, useTranslations, useTranslatedPath, useStripLangFromPath } from '../i18n/utils';
+import { getLangFromUrl, useTranslations, useTranslatedPath, /* useStripLangFromPath */ } from '../i18n/utils';
 import { defaultLang, ui } from '@/i18n/ui'
+import LanguageDropdown from './LanguageDropdown.vue'
 
 const navLinks = siteConfig.header.navLinks || []
 
@@ -24,12 +25,12 @@ const socialLinks = computed(() => {
         }
     })
 })
-// Define languages
-const languages = computed(() => {
-    // Dynamically construct languages array based on available translations
-    const availableLanguages = Object.keys(ui) as (keyof typeof ui)[]
-    return availableLanguages.map(lang => [lang, ui[lang].language])
-})
+// // Define languages
+// const languages = computed(() => {
+//     // Dynamically construct languages array based on available translations
+//     const availableLanguages = Object.keys(ui) as (keyof typeof ui)[]
+//     return availableLanguages.map(lang => [lang, ui[lang].language])
+// })
 
 const navDrawerOpen = ref(false); // Reactive state for drawer visibility
 const isHeaderHidden = ref(false); // Reactive state for header visibility
@@ -45,7 +46,7 @@ const currentLang = ref(defaultLang);
 let url: URL | undefined
 let t: (key: string) => string // Simplified type
 let tp: (path: string, lang?: string) => string // Simplified type
-let sp: (path: string, lang?: string) => string // Simplified type
+// let sp: (path: string, lang?: string) => string // Simplified type
 
 onMounted(() => {
     url = new URL(window.location.href);
@@ -53,7 +54,7 @@ onMounted(() => {
     t = useTranslations(currentLang.value as keyof typeof ui);
     console.log(`Header onMounted currentLang: ${currentLang.value}`)
     tp = useTranslatedPath(currentLang.value as keyof typeof ui);
-    sp = useStripLangFromPath(currentLang.value as keyof typeof ui);
+    // sp = useStripLangFromPath(currentLang.value as keyof typeof ui);
 
     useEventListener('scroll', () => {
         const currentScrollPosition = scroll.value;
@@ -110,7 +111,7 @@ watchEffect(() => {
     url = new URL(window.location.href);
     t = useTranslations(currentLang.value as keyof typeof ui);
     tp = useTranslatedPath(currentLang.value as keyof typeof ui);
-    sp = useStripLangFromPath(currentLang.value as keyof typeof ui);
+    // sp = useStripLangFromPath(currentLang.value as keyof typeof ui);
 
     console.log(`Header watchEffect currentLang: ${currentLang.value}
 url: ${url?.pathname}
@@ -155,9 +156,7 @@ function toggleNavDrawer() {
                 <a v-for="link in socialLinks" :key="link.text" :aria-label="`${link.text}`" :class="link.icon" nav-link
                     :target="getLinkTarget(link.href)" :href="link.href" />
                 <!-- Language selection -->
-                <a v-for="([lang, label]) in languages" :key="lang" :aria-label="`${label}`"
-                    :class="{ 'underline font-bold' : lang === currentLang}"
-                    :href="tp(url !== undefined ? sp(url.pathname) : '/', lang)" nav-link>{{label}}</a>
+                <LanguageDropdown />
 
                 <a nav-link target="_blank" :href="tp('/rss.xml')" i-ri-rss-line aria-label="RSS" />
                 <ThemeToggle />

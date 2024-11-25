@@ -9,6 +9,7 @@ export const defaultLang = 'en';
 
 export const ui = {
     en: {
+        'flag': '🇬🇧',
         'language': 'English',
         'nav.home': 'Home',
         'nav.blog': 'Blog',
@@ -26,6 +27,7 @@ export const ui = {
         'rss.titleLastTen': 'Last 10 posts in English',
     },
     it: {
+        'flag': '🇮🇹',
         'language': 'Italiano',
         'nav.home': 'Inizio',
         'nav.blog': 'Blog',
@@ -47,3 +49,9 @@ export const ui = {
 export function getLangLabel(lang: keyof typeof ui) {
     return ui[lang].language;
 }
+
+export const pathTemplates = {
+    '/posts/': '/{{rootLang}}/posts/{{lang}}/{{path}}',
+    '/': '/{{rootLang}}',
+    //Add more paths as needed
+};
