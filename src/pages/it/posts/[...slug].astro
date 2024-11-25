@@ -11,7 +11,7 @@ import { getPosts } from "@/utils/posts";
 import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
-  const posts = await getPosts({ lang: "it", withUnlisted: true });
+  const posts = await getPosts({ lang: "it", withUnlisted: true }); // This need to be with unlisted, otherwise they won't ever exist in SSG
   return posts.map((post: CollectionPost) => {
     return {
       params: { slug: post.slug },
@@ -82,7 +82,7 @@ const t = useTranslations(currentLang as keyof typeof ui);
       {
         unlisted && (
           <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
-            <span class="important-m-0 important-p-0 underline text-red" >
+            <span class="important-m-0 important-p-0 underline text-red">
               {t("slug.unlisted")}
             </span>
           </div>

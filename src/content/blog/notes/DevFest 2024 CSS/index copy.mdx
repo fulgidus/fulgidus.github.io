@@ -1,0 +1,103 @@
+---
+title: Non sapevo che CSS potesse fare questo
+description: Questi appunti trattano funzionalità avanzate di CSS come i selettori ":has" e ":range", nuove opzioni per il wrapping del testo e tecniche per le animazioni guidate dallo scroll. La guida offre approfondimenti su come implementare correttamente queste funzionalità, fornisce esempi del loro utilizzo e evidenzia considerazioni importanti per le prestazioni e la compatibilità con i browser moderni
+image: 1.jpg
+imageAlt: La prima slide e Matteo Fogli che inizia il talk
+pubDate: 2024-10-19
+duration: 2m
+tags:
+  - made-with-obsidian
+draft: false
+lang: it
+redirect: ""
+video: false
+unlisted: false
+---
+
+import closingPic from "./2.jpg";
+import { Image } from "astro:assets";
+
+## Riepilogo:
+
+- ### Capacità del CSS Oltre lo Stile Base:
+  - Scoperto che CSS offre funzionalità avanzate come `:has` e `text-wrap`, tra le altre, che possono migliorare notevolmente le capacità di progettazione web.
+
+- ### Ordine per Provare Nuove Funzionalità:
+  1. **HTML:** Inizia con HTML per strutturare i contenuti.
+  2. **CSS:** Usa CSS per lo stile e funzionalità avanzate come il selettore `:has`.
+  3. **JS:** Integra JavaScript per comportamenti dinamici e interattività.
+
+- ### Selettori Avanzati di CSS:
+
+  - #### Selettore `:has`:
+    - Permette di selezionare un elemento in base al suo stato o alla presenza di specifici figli.
+    Esempi:
+      ```css
+      elemento:has(.figlio) {
+      }
+      elemento:has(> .figlio-diretto) {
+      }
+      elemento:has(:stato) {
+      }
+      elemento:has(:stato) .figlio {
+      }
+      ```
+    - Supporta la logica booleana:
+      ```css
+      elemento:has(:not(:stato)) {
+      }
+      elemento:has(.logico, .oppure) {
+      }
+      elemento:has(.logico):has(.e) {
+      }
+      ```
+    - **❗ Rilevamento Funzionalità:**
+      ```css
+      @supports selector(figura:has(didascalia)) {
+        figura:has(didascalia) {
+          // definisci proprietà
+        }
+      }
+      ```
+    - **⚠️ Attenzioni:**
+      - Non è tollerante; usa `:where` per una selezione più permissiva.
+      - Prende la specificità più alta tra i selettori argomentati.
+      - Mantieni i selettori il più specifici possibile per evitare problemi di prestazioni.
+
+  - #### Selettore `:range`:
+    - Utilizza `:nth-child(n + B)` e `:nth(-n + B)` per contare elementi basandosi su condizioni specifiche.
+      Esempio:
+        ```css
+        :nth-child(An + B of .selettore) {
+        }
+        ```
+    - Può anche utilizzare divisioni per contare con `An` e `:last-child`.
+
+- ### Miglioramenti nel Wrapping del Testo:
+
+  - #### Wrapping del Testo Tipograficamente Accurato:
+    - `text-wrap: balance;`: Allinea le estremità delle righe per mantenere una forma rettangolare.
+    - `text-wrap: pretty;`: Evita orfani di una sola parola nell'ultima riga dei paragrafi.
+
+- ### Animazioni Basate sullo Scroll:
+  - Esplora animazioni guidate dallo scroll usando risorse come [scroll-driven-animations.style](https://scroll-driven-animations.style) (da vedere preferibilmente in Chrome).
+  - Come implementarle:
+    1. Rimuovi la componente temporale dall'animazione.
+    2. Rendi l'easing lineare.
+    3. Aggiungi `animation-timeline: scroll(block root);`.
+  - #### ❗ Rilevamento della Direzione di Scroll:
+    - Consulta [CodePen di Pecus](https://codepen.io/pecus/) per esempi.
+
+<Image src={closingPic} alt="La slide finale contenente informazioni di contatto" class="w80%" style="display: block; margin-left: auto; margin-right: auto;" />
+
+## Risorse:
+
+- ### Progetto di Base:
+  - Usa [MDN CanIUse](https://caniuse.com/) e [web.dev](https://web.dev/) per verificare il supporto alle funzionalità.
+
+- ### Risorse Aggiuntive:
+  - [scroll-driven-animations.style](https://scroll-driven-animations.style)
+  - [CodePen di Pecus](https://codepen.io/pecus/)
+
+> ℹ️
+> Questa pagina di appunti copre nuove funzionalità di CSS e fornisce indicazioni su come implementarle efficacemente, insieme a considerazioni importanti per prestazioni e compatibilità con i browser.

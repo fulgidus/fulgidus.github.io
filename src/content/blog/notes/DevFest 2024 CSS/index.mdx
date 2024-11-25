@@ -1,8 +1,8 @@
 ---
 title: Didn’t know CSS could do that
-description: Your blog description, which is long text, can be an introduction to the post or a paragraph of the post.
+description: These notes cover advanced CSS features such as the ":has" and ":range" selectors, new text wrapping options, and techniques for scroll-driven animations. The guide provides insights into the proper implementation of these features, offers examples of their usage, and highlights important considerations for performance and compatibility with modern browsers
 image: 1.jpg
-imageAlt: A picture of the first slide and Matteo Fogli starting the talk
+imageAlt: The first slide and Matteo Fogli starting the talk
 imageSize: "md"
 pubDate: 2024-10-19
 duration: 2m
@@ -12,10 +12,11 @@ draft: false
 lang: en
 redirect: ""
 video: false
-unlisted: true
+unlisted: false
 ---
 
 import closingPic from "./2.jpg";
+import { Image } from "astro:assets";
 
 ## Summary:
 
@@ -88,7 +89,7 @@ import closingPic from "./2.jpg";
   - #### ❗ Scroll Direction Detection:
     - Check out [Pecus's CodePen](https://codepen.io/pecus/) for examples.
 
-<img src={closingPic.src} alt="The closing slide containing contact info" width="80%" style="display: block; margin-left: auto; margin-right: auto;"/>
+<Image src={closingPic} alt="The closing slide containing contact info" class="w80%" style="display: block; margin-left: auto; margin-right: auto;"/>
 
 ## Resources:
 
