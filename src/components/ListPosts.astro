@@ -9,13 +9,20 @@ import {
   type DateStringNumber,
 } from "@/utils/posts";
 import type { CollectionPost } from "@/types";
+import { defaultLang, getLangLabel, ui } from "@/i18n/ui";
+import {
+  getLangFromUrl,
+  useTranslatedPath,
+//   useTranslations,
+} from "@/i18n/utils";
 
 // temp TODO remove export
 export interface Props {
   list: CollectionPost[];
+  lang: keyof typeof ui;
 }
 
-const { list = [] } = Astro.props;
+const { list = [], lang } = Astro.props;
 
 function purgePostsFromUnlisted(l: CollectionPost[]) {
   const sorted = l.reduce((acc, element) => {
@@ -55,6 +62,12 @@ function composeImageSizeClasses(post: CollectionPost): string {
   }
   return "max-w-24 sm-max-w-48";
 }
+const currentLang = getLangFromUrl(Astro.url.pathname);
+// Dynamically iconstruct languages array based on available translations
+// const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
+// const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
+// const t = useTranslations(currentLang as keyof typeof ui);
+const tp = useTranslatedPath(currentLang as keyof typeof ui);
 ---
 
 <ul sm:min-h-38 min-h-28 mb-18>
@@ -70,13 +83,21 @@ function composeImageSizeClasses(post: CollectionPost): string {
             <span class="text-7em color-transparent font-bold text-stroke-2 text-stroke-hex-aaa op14 absolute top--0.2em font-title">
               {getYear(post.data.pubDate)}
             </span>
+            {currentLang !== defaultLang && (
+              <div class="translate-y-5rem translate-x-50% rotate-90 absolute top-0.8em right-0 w-10 h-7rem overflow-show">
+                <span class="text-5rem color-transparent font-bold text-stroke-2 text-stroke-hex-aaa op14 absolute top-10 font-title text-nowrap">
+                  <LanguageFlag {lang} verbose={false} />
+                  {` ${getLangLabel(lang)}`}
+                </span>
+              </div>
+            )}
           </div>
         )}
         <a
           class="text-lg lh-tight nav-link p-3 b-rd-2 flex flex-col flex-gap-2"
           aria-label={post.data.title}
           target={getTarget(post)}
-          href={getHref(post)}
+          href={tp(getHref(post))}
           data-astro-prefetch
         >
           <div class="flex flex-col md:flex-row flex-gap-2 md:flex-items-center">
@@ -113,7 +134,10 @@ function composeImageSizeClasses(post: CollectionPost): string {
               )}
               {post.data.duration && <span>· {post.data.duration}</span>}
               <TagsList tags={post.data.tags} link={false} verbose={false} />
-              <LanguageFlag lang={post.data.lang} verbose={false} />
+              {post.data.lang && "· "}
+              {post.data.lang && (
+                <LanguageFlag lang={post.data.lang} verbose={false} />
+              )}
             </div>
           </div>
           <div text-sm>

@@ -1,37 +1,45 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro'
-import ListPosts from '@/components/ListPosts.astro'
-import siteConfig from '@/site-config'
-import { getPosts } from '@/utils/posts'
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import ListPosts from "@/components/ListPosts.astro";
+import siteConfig from "@/site-config";
+import { getPosts } from "@/utils/posts";
+import { getLangFromUrl } from "@/i18n/utils";
 
 export async function getStaticPaths() {
   const paths = siteConfig.page.blogLinks.map((nav) => {
-    const href = nav.href.replace('/blog', '')
+    const href = nav.href.replace("/blog", "");
     return {
       params: {
-        path: href === '' ? undefined : href.replace(/^\/+|\/+$/g, ''),
+        path: href === "" ? undefined : href.replace(/^\/+|\/+$/g, ""),
       },
-    }
-  })
-  return paths
+    };
+  });
+  return paths;
 }
 
-const { path } = Astro.params
-
-const posts = (await getPosts(path)).filter((p) => !p.data.unlisted)
+const { path } = Astro.params;
+const currentLang = getLangFromUrl(Astro.url.pathname);
+const posts = (await getPosts({path, lang: currentLang}))
 
 function activeLink(pathname: string) {
-  return Astro.url.pathname.replace(/\/+/g, '/').replace(/\/$/, '') === pathname
+  return (
+    Astro.url.pathname.replace(/\/+/g, "/").replace(/\/$/, "") === pathname
+  );
 }
 ---
 
-<BaseLayout title="Blog" description="List of all the blog posts." pageNav={true} pageOperate={true}>
+<BaseLayout
+  title="Blog"
+  description="List of all the blog posts."
+  pageNav={true}
+  pageOperate={true}
+>
   <div class="flex flex-col gap-2 sm:flex-row sm:gap-4 flex-wrap mb-8">
     {
       siteConfig.page.blogLinks.map((nav) => (
         <a
           aria-label={nav.text}
-          class={`nav-link text-3xl font-bold ${activeLink(nav.href) ? 'opacity-80' : 'opacity-30 hover:opacity-50'}`}
+          class={`nav-link text-3xl font-bold ${activeLink(nav.href) ? "opacity-80" : "opacity-30 hover:opacity-50"}`}
           href={nav.href}
         >
           {nav.text}
@@ -39,5 +47,5 @@ function activeLink(pathname: string) {
       ))
     }
   </div>
-  <ListPosts list={posts} />
+  <ListPosts list={posts} lang={currentLang} />
 </BaseLayout>

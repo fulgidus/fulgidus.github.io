@@ -18,7 +18,7 @@ export async function getStaticPaths() {
 
 const { path } = Astro.params
 
-const posts = (await getPosts(path)).filter((p) => !p.data.unlisted)
+const posts = (await getPosts({path}))
 
 function activeLink(pathname: string) {
   return Astro.url.pathname.replace(/\/+/g, '/').replace(/\/$/, '') === pathname
@@ -39,5 +39,5 @@ function activeLink(pathname: string) {
       ))
     }
   </div>
-  <ListPosts list={posts} />
+  <ListPosts list={posts} lang='en' />
 </BaseLayout>

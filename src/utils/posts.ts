@@ -1,6 +1,7 @@
 import { getCollection } from 'astro:content'
 import type { CollectionEntry } from 'astro:content'
 import type { CollectionPost, PostKey } from '@/types'
+import { defaultLang, ui } from '@/i18n/ui'
 
 // import type { ImageSize } from '@/content/config'
 // import type { ImageMetadata } from 'astro'
@@ -33,32 +34,38 @@ export function sortPostsByDate(posts: Array<CollectionEntry<'blog'>>) {
     return posts.sort(postSortingFunction)
 }
 
-export async function getPosts(path?: string, collection: PostKey = 'blog') {
+export async function getPosts(params: { path?: string, lang?: keyof typeof ui, collection?: PostKey } = {}) {
+    const { path, lang = defaultLang, collection = 'blog' } = params;
     return sortPostsByDate(await getCollection(collection, (post) => {
-        if (import.meta.env.PROD) {
-            if (post.data.draft) {
-                return false
-            }
-        }
-        if (path) {
-            if (!post.slug.includes(path)) {
-                return false
-            }
+        if ((import.meta.env.PROD && post.data.draft)
+            || (post.data.lang && post.data.lang !== lang)
+            || (post.data.unlisted) // FAIL if unlisted
+            || (path && !post.slug.includes(path))) { // Fail if it doesn't match search
+            return false
         }
         return true
     }))
 }
 
-export async function getLastTenPosts(path?: string, collection: PostKey = 'blog') {
-    return (await getPosts(path, collection)).slice(0, 10)
+export async function getLastTenPosts(params: { path?: string, lang?: keyof typeof ui, collection?: PostKey } = {}) {
+    return (await getPosts(params)).slice(0, 10)
 }
 
 
 
 /** Note: this function filters out draft posts based on the environment */
-export async function getAllPosts() {
+export async function getAllPosts(lang: keyof typeof ui = defaultLang) {
     return await getCollection('blog', ({ data }) => {
-        return !data.unlisted && (import.meta.env.PROD ? data.draft !== true : true)
+        if (data.lang && data.lang !== lang) { // FAIL when post has language different from either default or specified
+            return false
+        }
+        if (data.unlisted) { // FAIL when post is unlisted
+            return false
+        }
+        if (import.meta.env.PROD && data.draft) { // FAIL when is draft under PROD env
+            return false
+        }
+        return true
     })
 }
 
@@ -70,19 +77,19 @@ export function getAllTags(posts: Array<CollectionEntry<'blog'>>) {
 
 /** Note: This function doesn't filter draft posts, pass it the result of getAllPosts above to do so. */
 export function getUniqueTags(posts: Array<CollectionEntry<'blog'>>) {
-    return [...new Set(getAllTags(posts))]
+    return Array.from(new Set(getAllTags(posts)))
 }
 
 /** Note: This function doesn't filter draft posts, pass it the result of getAllPosts above to do so. */
 export function getUniqueTagsWithCount(
     posts: Array<CollectionEntry<'blog'>>
 ): Array<[string, number]> {
-    return [
-        ...getAllTags(posts).reduce(
+    return Array.from(
+        getAllTags(posts).reduce(
             (acc, t) => acc.set(t, (acc.get(t) ?? 0) + 1),
             new Map<string, number>()
         )
-    ].sort((a, b) => b[1] - a[1])
+    ).sort((a, b) => b[1] - a[1])
 }
 
 export type DateStringNumber = Date | string | number;

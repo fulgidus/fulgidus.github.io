@@ -24,6 +24,12 @@ const socialLinks = computed(() => {
         }
     })
 })
+// Define languages
+const languages = computed(() => {
+    // Dynamically construct languages array based on available translations
+    const availableLanguages = Object.keys(ui) as (keyof typeof ui)[]
+    return availableLanguages.map(lang => [lang, ui[lang].language])
+})
 
 const navDrawerOpen = ref(false); // Reactive state for drawer visibility
 const isHeaderHidden = ref(false); // Reactive state for header visibility
@@ -113,24 +119,36 @@ function toggleNavDrawer() {
         <header v-if="!isHeaderHidden" id="header" :class="{ 'header-bg-blur': scroll > 20, '!hidden': isHeaderHidden }"
             class="!fixed bg-transparent z-899 w-screen h-20 px-6 flex justify-between items-center relative print:hidden">
             <div class="flex items-center h-full">
-                <a :href="siteConfig.basePath" mr-6 aria-label="Header Logo Image">
-                    <img width="32" height="32" :src="siteConfig.header.logo.src" :alt="siteConfig.header.logo.alt"
-                        class="bg-nav-logo">
+                <!-- Logo -->
+                <a :href="tp(siteConfig.basePath)" aria-label="Header Logo Image" mr-6 b-rd-full>
+                    <img :src="siteConfig.header.logo.src" :alt="siteConfig.header.logo.alt"
+                        class="h-12 aspect-ratio-square b-rd-full">
                 </a>
+                <!-- End of logo -->
 
+                <!-- Navigation menu buttons -->
+                <!-- Always visible on larger screens -->
                 <nav aria-label="menu navigation" class="sm:flex hidden flex-wrap gap-x-6 position-initial flex-row">
-                    <!-- Always visible on larger screens -->
                     <a v-for="link in navLinks" :key="link.text" :aria-label="t(link.text)" :href="tp(link.href)">
-                        {{ t(link.text) }}--
+                        {{ t(link.text) }}
                     </a>
                 </nav>
+                <!-- End of navigation menu buttons -->
+
+                <!-- Hamburger menu button on smaller screens -->
                 <div class="sm:hidden h-full flex items-center" @click="toggleNavDrawer">
                     <i i-ri-menu-2-line />
                 </div>
+                <!-- End of hamburger menu button on smaller screens -->
             </div>
             <div class="flex gap-x-6">
+                <!-- Menu social links -->
                 <a v-for="link in socialLinks" :key="link.text" :aria-label="`${link.text}`" :class="link.icon" nav-link
                     :target="getLinkTarget(link.href)" :href="link.href" />
+                <!-- Language selection -->
+                <a v-for="([lang, label]) in languages" :key="lang" :aria-label="`${label}`"
+                    :class="{ 'underline font-bold' : lang === currentLang}"
+                    :href="lang !== defaultLang ? `/${lang}/` : '/'" nav-link>{{label}}</a>
 
                 <a nav-link target="_blank" href="/rss.xml" i-ri-rss-line aria-label="RSS" />
                 <ThemeToggle />

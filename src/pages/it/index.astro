@@ -11,163 +11,165 @@ const emailEntities = Array.from(email)
   .map((char) => `&#${char.charCodeAt(0)};`)
   .join("");
 
-import { getLangFromUrl, useTranslations } from "@/i18n/utils";
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+// import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+// const lang = getLangFromUrl(Astro.url);
+// const t = useTranslations(lang);
 ---
 
 <BaseLayout description={siteConfig.description}>
   <article class="prose">
     <div class="markdown-heading" dir="auto">
-      <h1 class="heading-element" dir="auto">Hello, there!</h1>
+      <h1 class="heading-element" dir="auto">Ciao!</h1>
     </div>
     <div class="markdown-heading" dir="auto">
-      <h2 class="heading-element" dir="auto" text-nowrap>👨&zwj;💻 About Me</h2>
+      <h2 class="heading-element" dir="auto" text-nowrap>👨‍💻 Su di me</h2>
     </div>
     <PokerPic
       img={meImg}
-      alt="Alessio Corsi a.k.a. Fulgidus with suspenders"
+      alt="Alessio Corsi alias Fulgidus con bretelle"
       class="flex m-x-auto w-50% sm-w-33% aspect-ratio-square m-2 sm-float-end clear-both"
     />
-
     <p dir="auto">
-      I am a versatile <strong>Full-Stack Developer</strong> with a focus on creating
-      efficient, scalable, and user-friendly digital solutions. My expertise spans
-      <strong>front-end development</strong>, <strong>back-end systems</strong>,
-      and database management. Leveraging my skills in <strong
+      Sono uno <strong>sviluppatore Full-Stack</strong> versatile, specializzato
+      nella creazione di soluzioni digitali efficienti, scalabili e user-friendly.
+      La mia esperienza copre <strong>lo sviluppo front-end</strong>, <strong
+        >sistemi back-end</strong
+      > e gestione di database. Grazie alle mie competenze in <strong
         >JavaScript</strong
-      >, <strong>TypeScript</strong>, and modern frameworks like <strong
+      >, <strong>TypeScript</strong> e moderni framework come <strong
         >React.js</strong
-      >, I bring ideas to life with clean and maintainable code.
+      >, do vita alle idee con codice pulito e manutenibile.
     </p>
     <p dir="auto">
-      With a background in <strong>Mobile App Design</strong> and hands-on experience
-      in full-stack projects, I enjoy solving challenging problems and exploring
-      innovative solutions. I am passionate about <strong
-        >software development</strong
-      >, <strong>blockchain technologies</strong>, and <strong
-        >cybersecurity</strong
-      >, always eager to learn and adapt to new trends in technology.
+      Con un background nella <strong>progettazione di app mobili</strong> e un'esperienza
+      pratica in progetti full-stack, mi piace risolvere problemi complessi ed esplorare
+      soluzioni innovative. Sono appassionato di <strong
+        >sviluppo software</strong
+      >, <strong>tecnologie blockchain</strong> e <strong>cybersicurezza</strong
+      >, sempre pronto a imparare e adattarmi alle nuove tendenze tecnologiche.
     </p>
     <div class="markdown-heading" dir="auto">
-      <h2 class="heading-element" dir="auto">🛠️ Tech Stack</h2>
+      <h2 class="heading-element" dir="auto">🛠️ Stack Tecnologico</h2>
     </div>
-    <p dir="auto">Here are some of the tools and technologies I work with:</p>
+    <p dir="auto">Ecco alcuni strumenti e tecnologie con cui lavoro:</p>
     <ul dir="auto">
-      <li>💻 <strong>Programming Languages:</strong> JavaScript, TypeScript</li>
       <li>
-        📚 <strong>Frameworks &amp; Libraries:</strong> React.js, Node.js, Prisma,
+        💻 <strong>Linguaggi di programmazione:</strong> JavaScript, TypeScript
+      </li>
+      <li>
+        📚 <strong>Framework &amp; Librerie:</strong> React.js, Node.js, Prisma,
         Zod
       </li>
       <li>
-        🛠️ <strong>Tools &amp; Platforms:</strong> Git, Docker, AWS, PostgreSQL,
+        🛠️ <strong>Strumenti &amp; Piattaforme:</strong> Git, Docker, AWS, PostgreSQL,
         MongoDB
       </li>
       <li>
-        🎨 <strong>Design &amp; Prototyping:</strong> Adobe Illustrator, Photoshop,
+        🎨 <strong>Design &amp; Prototipazione:</strong> Adobe Illustrator, Photoshop,
         Indesign
       </li>
       <li>
-        🐧 <strong>Operating Systems:</strong> Windows, Linux (Ubuntu, Manjaro, Kali,
-        and others)
+        🐧 <strong>Sistemi operativi:</strong> Windows, Linux (Ubuntu, Manjaro, Kali
+        e altri)
       </li>
     </ul>
     <div class="markdown-heading" dir="auto">
-      <h2 class="heading-element" dir="auto">👨&zwj;💻 Notable Projects</h2>
+      <h2 class="heading-element" dir="auto">👨‍💻 Progetti principali</h2>
     </div>
     <ul dir="auto">
       <li>
-        🖥️ <strong>Video Chat and Remote Management System</strong>: Developed a
-        sophisticated tool for remote file management and server control,
-        focusing on front-end architecture using React.js and TypeScript,
-        integrated with a Node.js backend and PostgreSQL database.
+        🖥️ <strong>Sistema di video chat e gestione remota</strong>: Ho sviluppato
+        uno strumento sofisticato per la video conferenza, gestione remota di file, e il controllo
+        dei server, concentrandomi sull'architettura front-end con React.js e
+        TypeScript, integrato con un back-end Node.js, S3, e database PostgreSQL.
       </li>
       <li>
-        ⚕️ <strong>Medical Services Platform</strong>: Built the back-end for
-        subscription-based services, including payment integrations with Stripe,
-        on AWS using MongoDB and Node.js.
+        ⚕️ <strong>Piattaforma di servizi medici</strong>: Realizzato il
+        back-end per servizi in abbonamento, inclusa l'integrazione dei
+        pagamenti con Stripe, su AWS utilizzando MongoDB e Node.js.
       </li>
       <li>
-        🚛 <strong>Enterprise IoT Dashboard</strong>: Contributed to a B2B web
-        app for IoT device management, utilizing React.js, TypeScript, and
+        🚛 <strong>Dashboard IoT aziendale</strong>: Contributo a un'app web B2B
+        per la gestione di dispositivi IoT, utilizzando React.js, TypeScript e
         Rx.js.
       </li>
     </ul>
     <div class="markdown-heading" dir="auto">
-      <h2 class="heading-element" dir="auto">🌱 Interests</h2>
+      <h2 class="heading-element" dir="auto">🌱 Interessi</h2>
     </div>
-    <p dir="auto">When I'm not coding, I delve into:</p>
+    <p dir="auto">Quando non programmo, mi dedico a:</p>
     <ul dir="auto">
       <li>
-        💡 <strong>Hobby Electronics</strong>: Tinkering with projects using
-        Arduino and Raspberry Pi.
+        💡 <strong>Elettronica hobbistica</strong>: Progetti con Arduino e
+        Raspberry Pi.
       </li>
       <li>
-        📻 <strong>HAM Radio</strong>: Experimenting with radios for long-range
-        communication, both in the analog and digital spaces, from sideband
-        modulation and Morse code to Meshtastic.
+        📻 <strong>Radio HAM</strong>: Esperimenti con radio per comunicazioni a
+        lunga distanza, sia in spazi analogici che digitali, dalla modulazione
+        in banda laterale al codice Morse e Meshtastic.
       </li>
       <li>
-        🔐 <strong>Cybersecurity</strong>: Studying secure coding practices,
-        penetration testing, and privacy-enhancing technologies.
+        🔐 <strong>Cybersicurezza</strong>: Studio di pratiche di programmazione
+        sicura, test di penetrazione e tecnologie per la tutela della privacy.
       </li>
       <li>
-        📈 <strong>Cryptocurrency and Blockchain</strong>: Exploring
-        decentralized technologies and their impact on modern economies.
+        📈 <strong>Criptovalute e blockchain</strong>: Esplorazione delle
+        tecnologie decentralizzate e del loro impatto sulle economie moderne.
       </li>
       <li>
-        🌌 <strong>Science Outreach</strong>: Following and supporting
-        initiatives that make science and technology accessible to everyone.
+        🌌 <strong>Divulgazione scientifica</strong>: Seguo e supporto
+        iniziative che rendono la scienza e la tecnologia accessibili a tutti.
       </li>
     </ul>
-    <p dir="auto">...and many more.</p>
+    <p dir="auto">...e molto altro.</p>
     <div class="markdown-heading" dir="auto">
-      <h2 class="heading-element" dir="auto">📬 Let's Connect</h2>
+      <h2 class="heading-element" dir="auto">📬 Connettiamoci</h2>
     </div>
-    <p dir="auto">Feel free to explore my repositories and connect with me:</p>
+    <p dir="auto">
+      Sentiti libero di esplorare i miei repository e connetterti con me:
+    </p>
     <ul dir="auto">
       <li>
         <strong>Email:</strong>
-        <EmailObfuscator emailEntities={emailEntities} client:only="vue">
-          <span slot="fallback"> Email not available </span>
-        </EmailObfuscator>
+        <EmailObfuscator emailEntities={emailEntities} client:only="vue"
+          ><span slot="fallback">
+            Email non disponibile
+          </span></EmailObfuscator>
       </li>
-      <li><strong>Location:</strong> Torino, Italy</li>
+      <li><strong>Luogo:</strong> Torino, Italia</li>
     </ul>
-    <p dir="auto">Let's innovate and build the future together!</p>
-
+    <p dir="auto">Innoviamo e costruiamo il futuro insieme!</p>
     <hr class="hr-line" />
-    <h1 class="text-title">How was this blog made?</h1>
+    <h1 class="text-title">Come è stato creato questo blog?</h1>
     <p>
-      It's derived from <a
+      Deriva da <a
         href="https://github.com/kieranwv/astro-theme-vitesse"
-        target="_blank">This very pretty Astro theme</a
+        target="_blank">questo bellissimo tema Astro</a
       >.
     </p>
     <p>
-      By the way, this theme uses the <a
+      A proposito, questo tema utilizza <a
         target="_blank"
         href="https://unocss.dev/">UnoCSS</a
-      > for style, it's fast.
+      > per lo stile, è veloce.
     </p>
     <p>
-      <span>Visit it</span>
+      <span>Visitalo</span>
       <a target="_blank" href="https://github.com/kieranwv/astro-theme-vitesse">
-        on GitHub
+        su GitHub
       </a>
-      <span></span>to fork the repository, read the docs or one-click deploy on
-      Netlify.
+      <span></span> per clonare il repository, leggere la documentazione o fare il
+      deploy con un clic su Netlify.
     </p>
     <p class="flex gap-x-4 gap-y-2 flex-wrap">
-      <span>Find the original creator on</span>
+      <span>Trova il creatore originale su</span>
       <a
         aria-label="GitHub"
         href="https://github.com/kieranwv"
         target="_blank"
         class="prose-link"
       >
-        <i class="i-simple-icons-github"></i>
-        GitHub
+        <i class="i-simple-icons-github"></i> GitHub
       </a>
     </p>
   </article>

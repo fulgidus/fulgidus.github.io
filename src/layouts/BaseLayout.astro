@@ -5,6 +5,7 @@ import BaseHead from "@/components/BaseHead.astro";
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
 import ScrollToTop from "@/components/ScrollToTop.vue";
+import { getLangFromUrl } from "@/i18n/utils";
 interface Props {
   title?: string;
   description?: string;
@@ -16,10 +17,12 @@ interface Props {
 }
 const { ...head } = Astro.props;
 const { imageSize } = Astro.props;
+
+const lang = getLangFromUrl(Astro.url);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <BaseHead {...head} />
     <ViewTransitions />

@@ -9,6 +9,7 @@ export const defaultLang = 'en';
 
 export const ui = {
     en: {
+        'language': 'English',
         'nav.home': 'Home',
         'nav.blog': 'Blog',
         'nav.notes': 'Note',
@@ -22,6 +23,7 @@ export const ui = {
         'nav.x': 'X',
     },
     it: {
+        'language': 'Italiano',
         'nav.home': 'Inizio',
         'nav.blog': 'Blog',
         'nav.notes': 'Note',
@@ -29,6 +31,10 @@ export const ui = {
         'nav.about': 'Informazioni',
     },
 } as const;
+
+export function getLangLabel(lang: keyof typeof ui) {
+    return ui[lang].language;
+}
 
 
 

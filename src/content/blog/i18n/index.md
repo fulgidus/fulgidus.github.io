@@ -28,12 +28,20 @@ The initial approach uses Astro's built-in features for content collections and 
 
 The transition to Vue.js involves incorporating a Vue component (`Header.vue`) for the site header. This brings advantages and complexities:
 - **Client-Side Interactivity:** Vue.js allows dynamic updates to the UI, reacting to events like scrolling. This capability isn't readily available in the pure Astro approach. The original header included features like scroll-based header styling and a nav drawer which required client-side JavaScript interactivity.
-- **Refined Translation:** The Vue.js integration refactored the translation functions. The `useTranslations` function, significantly enhanced, now offers:
+- **Refined Translation:** The Vue.js integration refactored the translation functions.
+    ```javascript
+    export function useTranslations(lang: keyof typeof ui) {
+        return function t(key: keyof typeof ui[typeof defaultLang]): string {
+            return ui[lang][key] ?? ui[defaultLang][key] ?? `#${key}#`;
+        }
+    }
+    ```  
+	The `useTranslations` function, significantly enhanced, now offers:
 	- Better type safety.
     - More robust error handling (returning the key if no translation is found).
     - A simpler, more readable implementation.
 - **Reactivity:** The introduction of Vue's reactivity system improved the translation update process whenever the language changes.
-- **Complexity:** The Vue.js implementation introduced additional complexity. The functions required careful integration with Vue's lifecycle methods (`onMounted`, `watchEffect`), and some DOM manipulation (`toggleNavDrawer`) was involved. This increases the component's size and potentially its maintenance overhead.
+- **Complexity:** The Vue.js implementation introduced additional complexity. The functions required careful integration with Vue's lifecycle methods (`onMounted`, `watchEffect`), but no direct DOM manipulation was involved. This increases the component's size and potentially its maintenance overhead.
     
 - **Asynchronous Data:** The handling of `siteConfig` (likely fetched asynchronously) requires extra care to ensure the data is available before rendering the component, possibly introducing loading states or asynchronous data handling.
     

@@ -10,7 +10,7 @@ import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
   const posts = await getPosts();
-  return posts.map((post: { slug: any }) => {
+  return posts.map((post: CollectionPost) => {
     return {
       params: { slug: post.slug },
       props: {
@@ -47,7 +47,7 @@ const articleImage = {
   alt: imageAlt,
 };
 
-function composeImageSizeClasses(size: ImageSize): string {
+export function composeImageSizeClasses(size: ImageSize): string {
   const r = Math.random();
   if (size === `xl`) {
     return `w-100%`;
@@ -66,6 +66,8 @@ function composeImageSizeClasses(size: ImageSize): string {
   }
   return `${r < 0.5 ? "float-left mr6" : "float-right ml6"} mb6 w-100%`;
 }
+
+const SLUG_DEFAULT_DISPLAYED_LANG = "en";
 ---
 
 <!-- ACTUAL POST RENDERER -->
@@ -107,7 +109,12 @@ function composeImageSizeClasses(size: ImageSize): string {
           )
         }
         {duration && <span>· {duration}</span>}
-        <LanguageFlag lang={lang} client:only="vue" verbose />
+        {"· "}
+        <LanguageFlag
+          lang={lang ?? SLUG_DEFAULT_DISPLAYED_LANG}
+          client:only="vue"
+          verbose
+        />
         {
           tags && tags.length > 0 && (
             <span class="flex flex-wrap flex-gap-1">
@@ -129,6 +136,7 @@ function composeImageSizeClasses(size: ImageSize): string {
       )
     }
     <Content />
+    </ul>
 
     <GoBackToBlog client:only="vue" />
   </article>

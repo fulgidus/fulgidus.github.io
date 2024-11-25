@@ -2,14 +2,24 @@
 import GoBackToBlog from "@/components/GoBackToBlog.vue";
 import LanguageFlag from "@/components/LanguageFlag.vue";
 import TagsList from "@/components/TagsList.vue";
-import type { ImageSize } from "@/content/config";
+import { getLangFromUrl } from "@/i18n/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { composeImageSizeClasses } from "@/pages/posts/[...slug].astro";
 import { type CollectionPost } from "@/types";
 import { getPosts } from "@/utils/posts";
 import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
-  const posts = await getPosts();
+  const lang = 'it';
+  const posts = await getPosts({ lang });
+  console.log(`
+------------------------------------------------------------------------------------------------------
+${JSON.stringify(posts.map((p) => p.slug))}
+-------------
+| LANG : ${lang} |
+-------------
+------------------------------------------------------------------------------------------------------
+  `);
   return posts.map((post: { slug: any }) => {
     return {
       params: { slug: post.slug },
@@ -46,26 +56,7 @@ const articleImage = {
   src: image?.src ?? "",
   alt: imageAlt,
 };
-
-function composeImageSizeClasses(size: ImageSize): string {
-  const r = Math.random();
-  if (size === `xl`) {
-    return `w-100%`;
-  }
-  if (size === `lg`) {
-    return `w-100%`;
-  }
-  if (size === `md`) {
-    return `${r < 0.5 ? "float-left mr6" : "float-right ml6"} mb6 w-100%`;
-  }
-  if (size === `sm`) {
-    return `${r < 0.5 ? "float-left mr4" : "float-right ml4"} mb4 w-75%`;
-  }
-  if (size === `xs`) {
-    return `${r < 0.5 ? "float-left mr4" : "float-right ml4"} mb4 w-50%`;
-  }
-  return `${r < 0.5 ? "float-left mr6" : "float-right ml6"} mb6 w-100%`;
-}
+const SLUG_DEFAULT_DISPLAYED_LANG = "it";
 ---
 
 <!-- ACTUAL POST RENDERER -->
@@ -107,7 +98,12 @@ function composeImageSizeClasses(size: ImageSize): string {
           )
         }
         {duration && <span>· {duration}</span>}
-        <LanguageFlag lang={lang} client:only="vue" verbose />
+        {"· "}
+        <LanguageFlag
+          lang={lang ?? SLUG_DEFAULT_DISPLAYED_LANG}
+          client:only="vue"
+          verbose
+        />
         {
           tags && tags.length > 0 && (
             <span class="flex flex-wrap flex-gap-1">
@@ -129,7 +125,8 @@ function composeImageSizeClasses(size: ImageSize): string {
       )
     }
     <Content />
-
-    <GoBackToBlog client:only="vue" />
+    <ul>
+      <GoBackToBlog client:only="vue" />
+    </ul>
   </article>
 </BaseLayout>

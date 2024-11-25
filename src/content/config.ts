@@ -20,7 +20,7 @@ const imageSizeSchema = z.union([
     z.literal('md'),
     z.literal('sm'),
     z.literal('xs'),
-]).default('md').optional()
+]).default('md')
 export type ImageSize = z.infer<typeof imageSizeSchema>
 
 const supportedLanguagesSchema = z.union([
@@ -28,7 +28,7 @@ const supportedLanguagesSchema = z.union([
     z.literal('it'),
     z.literal('pirate'),
     z.literal('zh'),
-]).default('en').optional()
+]).default('en')
 export type SupportedLanguages = z.infer<typeof supportedLanguagesSchema>
 
 export type ImageFormat = "png" | "jpg" | "jpeg" | "tiff" | "webp" | "gif" | "svg" | "avif"
