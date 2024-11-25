@@ -20,7 +20,7 @@ export async function GET(context: Context) {
         items: posts.map((item) => {
             return {
                 ...item.data,
-                link: `${context.site}posts/${item.slug}`,
+                link: `/it/${context.site}posts/${item.slug}`,
                 pubDate: new Date(item.data.pubDate),
                 description: item.data.description,
                 content: item.body,
