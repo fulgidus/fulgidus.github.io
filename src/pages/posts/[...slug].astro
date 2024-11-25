@@ -6,7 +6,6 @@ import type { ImageSize } from "@/content/config";
 import { ui } from "@/i18n/ui";
 import {
   getLangFromUrl,
-  useTranslatedPath,
   useTranslations,
 } from "@/i18n/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
@@ -28,7 +27,7 @@ export async function getStaticPaths() {
 
 type Props = { post: CollectionPost };
 
-const { post } = Astro.props;
+const { post }: Props = Astro.props;
 const {
   title,
   image,

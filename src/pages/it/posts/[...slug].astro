@@ -24,7 +24,7 @@ export async function getStaticPaths() {
 
 type Props = { post: CollectionPost };
 
-const { post } = Astro.props;
+const { post }: Props = Astro.props;
 const {
   title,
   image,

@@ -8,8 +8,6 @@ import {
   getLangFromUrl,
   useSpecificPath,
   useSpecificTranslation,
-  useTranslatedPath,
-  useTranslations,
 } from "@/i18n/utils";
 
 interface Props {
@@ -43,12 +41,11 @@ function formatCanonicalURL(url: string | URL) {
   return path.replace(/\/?$/, hasQueryParams ? "" : "/");
 }
 
-const currentLang = getLangFromUrl(Astro.url.pathname);
-// Dynamically construct languages array based on available translations
+// const currentLang = getLangFromUrl(Astro.url.pathname);
 const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
 // const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
-const t = useTranslations(currentLang as keyof typeof ui);
-const tp = useTranslatedPath(currentLang as keyof typeof ui);
+// const t = useTranslations(currentLang as keyof typeof ui);
+// const tp = useTranslatedPath(currentLang as keyof typeof ui);
 ---
 
 <!-- High Priority Global Metadata -->
