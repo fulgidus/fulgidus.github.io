@@ -2,7 +2,6 @@ export const languages = {
     en: 'English',
     it: 'Italiano',
     nl: 'Nederlands',
-    zh: '简体中文',
 };
 
 export const defaultLang = 'en';
@@ -44,6 +43,26 @@ export const ui = {
         'rss.titleAll': 'Tutti i post in Italiano',
         'rss.titleLastTen': 'Ultimi 10 post in Italiano',
     },
+    nl: {
+        'flag': '🇳🇱',
+        'language': 'Nederlands',
+        'nav.home': 'Huis',
+        'nav.blog': 'Blog',
+        'nav.notes': 'Opmerkingen',
+        'nav.projects': 'Projecten',
+        'nav.about': 'Over',
+        'nav.twitter': 'Twitter',
+        'nav.github': 'GitHub',
+        'nav.linkedin': 'LinkedIn',
+        'nav.instagram': 'Instagram',
+        'nav.youtube': 'YouTube',
+        'nav.x': 'X',
+        'slug.unlisted': 'Niet geindexeerd (Geen PostsList, Geen RSS, Geen robots.txt)',
+        'rss.titleAll': 'Alle posts in Nederlands',
+        'rss.titleLastTen': 'Laatste 10 posts in Nederlands',
+    },
+    
+
 } as const;
 
 export function getLangLabel(lang: keyof typeof ui) {
@@ -72,8 +91,8 @@ export function substituteTemplate(
     }
     return template.replace(/{{(\w+)}}/g, (_, key) => {
         if (variables[key] === undefined) {
-            console.error(`Missing value for template variable: ${key}
-Variables: ${JSON.stringify(variables)}`);
+            console.warn(`Missing value for template variable: ${key}`);
+            return `Missing value for template variable: ${key}`;
         }
         return variables[key];
     });

@@ -1,6 +1,5 @@
 import { ui, defaultLang, routesFromEnToLocalized, substituteTemplate } from './ui';
 
-
 export function getLangFromUrl(url: URL | string): keyof typeof ui {
     const [, lang] = (typeof url === 'string' ? url : url.pathname).split('/');
     if (lang in ui) return lang as keyof typeof ui;
@@ -14,14 +13,14 @@ export function useTranslations(lang: keyof typeof ui) {
 }
 
 export function useSpecificTranslation(lang: keyof typeof ui, key: keyof typeof ui[typeof defaultLang]) {
-    return ui[lang][key] ?? ui[defaultLang][key] ?? `#${key}#`;
+    return ui?.[lang]?.[key] ?? ui[defaultLang][key] ?? `#${key}#`;
 }
 
-export function old_useTranslatedPath(lang: keyof typeof ui) {
-    return function translatePath(path: string, l: string = lang) {
-        return l === defaultLang ? path : `/${l}${path}`
-    }
-}
+// export function old_useTranslatedPath(lang: keyof typeof ui) {
+//     return function translatePath(path: string, l: string = lang) {
+//         return l === defaultLang ? path : `/${l}${path}`
+//     }
+// }
 
 export function useTranslatedPath(currentLang: keyof typeof ui) {
     return function translatePath(path: string, targetLang: keyof typeof ui = defaultLang): string {
@@ -47,6 +46,7 @@ export function useTranslatedPath(currentLang: keyof typeof ui) {
                 // Path is of different locale either substitute or strip and repopulate
                 const strippedPath = useStripLangFromPath(currentLang)(path)
                 const localizedPath = populateFromRoute(strippedPath, targetLang)
+                console.log(`======= PATH: ${path} | ======= STRIPPED PATH: ${strippedPath} | ======= LOCALIZED PATH: ${localizedPath}`)
                 return localizedPath
             }
         } else {
@@ -78,7 +78,7 @@ function populateFromRoute(path: string, targetLang: keyof typeof ui) {
     }
     const localizedPath = substituteTemplate(routesFromEnToLocalized[foundRoute], {
         lang: targetLang,
-        path: path.slice(foundRoute.length),
+        path: foundRoute.length > 1 ? path.slice(foundRoute.length) : path !== '/' ? path : '',
     })
     return localizedPath
 }
@@ -94,7 +94,7 @@ export function useStripLangFromPath(lang: keyof typeof ui) {
         const newPath = [collectionParticle, ...remainingPath]
         console.log(`
             strippedLangFromPath:
-            lang: ${l} || path: ${path} | (path).split('/'): ${path.split('/')} | possibleLang:"${possibleLang}" | remainingPath: "/${newPath.join(' /')}" | path: "${path}"`)
+            lang: ${l} || path: ${path} | (path).split('/'): ${path.split('/')} | possibleLang:"${possibleLang}" | remainingPath: "/${newPath.join(' /')}"`)
         if (possibleLang in ui) {
             // Found prepended language
             console.log(`Found prepended language`)
