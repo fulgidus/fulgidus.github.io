@@ -25,7 +25,7 @@ export function old_useTranslatedPath(lang: keyof typeof ui) {
 
 export function useTranslatedPath(currentLang: keyof typeof ui) {
     return function translatePath(path: string, targetLang: keyof typeof ui = defaultLang): string {
-        const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
+        const availableLanguages = Object.keys(ui) as (keyof typeof ui)[]
         const pathParts = path.split('/');
         if (availableLanguages.includes(pathParts[1] as keyof typeof ui)) {
             // path is localized
@@ -52,35 +52,28 @@ export function useTranslatedPath(currentLang: keyof typeof ui) {
             console.log(`Path is English
                 path: ${path}`)
             if (targetLang === defaultLang) {
-                return path;
+                return path
             }
-            let foundRoute: keyof typeof routesFromEnToLocalized = '/' as keyof typeof routesFromEnToLocalized;
+            let foundRoute: keyof typeof routesFromEnToLocalized = '/' as keyof typeof routesFromEnToLocalized
             for (const route in routesFromEnToLocalized) {
                 if (path.startsWith(route)) {
                     // Found the most specific route!
                     console.log(`Found the most specific route!
                         route: ${route}`)
                     foundRoute = route as keyof typeof routesFromEnToLocalized;
-                    break;
+                    break
                 }
             }
             const localizedPath = substituteTemplate(routesFromEnToLocalized[foundRoute], {
                 lang: targetLang,
                 path: path.slice(foundRoute.length),
-            });
+            })
             // Localizing path...
             console.log(`Localizing path...
                 localizedPath: ${localizedPath}`)
             return localizedPath
         }
-        // Remove current language prefix if present
-        if (currentLang !== defaultLang) {
-            console.log(`${currentLang} !== ${defaultLang}`)
-            console.log(`pathParts: ${JSON.stringify(pathParts)}`)
-            path = pathParts.filter(part => part !== currentLang).join('/');
-            console.log(`path: ${path}`)
-        }
-    };
+    }
 }
 
 
