@@ -45,7 +45,9 @@ export function useTranslatedPath(currentLang: keyof typeof ui) {
                 return useStripLangFromPath(currentLang)(path);
             } else {
                 // Path is of different locale either substitute or strip and repopulate
-                return path // TODO: make path locale to locale converter
+                const strippedPath = useStripLangFromPath(currentLang)(path)
+                const localizedPath = populateFromRoute(strippedPath, targetLang)
+                return localizedPath
             }
         } else {
             // Path is English
@@ -54,20 +56,7 @@ export function useTranslatedPath(currentLang: keyof typeof ui) {
             if (targetLang === defaultLang) {
                 return path
             }
-            let foundRoute: keyof typeof routesFromEnToLocalized = '/' as keyof typeof routesFromEnToLocalized
-            for (const route in routesFromEnToLocalized) {
-                if (path.startsWith(route)) {
-                    // Found the most specific route!
-                    console.log(`Found the most specific route!
-                        route: ${route}`)
-                    foundRoute = route as keyof typeof routesFromEnToLocalized;
-                    break
-                }
-            }
-            const localizedPath = substituteTemplate(routesFromEnToLocalized[foundRoute], {
-                lang: targetLang,
-                path: path.slice(foundRoute.length),
-            })
+            const localizedPath = populateFromRoute(path, targetLang)
             // Localizing path...
             console.log(`Localizing path...
                 localizedPath: ${localizedPath}`)
@@ -76,7 +65,23 @@ export function useTranslatedPath(currentLang: keyof typeof ui) {
     }
 }
 
-
+function populateFromRoute(path: string, targetLang: keyof typeof ui) {
+    let foundRoute: keyof typeof routesFromEnToLocalized = '/' as keyof typeof routesFromEnToLocalized
+    for (const route in routesFromEnToLocalized) {
+        if (path.startsWith(route)) {
+            // Found the most specific route!
+            console.log(`Found the most specific route!
+                        route: ${route}`)
+            foundRoute = route as keyof typeof routesFromEnToLocalized;
+            break
+        }
+    }
+    const localizedPath = substituteTemplate(routesFromEnToLocalized[foundRoute], {
+        lang: targetLang,
+        path: path.slice(foundRoute.length),
+    })
+    return localizedPath
+}
 
 export function useSpecificPath(lang: keyof typeof ui, path: string) {
     return lang === defaultLang ? path : `/${lang}${path}`
