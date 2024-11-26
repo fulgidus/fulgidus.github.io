@@ -7,7 +7,7 @@
         <transition name="slide-fade">
             <ul v-if="isDropdownOpen" class="dropdown-menu bg-main">
                 <li v-for="([lang, label]) in languages" :key="lang" class="dropdown-item">
-                    <a :href="tp(url !== undefined ? sp(url.pathname) : '/', lang)" nav-link p-2 flex items-center justify-between gap-2
+                    <a v-if="ui[lang]?.disabled !== 'true'" :href="tp(url !== undefined ? sp(url.pathname) : '/', lang)" nav-link p-2 flex items-center justify-between gap-2
                         @click="changeLanguage(lang)">
                         <span class="flag-icon" v-if="ui[lang]?.flag">{{ui[lang].flag}}</span>
                         {{ label }}

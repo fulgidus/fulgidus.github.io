@@ -44,6 +44,7 @@ export const ui = {
         'rss.titleLastTen': 'Ultimi 10 post in Italiano',
     },
     nl: {
+        'disabled':'true',
         'flag': '🇳🇱',
         'language': 'Nederlands',
         'nav.home': 'Huis',
