@@ -11,7 +11,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            '@/': resolve(__dirname, 'src/*'), // Add this alias mapping
+            // '@/': resolve(__dirname, 'src/*'), // Add this alias mapping
             'astro:content': resolve(__dirname, './test/empty.js'), // Or './test/empty' if you prefer just a directory
         },
     },

@@ -1,0 +1,33 @@
+---
+import type { HTMLTag, Polymorphic } from "astro/types";
+
+import { getLangFromUrl, translateFrom } from "@/i18n/utils";
+import { defaultLang, ui } from "@/i18n/ui";
+// Dynamically construct languages array based on available translations
+// const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
+// const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
+// const t = useTranslations(currentLang as keyof typeof ui);
+// const tp = useTranslatedPath(currentLang as keyof typeof ui);
+
+type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
+  key: keyof (typeof ui)[typeof defaultLang];
+  lang?: keyof typeof ui;
+};
+
+const currentLang = getLangFromUrl("/it/blogss");
+const { key, lang = currentLang, ...props }: Props<"span"> = Astro.props;
+
+console.log("Received key:", key); // Add this line
+---
+
+<span {...props}>
+  {
+    !key ? (
+      <>#key not provided#</>
+    ) : (
+      <>
+        key:{key}|tr:{translateFrom(lang, key)}
+      </>
+    )
+  }
+</span>

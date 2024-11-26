@@ -5,7 +5,7 @@ import { computed, onMounted, ref, watchEffect } from 'vue'
 import ThemeToggle from './ThemeToggle.vue'
 import { getLinkTarget } from '@/utils/link'
 import siteConfig from '@/site-config'
-import { getLangFromUrl, useTranslations, useTranslatedPath, /* useStripLangFromPath */ } from '../i18n/utils';
+import { getLangFromUrl, useTranslate, translatePath, /* useStripLangFromPath */ } from '../i18n/utils';
 import { defaultLang, ui } from '@/i18n/ui'
 import LanguageDropdown from './LanguageDropdown.vue'
 
@@ -44,17 +44,12 @@ const currentLang = ref(defaultLang);
 
 
 let url: URL | undefined
-let t: (key: string) => string // Simplified type
-let tp: (path: string, lang?: string) => string // Simplified type
-// let sp: (path: string, lang?: string) => string // Simplified type
+let translate: (key: string) => string // Simplified type
 
 onMounted(() => {
     url = new URL(window.location.href);
     currentLang.value = getLangFromUrl(url); // Update currentLang reactively
-    t = useTranslations(currentLang.value as keyof typeof ui);
-    console.log(`Header onMounted currentLang: ${currentLang.value}`)
-    tp = useTranslatedPath(currentLang.value as keyof typeof ui);
-    // sp = useStripLangFromPath(currentLang.value as keyof typeof ui);
+    translate = useTranslate(currentLang.value as keyof typeof ui);
 
     useEventListener('scroll', () => {
         const currentScrollPosition = scroll.value;
@@ -109,13 +104,7 @@ onMounted(() => {
 // Watch currentLang for changes and update translations
 watchEffect(() => {
     url = new URL(window.location.href);
-    t = useTranslations(currentLang.value as keyof typeof ui);
-    tp = useTranslatedPath(currentLang.value as keyof typeof ui);
-    // sp = useStripLangFromPath(currentLang.value as keyof typeof ui);
-
-    console.log(`Header watchEffect currentLang: ${currentLang.value}
-url: ${url?.pathname}
-`)
+    translate = useTranslate(currentLang.value as keyof typeof ui);
 });
 
 
@@ -130,7 +119,7 @@ function toggleNavDrawer() {
             class="!fixed bg-transparent z-899 w-screen h-20 px-6 flex justify-between items-center relative print:hidden">
             <div class="flex items-center h-full">
                 <!-- Logo -->
-                <a :href="tp(siteConfig.basePath)" aria-label="Header Logo Image" mr-6 b-rd-full>
+                <a :href="translatePath(siteConfig.basePath)" :aria-label="siteConfig.header.logo.alt" class="mr-6 b-rd-full">
                     <img :src="siteConfig.header.logo.src" :alt="siteConfig.header.logo.alt"
                         class="h-12 aspect-ratio-square b-rd-full">
                 </a>
@@ -138,9 +127,9 @@ function toggleNavDrawer() {
 
                 <!-- Navigation menu buttons -->
                 <!-- Always visible on larger screens -->
-                <nav aria-label="menu navigation" class="sm:flex hidden flex-wrap gap-x-6 position-initial flex-row">
-                    <a v-for="link in navLinks" :key="link.text" :aria-label="t(link.text)" :href="tp(link.href)">
-                        {{ t(link.text) }}
+                <nav aria-label="Menu navigation" class="sm:flex hidden flex-wrap gap-x-6 position-initial flex-row">
+                    <a v-for="link in navLinks" :key="link.text" :aria-label="translate(link.text)" :href="translatePath(link.href)">
+                        {{ translate(link.text) }}
                     </a>
                 </nav>
                 <!-- End of navigation menu buttons -->
@@ -158,7 +147,7 @@ function toggleNavDrawer() {
                 <!-- Language selection -->
                 <LanguageDropdown />
 
-                <a nav-link target="_blank" :href="tp('/rss.xml')" i-ri-rss-line aria-label="RSS" />
+                <a nav-link target="_blank" :href="translatePath('/rss.xml')" i-ri-rss-line aria-label="RSS" />
                 <ThemeToggle />
             </div>
         </header>
@@ -166,9 +155,9 @@ function toggleNavDrawer() {
     <Transition name="nav-drawer"> <!-- Add a transition -->
         <nav v-if="navDrawerOpen" class="nav-drawer bg-white dark:bg-black" aria-label="menu navigation">
             <i i-ri-menu-2-fill @click="toggleNavDrawer" />
-            <a v-for="link in navLinks" :key="link.text" :aria-label="t(link.text)" :href="tp(link.href)"
+            <a v-for="link in navLinks" :key="link.text" :aria-label="translate(link.text)" :href="translatePath(link.href)"
                 @click="toggleNavDrawer">
-                {{ t(link.text) }}-
+                {{ translate(link.text) }}
             </a>
         </nav>
     </Transition>

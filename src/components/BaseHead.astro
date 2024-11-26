@@ -6,7 +6,7 @@ import "@/styles/dot.css";
 import { defaultLang, ui } from "@/i18n/ui";
 import {
   useSpecificPath,
-  useSpecificTranslation,
+  translateFrom,
 } from "@/i18n/utils";
 
 interface Props {
@@ -79,14 +79,14 @@ const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
             rel="alternate"
             type="application/rss+xml"
             href={useSpecificPath(lang, `/rss.xml`)}
-            title={useSpecificTranslation(lang, "rss.titleAll")}
+            title={translateFrom(lang, "rss.titleAll")}
             lang={lang}
             />
           <link
             rel="alternate"
             type="application/rss+xml"
             href={useSpecificPath(lang, `/last-ten.xml`)}
-            title={useSpecificTranslation(lang, "rss.titleLastTen")}
+            title={translateFrom(lang, "rss.titleLastTen")}
             lang={lang}
           />
         </>

@@ -44,13 +44,6 @@ type GetPostsParams = {
 
 export async function getPosts(params: GetPostsParams = {}) {
     const { path, lang = defaultLang, collection = 'blog', withUnlisted = false, withDrafts = true } = params;
-    console.log(`getPosts EN
-        Filtering by:
-        lang: ${lang}
-        path: ${path}
-        collection: ${collection}
-        withUnlisted: ${withUnlisted}
-`)
     return sortPostsByDate(await getCollection(collection, (post) => {
         if ((import.meta.env.PROD && post.data.draft)
             || (!withDrafts && post.data.draft) // FAIL when wihtout draft and it's a draft

@@ -12,8 +12,8 @@ import type { CollectionPost } from "@/types";
 import { defaultLang, getLangLabel, ui } from "@/i18n/ui";
 import {
   getLangFromUrl,
-  useTranslatedPath,
-//   useTranslations,
+  translatePath,
+  //   useTranslations,
 } from "@/i18n/utils";
 
 // temp TODO remove export
@@ -67,7 +67,6 @@ const currentLang = getLangFromUrl(Astro.url.pathname);
 // const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
 // const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
 // const t = useTranslations(currentLang as keyof typeof ui);
-const tp = useTranslatedPath(currentLang as keyof typeof ui);
 ---
 
 <ul sm:min-h-38 min-h-28 mb-18>
@@ -97,7 +96,7 @@ const tp = useTranslatedPath(currentLang as keyof typeof ui);
           class="text-lg lh-tight nav-link p-3 b-rd-2 flex flex-col flex-gap-2"
           aria-label={post.data.title}
           target={getTarget(post)}
-          href={tp(getHref(post))}
+          href={translatePath(getHref(post))}
           data-astro-prefetch
         >
           <div class="flex flex-col md:flex-row flex-gap-2 md:flex-items-center">

@@ -1,11 +1,10 @@
-import { ui } from './src/i18n/ui'
+import { availableLanguages, ui } from './src/i18n/ui'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import vue from '@astrojs/vue'
 import { defineConfig } from 'astro/config'
 import UnoCSS from 'unocss/astro'
 
-const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
 const languages: Record<string, string> = Object.fromEntries(
     availableLanguages.map((lang) => [lang, ui[lang].language])
 );
@@ -15,6 +14,12 @@ export default defineConfig({
     server: {
         port: 1987,
     },
+    // i18n: { // This breaks the site for some reason, it's not needed anyway
+    //     defaultLocale: 'en',
+    //     locales: availableLanguages,
+    //     routing: 'manual',
+    //     fallback: availableLanguages['en'],
+    // },
     integrations: [
         mdx(), 
         vue(), 

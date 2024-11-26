@@ -6,7 +6,7 @@ import type { ImageSize } from "@/content/config";
 import { ui } from "@/i18n/ui";
 import {
   getLangFromUrl,
-  useTranslations,
+  useTranslate,
 } from "@/i18n/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { type CollectionPost } from "@/types";
@@ -76,7 +76,7 @@ const currentLang = getLangFromUrl(Astro.url.pathname);
 // Dynamically construct languages array based on available translations
 // const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
 // const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
-const t = useTranslations(currentLang as keyof typeof ui);
+const t = useTranslate(currentLang as keyof typeof ui);
 // const tp = useTranslatedPath(currentLang as keyof typeof ui);
 ---
 

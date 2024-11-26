@@ -1,11 +1,4 @@
-export const languages = {
-    en: 'English',
-    it: 'Italiano',
-    nl: 'Nederlands',
-};
-
 export const defaultLang = 'en';
-
 export const ui = {
     en: {
         'flag': '🇬🇧',
@@ -24,6 +17,8 @@ export const ui = {
         'slug.unlisted': 'Not indexed (No PostsList, No RSS, No robots.txt)',
         'rss.titleAll': 'All posts in English',
         'rss.titleLastTen': 'Last 10 posts in English',
+        '404.title': 'Not found',
+        'langSelector.empty': 'Select language',
     },
     it: {
         'flag': '🇮🇹',
@@ -42,9 +37,11 @@ export const ui = {
         'slug.unlisted': 'Non indicizzato (No PostsList, No RSS, No robots.txt)',
         'rss.titleAll': 'Tutti i post in Italiano',
         'rss.titleLastTen': 'Ultimi 10 post in Italiano',
+        '404.title': 'Non trovato',
+        'langSelector.empty': 'Seleziona lingua',
     },
     nl: {
-        'disabled':'true',
+        
         'flag': '🇳🇱',
         'language': 'Nederlands',
         'nav.home': 'Huis',
@@ -61,10 +58,20 @@ export const ui = {
         'slug.unlisted': 'Niet geindexeerd (Geen PostsList, Geen RSS, Geen robots.txt)',
         'rss.titleAll': 'Alle posts in Nederlands',
         'rss.titleLastTen': 'Laatste 10 posts in Nederlands',
+        '404.title': 'Niet gevonden',
+        'langSelector.empty': 'Selecteer taal',
     },
     
 
 } as const;
+
+export const languages = {
+    en: 'English',
+    it: 'Italiano',
+    nl: 'Nederlands',
+};
+
+export const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
 
 export function getLangLabel(lang: keyof typeof ui) {
     return ui[lang].language;
