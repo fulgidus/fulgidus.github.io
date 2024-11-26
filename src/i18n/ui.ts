@@ -50,8 +50,31 @@ export function getLangLabel(lang: keyof typeof ui) {
     return ui[lang].language;
 }
 
-export const pathTemplates = {
-    '/posts/': '/{{rootLang}}/posts/{{lang}}/{{path}}',
-    '/': '/{{rootLang}}',
+export const routesFromEnToLocalized = {
+    '/posts/notes': '/{{lang}}/posts/{{lang}}/notes{{path}}',
+    '/posts/talks': '/{{lang}}/posts/{{lang}}/talks{{path}}',
+    '/posts': '/{{lang}}/posts/{{lang}}{{path}}',
+    '/blog/notes': '/{{lang}}/blog/notes',
+    '/blog': '/{{lang}}/blog',
+    '/projects': '/{{lang}}/projects',
+    '/': '/{{lang}}{{path}}',
+    '': '/{{lang}}{{path}}',
     //Add more paths as needed
 };
+
+
+export function substituteTemplate(
+    template: string,
+    variables: Record<string, string>
+): string {
+    if (variables['lang'] === undefined) {
+        variables['lang'] = defaultLang;
+    }
+    return template.replace(/{{(\w+)}}/g, (_, key) => {
+        if (variables[key] === undefined) {
+            console.error(`Missing value for template variable: ${key}
+Variables: ${JSON.stringify(variables)}`);
+        }
+        return variables[key];
+    });
+}

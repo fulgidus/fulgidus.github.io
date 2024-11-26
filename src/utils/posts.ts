@@ -44,13 +44,12 @@ type GetPostsParams = {
 
 export async function getPosts(params: GetPostsParams = {}) {
     const { path, lang = defaultLang, collection = 'blog', withUnlisted = false, withDrafts = true } = params;
-    console.log(`
-----------------------------------------------------------------------------------------------------------------------------------------------------------
-getPosts filtering by
-lang: ${lang}
-path: ${path}
-collection: ${collection}
-withUnlisted: ${withUnlisted}
+    console.log(`getPosts EN
+        Filtering by:
+        lang: ${lang}
+        path: ${path}
+        collection: ${collection}
+        withUnlisted: ${withUnlisted}
 `)
     return sortPostsByDate(await getCollection(collection, (post) => {
         if ((import.meta.env.PROD && post.data.draft)

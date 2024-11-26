@@ -51,7 +51,10 @@ watchEffect(() => {
     sp = useStripLangFromPath(currentLang.value as keyof typeof ui);
 
     console.log(`LangDropdown watchEffect currentLang: ${currentLang.value}
-url: ${url?.pathname}
+    url: ${url?.pathname}
+    stripped: ${sp(url?.pathname)}
+    translated to en: ${tp(url?.pathname, 'en')}
+    translated to it: ${tp(url?.pathname, 'it')}
 `)
 });
 
