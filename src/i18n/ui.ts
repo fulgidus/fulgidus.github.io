@@ -18,11 +18,14 @@ export const ui = {
         'rss.titleAll': 'All posts in English',
         'rss.titleLastTen': 'Last 10 posts in English',
         '404.title': 'Not found',
+        '404.description': 'Sorry, we couldn\'t find what you were looking for!',
+        '404.backButtonLabel': 'Go back to Home',
         'langSelector.empty': 'Select language',
     },
     it: {
         'flag': '🇮🇹',
         'language': 'Italiano',
+        'diagnostic': 'Diagnostic',
         'nav.home': 'Inizio',
         'nav.blog': 'Blog',
         'nav.notes': 'Note',
@@ -38,6 +41,8 @@ export const ui = {
         'rss.titleAll': 'Tutti i post in Italiano',
         'rss.titleLastTen': 'Ultimi 10 post in Italiano',
         '404.title': 'Non trovato',
+        '404.description': 'Spiacenti, non siamo riusciti a trovare quel che cercavi!',
+        '404.backButtonLabel': 'Torna all\'Inizio',
         'langSelector.empty': 'Seleziona lingua',
     },
     nl: {
@@ -59,6 +64,8 @@ export const ui = {
         'rss.titleAll': 'Alle posts in Nederlands',
         'rss.titleLastTen': 'Laatste 10 posts in Nederlands',
         '404.title': 'Niet gevonden',
+        '404.description': 'Sorry, we konden niet vinden waar je naar op zoek was!',
+        '404.backButtonLabel': 'Ga naar Huis',
         'langSelector.empty': 'Selecteer taal',
     },
     

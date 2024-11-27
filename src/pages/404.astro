@@ -1,0 +1,48 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import dark from "../../public/img/404-dark.gif";
+import light from "../../public/img/404-light.gif";
+import { Image } from "astro:assets";
+import DottieErrorNumber from "@/components/error-numbers/LottieErrorNumber.vue";
+import Trans from "@/components/Trans.astro";
+import { getLangFromUrl, translatePath } from "@/i18n/utils";
+const currentLang = getLangFromUrl(Astro.url);
+---
+
+<BaseLayout
+  title="Not Found"
+  description="Sorry, we couldn't find what you were looking for."
+>
+  <article class="prose">
+    <Image
+      src={dark}
+      alt="404 Error animation"
+      format={"webp"}
+      loading="lazy"
+      class="m-auto hidden dark:block"
+    />
+    <Image
+      src={light}
+      alt="404 Error animation"
+      format={"webp"}
+      loading="lazy"
+      class="m-auto block dark:hidden"
+    />
+    <h2>
+      <Trans key="404.title" />
+    </h2>
+    <div class="flex flex-wrap items-center justify-between">
+      <p>
+        <Trans key="404.description" />
+      </p>
+      <a
+        href={translatePath("/", currentLang)}
+        class="flex flex-nowrap items-center justify-center gap-3 b-rd-2 p-1 b-2 b-color-hex-380541"
+        role="button"
+      >
+        <i aria-label="Go back" i-ri-home-line></i>
+        <Trans key="404.backButtonLabel" /></a
+      >
+    </div>
+  </article>
+</BaseLayout>
