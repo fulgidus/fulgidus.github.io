@@ -41,7 +41,7 @@ export const ui = {
         'langSelector.empty': 'Seleziona lingua',
     },
     nl: {
-        
+        'disabled': 'true',
         'flag': '🇳🇱',
         'language': 'Nederlands',
         'nav.home': 'Huis',
@@ -77,7 +77,9 @@ export function getLangLabel(lang: keyof typeof ui) {
     return ui[lang].language;
 }
 
+// You can have only one template variable in the route description and it must always be {{4-chars-of-length}} no less, no more
 export const routesFromEnToLocalized = {
+    '/posts/{{lang}}/notes': '/{{lang}}/posts/{{lang}}/notes{{path}}', // correct, exactly 4 chars in "lang"
     '/posts/notes': '/{{lang}}/posts/{{lang}}/notes{{path}}',
     '/posts/talks': '/{{lang}}/posts/{{lang}}/talks{{path}}',
     '/posts': '/{{lang}}/posts/{{lang}}{{path}}',
