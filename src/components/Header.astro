@@ -1,12 +1,12 @@
 ---
-import { ui, defaultLang } from "@/i18n/ui"
+import { ui, defaultLang, TranslationKeys, Languages } from "@/i18n/ui"
 import { getLangFromUrl, translatePath, useTranslate } from "@/i18n/utils"
 import siteConfig from "@/site-config"
 
 
 const currentLang = getLangFromUrl(Astro.url)
 const translate = useTranslate(currentLang)
-const availableLanguages = Object.keys(ui) as (keyof typeof ui)[]
+const availableLanguages = Object.keys(ui) as Languages[]
 const languages = availableLanguages.map(lang => [lang, ui[lang].language])
 ---
 <header id="no-js-header" class="{`!fixed bg-transparent z-899 w-screen h-20 px-6 flex justify-center items-center relative print:hidden text-main`}">
@@ -20,8 +20,8 @@ const languages = availableLanguages.map(lang => [lang, ui[lang].language])
         <!-- Navigazione -->
         <nav class="nav flex flex-wrap items-center content-center gap-4 mrauto">
             {siteConfig.header.navLinks.map((link) => (
-            <a class="nav-link" aria-label={translate(link.text as keyof typeof ui[typeof defaultLang])} href={translatePath(link.href, currentLang)}>
-                        { translate(link.text as keyof typeof ui[typeof defaultLang]) }
+            <a class="nav-link" aria-label={translate(link.text as TranslationKeys)} href={translatePath(link.href, currentLang)}>
+                        { translate(link.text as TranslationKeys) }
                     </a>
             ))}
         </nav>
@@ -40,7 +40,7 @@ const languages = availableLanguages.map(lang => [lang, ui[lang].language])
         <!-- Dropdown lingua -->
         <div class="flex flex-wrap items-cente gap-2">
             {languages.map(([lang]) => lang).filter(lang => ui[lang]?.disabled !== 'true').map((code) => (
-                <a href={translatePath(Astro.url.pathname, code as keyof typeof ui)}>{ui[code].flag}</a>
+                <a href={translatePath(Astro.url.pathname, code as Languages)}>{ui[code].flag}</a>
             ))}
         </div>
     </div>

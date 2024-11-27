@@ -7,7 +7,7 @@
         <transition name="slide-fade">
             <ul v-if="isDropdownOpen" class="dropdown-menu bg-main">
                 <li v-for="([lang, label]) in languages" :key="lang" class="dropdown-item">
-                    <a v-if="ui[lang]?.disabled !== 'true'" :href="translatePath(url !== undefined ? stripLangFromPath(url.pathname) : '/', lang as keyof typeof ui)" nav-link p-2 flex items-center justify-between gap-2
+                    <a v-if="ui[lang]?.disabled !== 'true'" :href="translatePath(url !== undefined ? stripLangFromPath(url.pathname) : '/', lang as Languages)" nav-link p-2 flex items-center justify-between gap-2
                         @click="changeLanguage(lang)">
                         <span class="flag-icon" v-if="ui[lang]?.flag">{{ui[lang].flag}}</span>
                         {{ label }}
@@ -21,7 +21,7 @@
 <script lang="ts" setup>
 import { ref, computed, watchEffect, onMounted } from 'vue';
 import { getLangFromUrl, stripLangFromPath, translatePath, useTranslate } from '../i18n/utils';
-import { defaultLang, ui } from '@/i18n/ui';
+import { defaultLang, Languages, ui } from '@/i18n/ui';
 
 
 const isDropdownOpen = ref(false);
@@ -34,24 +34,24 @@ let translate: (key: string) => string // Simplified type
 onMounted(() => {
     url = new URL(window.location.href);
     currentLang.value = getLangFromUrl(url); // Update currentLang reactively
-    translate = useTranslate(currentLang.value as keyof typeof ui);
+    translate = useTranslate(currentLang.value as Languages);
 })
 
 
 // Watch currentLang for changes and update translations
 watchEffect(() => {
     url = new URL(window.location.href);
-    translate = useTranslate(currentLang.value as keyof typeof ui);
+    translate = useTranslate(currentLang.value as Languages);
 });
 
 
 
 // const currentLangLabel = computed(() => {
-//     return ui[currentLang.value as keyof typeof ui]?.language || 'Language';
+//     return ui[currentLang.value as Languages]?.language || 'Language';
 // });
 
 const languages = computed(() => {
-    const availableLanguages = Object.keys(ui) as (keyof typeof ui)[]
+    const availableLanguages = Object.keys(ui) as Languages[]
     return availableLanguages.map(lang => [lang, ui[lang].language])
 });
 

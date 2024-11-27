@@ -1,35 +1,39 @@
-import { ui, defaultLang, routesFromEnToLocalized, substituteTemplate, availableLanguages } from './ui';
+import { ui, defaultLang, routesFromEnToLocalized, substituteTemplate, availableLanguages, TranslationKeys, Languages } from './ui';
 
-export function getLangFromUrl(url: URL | string): keyof typeof ui {
+function isValidLanguage(lang: string): lang is Languages {
+    return lang in ui;
+}
+
+export function getLangFromUrl(url: URL | string): Languages {
     const [, lang] = (typeof url === 'string' ? url : url.pathname).split('/');
-    if (lang in ui) {
-        return lang as keyof typeof ui
+    if (isValidLanguage(lang)) {
+        return lang
     }
     return defaultLang;
 }
 
-export function useTranslate(lang: keyof typeof ui) {
-    return function translate(key: keyof typeof ui[typeof defaultLang]): string {
+export function useTranslate(lang: Languages) {
+    return function translate(key: TranslationKeys): string {
         return ui[lang][key] ?? ui[defaultLang][key] ?? `#${key}#`;
     }
 }
 
-export function translateFrom(lang: keyof typeof ui, key: keyof typeof ui[typeof defaultLang]) {
+export function translateFrom(lang: Languages, key: TranslationKeys) {
     return ui?.[lang]?.[key] ?? ui[defaultLang][key] ?? `#${key}#`;
 }
 
-// export function old_useTranslatedPath(lang: keyof typeof ui) {
+// export function old_useTranslatedPath(lang: Languages) {
 //     return function translatePath(path: string, l: string = lang) {
 //         return l === defaultLang ? path : `/${l}${path}`
 //     }
 // }
 
-export function translatePath(path: string, targetLang: keyof typeof ui = defaultLang): string {
-    const availableLanguages = Object.keys(ui) as (keyof typeof ui)[]
+export function translatePath(path: string, targetLang: Languages = defaultLang): string {
+    const availableLanguages = Object.keys(ui) as (Languages)[]
     const pathParts = path.split('/');
-    if (availableLanguages.includes(pathParts[1] as keyof typeof ui)) {
+    if (availableLanguages.includes(pathParts[1] as Languages)) {
         // path is localized
-        if (pathParts[1] as keyof typeof ui === targetLang) {
+        if (pathParts[1] as Languages === targetLang) {
             // No change in route necessary
             return path;
         } else if (targetLang === defaultLang) {
@@ -53,7 +57,7 @@ export function translatePath(path: string, targetLang: keyof typeof ui = defaul
 
 }
 
-function populateFromRoute(path: string, targetLang: keyof typeof ui) {
+function populateFromRoute(path: string, targetLang: Languages) {
     for (const route in routesFromEnToLocalized) {
         if (path.startsWith(route)) {
             // Found the most specific route!
@@ -85,13 +89,13 @@ function populateFromRoute(path: string, targetLang: keyof typeof ui) {
     }
 }
 
-export function useSpecificPath(lang: keyof typeof ui, path: string) {
+export function useSpecificPath(lang: Languages, path: string) {
     return lang === defaultLang ? path : `/${lang}${path}`
 }
 
 
 export function stripLangFromPath(path: string): string {
-    const newPath = path.split('/').filter(p => !availableLanguages.includes(p as keyof typeof ui)).join('/')
+    const newPath = path.split('/').filter(p => !availableLanguages.includes(p as Languages)).join('/')
     // if (possibleLang in ui) {
     //     // Found prepended language
     //     return `/${newPath.join('/')}`

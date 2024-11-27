@@ -6,7 +6,7 @@ import ThemeToggle from './ThemeToggle.vue'
 import { getLinkTarget } from '@/utils/link'
 import siteConfig from '@/site-config'
 import { getLangFromUrl, useTranslate, translatePath, /* useStripLangFromPath */ } from '../i18n/utils';
-import { defaultLang, ui } from '@/i18n/ui'
+import { defaultLang, Languages } from '@/i18n/ui'
 import LanguageDropdown from './LanguageDropdown.vue'
 
 const navLinks = siteConfig.header.navLinks || []
@@ -28,7 +28,7 @@ const socialLinks = computed(() => {
 // // Define languages
 // const languages = computed(() => {
 //     // Dynamically construct languages array based on available translations
-//     const availableLanguages = Object.keys(ui) as (keyof typeof ui)[]
+//     const availableLanguages = Object.keys(ui) as (Languages)[]
 //     return availableLanguages.map(lang => [lang, ui[lang].language])
 // })
 
@@ -54,7 +54,7 @@ onBeforeMount(()=> {
 onMounted(() => {
     url = new URL(window.location.href);
     currentLang.value = getLangFromUrl(url); // Update currentLang reactively
-    translate = useTranslate(currentLang.value as keyof typeof ui);
+    translate = useTranslate(currentLang.value as Languages);
 
     useEventListener('scroll', () => {
         const currentScrollPosition = scroll.value;
@@ -109,7 +109,7 @@ onMounted(() => {
 // Watch currentLang for changes and update translations
 watchEffect(() => {
     url = new URL(window.location.href);
-    translate = useTranslate(currentLang.value as keyof typeof ui);
+    translate = useTranslate(currentLang.value as Languages);
 });
 
 
@@ -124,7 +124,7 @@ function toggleNavDrawer() {
             class="slide-fade !fixed bg-transparent z-899 w-screen h-20 px-6 flex justify-between items-center relative print:hidden">
             <div class="flex items-center h-full">
                 <!-- Logo -->
-                <a :href="translatePath(siteConfig.basePath, currentLang as keyof typeof ui)" :aria-label="siteConfig.header.logo.alt"
+                <a :href="translatePath(siteConfig.basePath, currentLang as Languages)" :aria-label="siteConfig.header.logo.alt"
                     class="mr-4 b-rd-full">
                     <img :src="siteConfig.header.logo.src" :alt="siteConfig.header.logo.alt"
                         class="h-12 aspect-ratio-square b-rd-full">
@@ -135,7 +135,7 @@ function toggleNavDrawer() {
                 <!-- Always visible on larger screens -->
                 <nav aria-label="Menu navigation" class="sm:flex hidden flex-wrap gap-x-6 position-initial flex-row">
                     <a v-for="link in navLinks" :key="link.text" :aria-label="translate(link.text)"
-                        :href="translatePath(link.href, currentLang as keyof typeof ui)">
+                        :href="translatePath(link.href, currentLang as Languages)">
                         {{ translate(link.text) }}
                     </a>
                 </nav>
@@ -154,7 +154,7 @@ function toggleNavDrawer() {
                 <!-- Language selection -->
                 <LanguageDropdown />
 
-                <a nav-link target="_blank" :href="translatePath('/rss.xml', currentLang as keyof typeof ui)" i-ri-rss-line aria-label="RSS" />
+                <a nav-link target="_blank" :href="translatePath('/rss.xml', currentLang as Languages)" i-ri-rss-line aria-label="RSS" />
                 <ThemeToggle />
             </div>
         </header>
@@ -163,7 +163,7 @@ function toggleNavDrawer() {
         <nav v-if="navDrawerOpen" class="nav-drawer bg-main gap-6 p-6 items-center justify-start w-auto" aria-label="menu navigation">
             <i i-ri-menu-2-fill @click="toggleNavDrawer" class="self-start"/>
             <a v-for="link in navLinks" :key="link.text" :aria-label="translate(link.text)"
-                :href="translatePath(link.href, currentLang as keyof typeof ui)" @click="toggleNavDrawer">
+                :href="translatePath(link.href, currentLang as Languages)" @click="toggleNavDrawer">
                 {{ translate(link.text) }}
             </a>
         </nav>

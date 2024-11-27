@@ -7,7 +7,7 @@ import {
     useSpecificPath,
     stripLangFromPath
 } from './utils';
-import { ui } from './ui';
+import { Languages, TranslationKeys, ui } from './ui';
 
 
 describe('i18n/utils', () => {
@@ -27,12 +27,12 @@ describe('i18n/utils', () => {
     it('should create a translation function', () => {
         const t = useTranslate('it');
         expect(t('nav.home')).toBe(ui.it['nav.home']); //Replace 'nav.home' with an actual key from your ui object
-        expect(t('nonexistentKey' as keyof typeof ui.en)).toBe(ui.en['nonexistentKey'] ?? '#nonexistentKey#'); //Should handle missing keys gracefully.  Modify based on your desired behavior.
+        expect(t('nonexistentKey' as TranslationKeys)).toBe(ui.en['nonexistentKey'] ?? '#nonexistentKey#'); //Should handle missing keys gracefully.  Modify based on your desired behavior.
     });
 
     it('should return a specific translation', () => {
         expect(translateFrom('it', 'language')).toBe(ui.it['language']); //Replace 'nav.home' with an actual key from your ui object
-        expect(translateFrom('fr' as keyof typeof ui, 'nav.home')).toBe(ui.en['nav.home'] ?? '#nav.home#'); //Should handle missing languages gracefully. Modify based on your desired behavior.
+        expect(translateFrom('fr' as Languages, 'nav.home')).toBe(ui.en['nav.home'] ?? '#nav.home#'); //Should handle missing languages gracefully. Modify based on your desired behavior.
     });
 
     describe('useTranslatedPath', () => {
@@ -40,7 +40,7 @@ describe('i18n/utils', () => {
             expect(translatePath('/about', 'en')).toBe('/about');
             expect(translatePath('/about', 'it')).toBe('/it/about');
             expect(translatePath('/it/about', 'en')).toBe('/about'); //Strips language prefix if targetLang is defaultLang
-            expect(translatePath('/it/about', 'pirate' as keyof typeof ui)).toBe('/pirate/about'); //Doesn't care is it's not in ui... Theoretically it shouldn't be possible anyway due to TS
+            expect(translatePath('/it/about', 'pirate' as Languages)).toBe('/pirate/about'); //Doesn't care is it's not in ui... Theoretically it shouldn't be possible anyway due to TS
         });
 
         it('should handle complex paths correctly', () => {

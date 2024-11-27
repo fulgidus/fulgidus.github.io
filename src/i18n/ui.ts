@@ -71,9 +71,9 @@ export const languages = {
     nl: 'Nederlands',
 };
 
-export const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
+export const availableLanguages = Object.keys(ui) as Languages[];
 
-export function getLangLabel(lang: keyof typeof ui) {
+export function getLangLabel(lang: Languages) {
     return ui[lang].language;
 }
 
@@ -107,3 +107,7 @@ export function substituteTemplate(
         return variables[key];
     });
 }
+
+export type UI = typeof ui;
+export type Languages = keyof UI;
+export type TranslationKeys = Languages[typeof defaultLang];

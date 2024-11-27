@@ -2,7 +2,7 @@
 import GoBackToBlog from "@/components/GoBackToBlog.vue";
 import LanguageFlag from "@/components/LanguageFlags.vue";
 import TagsList from "@/components/TagsList.vue";
-import { ui } from "@/i18n/ui";
+import { Languages, ui } from "@/i18n/ui";
 import { getLangFromUrl, useTranslate } from "@/i18n/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { composeImageSizeClasses } from "@/pages/posts/[...slug].astro";
@@ -54,10 +54,10 @@ const articleImage = {
 };
 const currentLang = getLangFromUrl(Astro.url.pathname);
 // Dynamically construct languages array based on available translations
-// const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
+// const availableLanguages = Object.keys(ui) as (Languages)[];
 // const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
-const t = useTranslate(currentLang as keyof typeof ui);
-// const tp = useTranslatedPath(currentLang as keyof typeof ui);
+const t = useTranslate(currentLang as Languages);
+// const tp = useTranslatedPath(currentLang as Languages);
 ---
 
 <!-- ACTUAL POST RENDERER -->

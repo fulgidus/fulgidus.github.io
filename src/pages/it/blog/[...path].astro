@@ -7,7 +7,7 @@ import { getLangFromUrl } from "@/i18n/utils";
 
 export async function getStaticPaths() {
   const paths = siteConfig.page.blogLinks.it.map((nav) => {
-    const href = nav.href.replace("/it/blog", "");
+    const href = nav.href.replace("/it/blog", "")
     return {
       params: {
         path: href === "" ? undefined : href.replace(/^\/+|\/+$/g, ""),

@@ -9,7 +9,7 @@ import {
   type DateStringNumber,
 } from "@/utils/posts";
 import type { CollectionPost } from "@/types";
-import { defaultLang, getLangLabel, ui } from "@/i18n/ui";
+import { defaultLang, getLangLabel, Languages, ui } from "@/i18n/ui";
 import {
   getLangFromUrl,
   translatePath,
@@ -19,7 +19,7 @@ import {
 // temp TODO remove export
 export interface Props {
   list: CollectionPost[];
-  lang: keyof typeof ui;
+  lang: Languages;
 }
 
 const { list = [], lang } = Astro.props;
@@ -64,9 +64,9 @@ function composeImageSizeClasses(post: CollectionPost): string {
 }
 const currentLang = getLangFromUrl(Astro.url.pathname);
 // Dynamically construct languages array based on available translations
-// const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
+// const availableLanguages = Object.keys(ui) as (Languages)[];
 // const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
-// const t = useTranslations(currentLang as keyof typeof ui);
+// const t = useTranslations(currentLang as Languages);
 ---
 
 <ul sm:min-h-38 min-h-28 mb-18>
@@ -96,7 +96,7 @@ const currentLang = getLangFromUrl(Astro.url.pathname);
           class="text-lg lh-tight nav-link p-3 b-rd-2 flex flex-col flex-gap-2"
           aria-label={post.data.title}
           target={getTarget(post)}
-          href={translatePath(getHref(post), currentLang as keyof typeof ui)}
+          href={translatePath(getHref(post), currentLang as Languages)}
           data-astro-prefetch
         >
           <div class="flex flex-col md:flex-row flex-gap-2 md:flex-items-center">

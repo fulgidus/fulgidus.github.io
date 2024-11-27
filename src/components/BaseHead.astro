@@ -3,7 +3,7 @@ import siteConfig from "@/site-config";
 import "@/styles/global.css";
 import "@/styles/prose.css";
 import "@/styles/dot.css";
-import { defaultLang, ui } from "@/i18n/ui";
+import { defaultLang, Languages, ui } from "@/i18n/ui";
 import {
   useSpecificPath,
   translateFrom,
@@ -41,10 +41,10 @@ function formatCanonicalURL(url: string | URL) {
 }
 
 // const currentLang = getLangFromUrl(Astro.url.pathname);
-const availableLanguages = Object.keys(ui) as (keyof typeof ui)[];
+const availableLanguages = Object.keys(ui) as (Languages)[];
 // const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
-// const t = useTranslations(currentLang as keyof typeof ui);
-// const tp = useTranslatedPath(currentLang as keyof typeof ui);
+// const t = useTranslations(currentLang as Languages);
+// const tp = useTranslatedPath(currentLang as Languages);
 ---
 
 <!-- High Priority Global Metadata -->
