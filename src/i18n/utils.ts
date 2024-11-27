@@ -1,4 +1,4 @@
-import { ui, defaultLang, routesFromEnToLocalized, substituteTemplate } from './ui';
+import { ui, defaultLang, routesFromEnToLocalized, substituteTemplate, availableLanguages } from './ui';
 
 export function getLangFromUrl(url: URL | string): keyof typeof ui {
     const [, lang] = (typeof url === 'string' ? url : url.pathname).split('/');
@@ -54,19 +54,35 @@ export function translatePath(path: string, targetLang: keyof typeof ui = defaul
 }
 
 function populateFromRoute(path: string, targetLang: keyof typeof ui) {
-    let foundRoute: keyof typeof routesFromEnToLocalized = '/' as keyof typeof routesFromEnToLocalized
     for (const route in routesFromEnToLocalized) {
         if (path.startsWith(route)) {
             // Found the most specific route!
-            foundRoute = route as keyof typeof routesFromEnToLocalized;
-            break
+            const substitutedRoute = substituteRoute(route)
+            return substitutedRoute
+        }
+        // Now we check for templated routes
+        if (route.includes('{{')) {
+            const foundSubstitutedRoute = substituteTemplate(route, {
+                lang: targetLang,
+                path: path
+            })
+            if (path.startsWith(foundSubstitutedRoute)) {
+                const substitutedRoute = substituteRoute(route, true);
+                return substitutedRoute
+            }
         }
     }
-    const localizedPath = substituteTemplate(routesFromEnToLocalized[foundRoute], {
-        lang: targetLang,
-        path: foundRoute.length > 1 ? path.slice(foundRoute.length) : path !== '/' ? path : '',
-    })
-    return localizedPath
+    return path
+
+    function substituteRoute(route: string, offsetForTemplateVar: boolean = false) {
+        const foundRoute = route as keyof typeof routesFromEnToLocalized;
+        const substitutedRoute = substituteTemplate(routesFromEnToLocalized[foundRoute], {
+            lang: targetLang,
+            // The -6 is to offset lenght of {{path}} or {{lang}} this means that you can have only one ine the route description and it must always be {{4-chars-of-length}} no less, no more
+            path: foundRoute.length > 1 ? path.slice(foundRoute.length - (offsetForTemplateVar ? 6 : 0)) : path !== '/' ? path : '',
+        });
+        return substitutedRoute;
+    }
 }
 
 export function useSpecificPath(lang: keyof typeof ui, path: string) {
@@ -75,13 +91,12 @@ export function useSpecificPath(lang: keyof typeof ui, path: string) {
 
 
 export function stripLangFromPath(path: string): string {
-    const [, possibleLang, collectionParticle, , ...remainingPath] = (path).split('/'); // search for a prepended language
-    const newPath = [collectionParticle, ...remainingPath]
-    if (possibleLang in ui) {
-        // Found prepended language
-        return `/${newPath.join('/')}`
-    }
+    const newPath = path.split('/').filter(p => !availableLanguages.includes(p as keyof typeof ui)).join('/')
+    // if (possibleLang in ui) {
+    //     // Found prepended language
+    //     return `/${newPath.join('/')}`
+    // }
     // Not foun any language in path
-    return path
+    return newPath
 
 }

@@ -46,6 +46,8 @@ describe('i18n/utils', () => {
         it('should handle complex paths correctly', () => {
             expect(translatePath('/posts/my-post')).toBe('/posts/my-post');
             expect(translatePath('/posts/my-post', 'it')).toBe('/it/posts/it/my-post'); //This depends on your route mappings. Adjust as needed.
+            expect(translatePath('/posts/notes/stuff-1', 'it')).toBe('/it/posts/it/notes/stuff-1');
+            expect(translatePath('/it/blog/notes', 'en')).toBe('/blog/notes');
         });
 
         it('should handle already localized paths', () => {
