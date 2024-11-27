@@ -110,4 +110,4 @@ export function substituteTemplate(
 
 export type UI = typeof ui;
 export type Languages = keyof UI;
-export type TranslationKeys = Languages[typeof defaultLang];
+export type TranslationKeys = keyof UI[typeof defaultLang];
