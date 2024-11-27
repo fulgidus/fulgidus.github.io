@@ -1,7 +1,7 @@
 import { getCollection } from 'astro:content'
 import type { CollectionEntry } from 'astro:content'
 import type { CollectionPost, PostKey } from '@/types'
-import { defaultLang, ui } from '@/i18n/ui'
+import { defaultLang, Languages } from '@/i18n/ui'
 
 // import type { ImageSize } from '@/content/config'
 // import type { ImageMetadata } from 'astro'
@@ -36,7 +36,7 @@ export function sortPostsByDate(posts: Array<CollectionEntry<'blog'>>) {
 
 type GetPostsParams = {
     path?: string
-    lang?: keyof typeof ui
+    lang?: Languages
     collection?: PostKey
     withUnlisted?: boolean
     withDrafts?: boolean
@@ -64,7 +64,7 @@ export async function getLastTenPosts(params: GetPostsParams = {}) {
 
 
 /** Note: this function filters out draft posts based on the environment */
-export async function getAllPosts(lang: keyof typeof ui = defaultLang) {
+export async function getAllPosts(lang: Languages = defaultLang) {
     return await getCollection('blog', ({ data }) => {
         if (data.lang && data.lang !== lang) { // FAIL when post has language different from either default or specified
             return false
