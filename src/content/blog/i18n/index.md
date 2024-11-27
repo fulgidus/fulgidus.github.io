@@ -1,7 +1,7 @@
 ---
 title: "Evolving an i18n Solution: From Astro to Vue.js"
 description: This article details the evolution of an i18n (internationalization) solution, from a basic Astro implementation to a more sophisticated Vue.js approach, highlighting the differences and advantages of each.
-image: i18n.svg
+image: i18n.png
 imageAlt: Astro and VueJS logos surrounded by a circle of random national flags
 imageSize: md
 pubDate: 2024-11-27T09:52:49
