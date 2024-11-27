@@ -10,7 +10,7 @@ const availableLanguages = Object.keys(ui) as (keyof typeof ui)[]
 const languages = availableLanguages.map(lang => [lang, ui[lang].language])
 ---
 <header id="no-js-header" class="{`!fixed bg-transparent z-899 w-screen h-20 px-6 flex justify-center items-center relative print:hidden text-main`}">
-    <div class="flex items-center justify-between h-full w-4xl flew-grow-1">
+    <div class="flex items-center justify-between h-full w-screen flew-grow-1">
         <!-- Logo -->
         <a :href={translatePath(siteConfig.basePath, currentLang)} aria-label={siteConfig.header.logo.alt} class="mr-6 b-rd-full">
             <img src={siteConfig.header.logo.src} alt={siteConfig.header.logo.alt}
@@ -29,9 +29,9 @@ const languages = availableLanguages.map(lang => [lang, ui[lang].language])
         
         <!-- Social Links -->
         <div class="social-links flex flex-wrap items-center content-center gap-2 mr2 p2">
-                {siteConfig.socialLinks.map((link) => (
+                {siteConfig.socialLinks.filter(sl => sl.header).map((link) => (
                     <a href={link.href} target="_blank" rel="noopener noreferrer" aria-label={link.text}>
-                        <i class={`${link.icon} nav-link`}></span>
+                        <i class={`${link.header ?? link.icon} nav-link`}></span>
                         <span class="sr-only">{link.text}</span>
                     </a>
                 ))}
