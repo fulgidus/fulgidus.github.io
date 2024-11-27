@@ -9,18 +9,18 @@ const translate = useTranslate(currentLang)
 const availableLanguages = Object.keys(ui) as (keyof typeof ui)[]
 const languages = availableLanguages.map(lang => [lang, ui[lang].language])
 ---
-<header class="{`!fixed bg-transparent z-899 w-screen h-20 px-6 flex justify-center items-center relative print:hidden`}">
+<header id="no-js-header" class="{`!fixed bg-transparent z-899 w-screen h-20 px-6 flex justify-center items-center relative print:hidden text-main`}">
     <div class="flex items-center justify-between h-full w-4xl flew-grow-1">
         <!-- Logo -->
-        <a :href={translatePath(siteConfig.basePath)} aria-label={siteConfig.header.logo.alt} class="mr-6 b-rd-full">
+        <a :href={translatePath(siteConfig.basePath, currentLang)} aria-label={siteConfig.header.logo.alt} class="mr-6 b-rd-full">
             <img src={siteConfig.header.logo.src} alt={siteConfig.header.logo.alt}
                 class="h-12 aspect-ratio-square b-rd-full">
         </a>
 
         <!-- Navigazione -->
-        <nav class="nav flex flex-nowrap items-center content-center gap-4 mrauto">
+        <nav class="nav flex flex-wrap items-center content-center gap-4 mrauto">
             {siteConfig.header.navLinks.map((link) => (
-            <a class="nav-link" aria-label={translate(link.text as keyof typeof ui[typeof defaultLang])} href={translatePath(link.href)}>
+            <a class="nav-link" aria-label={translate(link.text as keyof typeof ui[typeof defaultLang])} href={translatePath(link.href, currentLang)}>
                         { translate(link.text as keyof typeof ui[typeof defaultLang]) }
                     </a>
             ))}
@@ -28,7 +28,7 @@ const languages = availableLanguages.map(lang => [lang, ui[lang].language])
 
         
         <!-- Social Links -->
-        <div class="social-links flex flex-nowrap items-center content-center gap-4 mr4">
+        <div class="social-links flex flex-wrap items-center content-center gap-2 mr2 p2">
                 {siteConfig.socialLinks.map((link) => (
                     <a href={link.href} target="_blank" rel="noopener noreferrer" aria-label={link.text}>
                         <i class={`${link.icon} nav-link`}></span>
@@ -38,8 +38,8 @@ const languages = availableLanguages.map(lang => [lang, ui[lang].language])
         </div>
 
         <!-- Dropdown lingua -->
-        <div class="flex items-center gap-2">
-            {languages.map(([code, /* lang */]) => (
+        <div class="flex flex-wrap items-cente gap-2">
+            {languages.map(([lang]) => lang).filter(lang => ui[lang]?.disabled !== 'true').map((code) => (
                 <a href={translatePath(Astro.url.pathname, code as keyof typeof ui)}>{ui[code].flag}</a>
             ))}
         </div>

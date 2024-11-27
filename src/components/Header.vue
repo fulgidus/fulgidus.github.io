@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script lang="ts" setup>
 import { useEventListener, useWindowScroll } from '@vueuse/core'
-import { computed, onMounted, ref, watchEffect } from 'vue'
+import { computed, onMounted, ref, watchEffect, onBeforeMount } from 'vue'
 import ThemeToggle from './ThemeToggle.vue'
 import { getLinkTarget } from '@/utils/link'
 import siteConfig from '@/site-config'
@@ -45,6 +45,11 @@ const currentLang = ref(defaultLang);
 
 let url: URL | undefined
 let translate: (key: string) => string // Simplified type
+
+onBeforeMount(()=> {
+    const noJsHeader = document.getElementById('no-js-header')
+    noJsHeader?.remove()
+});
 
 onMounted(() => {
     url = new URL(window.location.href);
@@ -116,10 +121,11 @@ function toggleNavDrawer() {
 <template>
     <Transition name="slide-fade">
         <header v-if="!isHeaderHidden" id="header" :class="{ 'header-bg-blur': scroll > 20, '!hidden': isHeaderHidden }"
-            class="!fixed bg-transparent z-899 w-screen h-20 px-6 flex justify-between items-center relative print:hidden">
+            class="slide-fade !fixed bg-transparent z-899 w-screen h-20 px-6 flex justify-between items-center relative print:hidden">
             <div class="flex items-center h-full">
                 <!-- Logo -->
-                <a :href="translatePath(siteConfig.basePath)" :aria-label="siteConfig.header.logo.alt" class="mr-6 b-rd-full">
+                <a :href="translatePath(siteConfig.basePath, currentLang as keyof typeof ui)" :aria-label="siteConfig.header.logo.alt"
+                    class="mr-4 b-rd-full">
                     <img :src="siteConfig.header.logo.src" :alt="siteConfig.header.logo.alt"
                         class="h-12 aspect-ratio-square b-rd-full">
                 </a>
@@ -128,7 +134,8 @@ function toggleNavDrawer() {
                 <!-- Navigation menu buttons -->
                 <!-- Always visible on larger screens -->
                 <nav aria-label="Menu navigation" class="sm:flex hidden flex-wrap gap-x-6 position-initial flex-row">
-                    <a v-for="link in navLinks" :key="link.text" :aria-label="translate(link.text)" :href="translatePath(link.href)">
+                    <a v-for="link in navLinks" :key="link.text" :aria-label="translate(link.text)"
+                        :href="translatePath(link.href, currentLang as keyof typeof ui)">
                         {{ translate(link.text) }}
                     </a>
                 </nav>
@@ -140,23 +147,23 @@ function toggleNavDrawer() {
                 </div>
                 <!-- End of hamburger menu button on smaller screens -->
             </div>
-            <div class="flex gap-x-6">
+            <div class="flex gap-x-3 flex-wrap items-center justify-end">
                 <!-- Menu social links -->
                 <a v-for="link in socialLinks" :key="link.text" :aria-label="`${link.text}`" :class="link.icon" nav-link
                     :target="getLinkTarget(link.href)" :href="link.href" />
                 <!-- Language selection -->
                 <LanguageDropdown />
 
-                <a nav-link target="_blank" :href="translatePath('/rss.xml')" i-ri-rss-line aria-label="RSS" />
+                <a nav-link target="_blank" :href="translatePath('/rss.xml', currentLang as keyof typeof ui)" i-ri-rss-line aria-label="RSS" />
                 <ThemeToggle />
             </div>
         </header>
     </Transition>
     <Transition name="nav-drawer"> <!-- Add a transition -->
-        <nav v-if="navDrawerOpen" class="nav-drawer bg-white dark:bg-black" aria-label="menu navigation">
-            <i i-ri-menu-2-fill @click="toggleNavDrawer" />
-            <a v-for="link in navLinks" :key="link.text" :aria-label="translate(link.text)" :href="translatePath(link.href)"
-                @click="toggleNavDrawer">
+        <nav v-if="navDrawerOpen" class="nav-drawer bg-main gap-6 p-6 items-center justify-start w-auto" aria-label="menu navigation">
+            <i i-ri-menu-2-fill @click="toggleNavDrawer" class="self-start"/>
+            <a v-for="link in navLinks" :key="link.text" :aria-label="translate(link.text)"
+                :href="translatePath(link.href, currentLang as keyof typeof ui)" @click="toggleNavDrawer">
                 {{ translate(link.text) }}
             </a>
         </nav>
@@ -184,11 +191,7 @@ function toggleNavDrawer() {
     background: rgba(0, 0, 0, 0.5);
     z-index: 998;
 } */
-.slide-fade {
-    --at-apply: transition-all;
-    transition: all 0.3s ease-out;
-    transform: translateY(0);
-}
+.dropdown-item {}
 
 .slide-fade-enter-active {
     transition: all 0.3s ease-out;
@@ -200,7 +203,7 @@ function toggleNavDrawer() {
 
 .slide-fade-enter-from,
 .slide-fade-leave-to {
-    transform: translateY(-100%);
+    transform: translateY(-20px);
     opacity: 0;
 }
 
@@ -219,16 +222,28 @@ function toggleNavDrawer() {
     height: 100vh;
     min-width: 32vw;
     max-width: 50vw;
-    padding: 16px;
     display: flex;
     flex-direction: column;
     justify-content: start;
-    align-items: flex-start;
-    gap: 16px;
+    align-items: center;
 
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     overflow-y: auto;
+}
+
+.nav-drawer-enter-active {
+    transition: all 0.3s ease-out;
+}
+
+.nav-drawer-leave-active {
+    transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.nav-drawer-enter-from,
+.nav-drawer-leave-to {
+    transform: translateX(-100%);
+    opacity: 0;
 }
 
 .nav-drawer-mask {
