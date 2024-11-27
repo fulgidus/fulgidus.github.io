@@ -2,12 +2,9 @@ import { ui, defaultLang, routesFromEnToLocalized, substituteTemplate } from './
 
 export function getLangFromUrl(url: URL | string): keyof typeof ui {
     const [, lang] = (typeof url === 'string' ? url : url.pathname).split('/');
-    console.log(`\ngetLangFromUrl: Received url "${url}"`)
     if (lang in ui) {
-        console.log(`Found language: ${lang}`)
         return lang as keyof typeof ui
     }
-    console.log(`Lang not found in url, fallback to default: ${defaultLang}`)
     return defaultLang;
 }
 
