@@ -17,7 +17,7 @@ after:(content-empty absolute inset-0 b-rd-full border-4 border-hex-380541 z-1)`
 const imgClasses = `important-m-0 w-full h-full b-rd-full`;
 ---
 
-<span {...Astro.props} bg-hex-380541 b-rd-full p-1 flex>
+<span {...Astro.props} class="bg-hex-380541 b-rd-full p-1 flex">
   <span class={spanClasses}>
     <Image src={img} alt={alt} class={imgClasses} format="webp" quality={85} />
   </span>
