@@ -41,8 +41,8 @@ export default defineConfig({
         presetWebFonts({
             provider: 'google',
             fonts: {
-                title: 'Roboto:400,600,800',
-                sans: ['Roboto', 'Arial', 'sans-serif'],
+                title: 'Inter:400,600,800',
+                sans: 'Roboto',
                 mono: ['Fira Code', 'Fira Mono:400,700'],
             },
         }),
