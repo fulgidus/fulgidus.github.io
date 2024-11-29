@@ -1,6 +1,6 @@
 ---
 title: Building a Multi-Platform Rust App with Shamir's Secret Sharing
-description: Exploring the design and implementation of a multi-platform Rust application that leverages Shamir's Secret Sharing scheme to manage secure string reconstruction.
+description: A journey through developing a single Rust application that targets web, desktop and CLI platforms, using modern frameworks and best practices.
 image: "1.png"
 imageAlt: "A clean and minimalistic vector illustration representing multi-platform software development using Rust"
 imageSize: "md"
@@ -21,41 +21,61 @@ video: false
 
 # Introduction
 
-In the world of secure software design, the ability to manage sensitive information, such as passwords or cryptographic keys, in a distributed yet reliable way is a recurring challenge. Shamir's Secret Sharing (SSS) algorithm offers an elegant solution, enabling us to split a secret into several parts, or shares, which can be distributed among participants. Any subset of those shares meeting a threshold can reconstruct the original secret, while a smaller set reveals nothing.
+Modern software development often requires applications to run seamlessly across different platforms and interfaces. This article explores how to leverage Rust's ecosystem to build a single application that works effectively on web, desktop, and command-line environments. We'll use Shamir's Secret Sharing (SSS) as our practical use case, demonstrating how to:
 
-This post delves into the architecture, design, and implementation of a multi-platform Rust application built around this concept. The app not only demonstrates Rust's versatility but also showcases how Shamir's algorithm can be embedded into real-world software with robust cross-platform support. We'll explore how the app supports:
+1. Design a modular architecture that shares core logic
+2. Implement platform-specific interfaces using modern Rust frameworks
+3. Handle security and testing considerations across platforms
+4. Balance user experience with technical constraints
 
-1. **A full-stack web version** using `Leptos` for serving a dynamic interface.
-2. **A standalone GUI** built with `Slint`, providing a sleek, native-like user interface for multiple platforms.
-3. **A command-line version** leveraging `Clap` for a lightweight, terminal-based experience.
+# Architecture Overview
 
-Each version of the application is tailored to its environment but maintains a shared core logic, ensuring consistency and minimal duplication of effort.
+## Multi-Platform Strategy
+Our application demonstrates three key approaches to cross-platform development:
 
-# Objectives and Approach
+1. **Core Business Logic**
+   - Platform-agnostic Rust library
+   - Shared types and interfaces
+   - Consistent behavior across platforms
 
-The primary goal of this project was to implement a versatile application that could cater to different user needs and environments. Whether the user preferred the simplicity of a terminal, the visual feedback of a GUI, or the accessibility of a web interface, the app needed to provide a seamless experience. Achieving this required a modular architecture and careful separation of concerns.
+2. **Platform Adapters**
+   - Web: Leptos for reactive web interfaces
+   - Desktop: Slint for native GUI
+   - CLI: Clap for command-line parsing
 
-### Core Features
+3. **Platform-Specific Optimizations**
+   - Memory management strategies per platform
+   - UI/UX adaptations for each target
+   - Platform-specific error handling
 
-1. **Secure Secret Sharing**
-   At the heart of the application lies the implementation of Shamir's Secret Sharing algorithm. It allows users to:
-   - Split a secret into `n` shares.
-   - Specify a threshold, `t`, such that any `t` shares can reconstruct the secret.
+# Shamir's Secret Sharing: Our Use Case
 
-2. **Multi-Platform Support**
-   By leveraging Rust's ecosystem, we ensured that the app runs smoothly across different environments:
-   - **Web:** A `Leptos`-powered server serves a responsive web application.
-   - **GUI:** `Slint` provides an intuitive interface for users who prefer desktop applications.
-   - **CLI:** `Clap` makes the tool accessible to terminal enthusiasts and automation scripts.
+We chose SSS as our core functionality because it provides:
+- A non-trivial algorithm to demonstrate proper code organization
+- Clear separation between business logic and UI concerns
+- Interesting security considerations across platforms
+- Meaningful test cases and error handling scenarios
 
-### Architectural Choices
-
-A key consideration was keeping the business logic agnostic to the platform. To achieve this:
-- **Core logic** (e.g., Shamir's algorithm) resides in a dedicated Rust library, reusable by all three versions of the app.
-- **Platform-specific layers** handle UI, user input, and output formatting.
-- **Modular design** minimizes redundancy and allows easy updates to the core functionality without disrupting platform-specific code.
--
 # Implementation Details
+
+## Modular Architecture
+
+Our application follows a layered architecture:
+
+1. **Core Library Layer**
+   - Platform-agnostic business logic
+   - Pure Rust implementation of SSS
+   - Shared types and interfaces
+
+2. **Platform Adaptation Layer**
+   - Platform-specific data handling
+   - UI state management
+   - Error handling and formatting
+
+3. **Presentation Layer**
+   - Web interface (Leptos)
+   - Desktop GUI (Slint)
+   - CLI interface (Clap)
 
 ### Core Logic
 
@@ -191,6 +211,55 @@ fn App(cx: Scope) -> impl IntoView {
     }
 }
 ```
+
+# Platform-Specific Challenges
+
+## Web Platform
+- Managing state between client and server
+- Handling browser security constraints
+- Optimizing for different screen sizes
+
+## Desktop GUI
+- Native look and feel across operating systems
+- Resource management and performance
+- System integration points
+
+## CLI Interface
+- Consistent experience across shells
+- Input/output streaming considerations
+- Integration with system tools
+
+# Security Considerations
+
+Implementing Shamir's Secret Sharing in a production environment requires careful attention to security. Here are some key considerations:
+
+1. **Secure Random Number Generation**
+   The security of the shares depends on the randomness of the polynomial coefficients. Using a cryptographically secure random number generator is essential.
+
+2. **Memory Management**
+   Sensitive data should be handled carefully in memory to prevent leaks. This includes zeroing out memory after use and avoiding unnecessary copies.
+
+3. **Entropy Gathering**
+   Cross-platform applications must ensure they gather sufficient entropy for secure random number generation, which can vary between operating systems.
+
+4. **Type-Safe Share Management**
+   Using Rust's type system to enforce correct handling of shares can prevent logical errors and improve code safety.
+
+# Testing
+
+Testing cryptographic code requires a rigorous approach to ensure correctness and security. Here are some strategies:
+
+1. **Unit Tests**
+   Write unit tests for individual functions, including edge cases and invalid inputs.
+
+2. **Integration Tests**
+   Test the complete workflow of generating and reconstructing shares to ensure all components work together correctly.
+
+3. **Fuzz Testing**
+   Use fuzz testing to discover edge cases and potential vulnerabilities by providing random inputs to the functions.
+
+4. **Code Reviews**
+   Regular code reviews by peers can help identify potential issues and improve code quality.
 
 # Results
 

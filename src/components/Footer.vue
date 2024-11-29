@@ -1,6 +1,24 @@
 <script lang="ts" setup>
+import { defaultLang, Languages } from '@/i18n/ui';
+import { getLangFromUrl, translatePath, useTranslate } from '@/i18n/utils';
 import siteConfig from '@/site-config'
 import { getLinkTarget } from '@/utils/link'
+import { onMounted, ref, watchEffect } from 'vue';
+
+
+const currentLang = ref<Languages>(defaultLang);
+let currentUrl: URL | undefined
+let translate: (key: string) => string
+onMounted(() => {
+    currentUrl = new URL(window.location.href);
+    currentLang.value = getLangFromUrl(currentUrl); // Update currentLang reactively
+    translate = useTranslate(currentLang.value );
+})
+watchEffect(() => {
+    currentUrl = new URL(window.location.href);
+    currentLang.value = getLangFromUrl(currentUrl); // Update currentLang reactively
+    translate = useTranslate(currentLang.value as Languages);
+});
 </script>
 
 <template>
@@ -11,8 +29,8 @@ import { getLinkTarget } from '@/utils/link'
             <template v-for="(link, index) in siteConfig.footer.navLinks" :key="link.text">
                 <span v-if="index > 0" op-70>|</span>
                 <a :aria-label="`${link.text}`" :target="getLinkTarget(link.href)" class="nav-link flex items-center"
-                    :href="link.href" data-astro-prefetch>
-                    {{ link.text }}
+                    :href="translatePath(link.href, currentLang)" data-astro-prefetch>
+                    {{ translate(link.text) }}
                 </a>
 
             </template>

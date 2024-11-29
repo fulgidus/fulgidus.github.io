@@ -104,15 +104,15 @@ export const siteConfig = {
     footer: {
         navLinks: [
             {
-                text: 'Posts Props',
+                text: 'footer.postProps',
                 href: '/posts-props',
             },
             {
-                text: 'Markdown Style',
+                text: 'footer.style',
                 href: '/md-style',
             },
             {
-                text: 'All Tags',
+                text: 'footer.tags',
                 href: '/tags',
             },
         ],

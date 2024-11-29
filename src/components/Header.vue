@@ -39,12 +39,12 @@ const amAtTopScrollPosition = ref(true);
 
 const { y: scroll } = useWindowScroll();
 
+
+
 // Reactive language based on URL
 const currentLang = ref(defaultLang);
-
-
-let url: URL | undefined
-let translate: (key: string) => string // Simplified type
+let currentUrl: URL | undefined
+let translate: (key: string) => string
 
 onBeforeMount(()=> {
     const noJsHeader = document.getElementById('no-js-header')
@@ -52,8 +52,8 @@ onBeforeMount(()=> {
 });
 
 onMounted(() => {
-    url = new URL(window.location.href);
-    currentLang.value = getLangFromUrl(url); // Update currentLang reactively
+    currentUrl = new URL(window.location.href);
+    currentLang.value = getLangFromUrl(currentUrl); // Update currentLang reactively
     translate = useTranslate(currentLang.value as Languages);
 
     useEventListener('scroll', () => {
@@ -108,7 +108,7 @@ onMounted(() => {
 
 // Watch currentLang for changes and update translations
 watchEffect(() => {
-    url = new URL(window.location.href);
+    currentUrl = new URL(window.location.href);
     translate = useTranslate(currentLang.value as Languages);
 });
 
