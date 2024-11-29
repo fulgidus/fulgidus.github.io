@@ -33,12 +33,10 @@ const lang = getLangFromUrl(Astro.url);
     <Header client:only="vue" />
     <HeaderAstro />
     <main
-      class=`grow ${imageSize === 'xl' ? 'max-w-100vw':'max-w-4xl'} mx-auto sm:pt-36 pt-26 pb-16 px-6 relative important:print:max-w-100vw important:print:p0`
+      class=`grow ${imageSize === 'xl' ? 'max-w-100vw':'max-w-4xl'} mx-auto sm:pt-36 pt-26 pb-16 px-6 relative important:print:max-w-100vw important:print:p0 text-pretty`
       transition:animate={fade({ duration: "0.4s" })}
-      text-pretty
     >
       <slot />
-      <DownloadFile fileName="example.pdf" lang={lang} />
       <ScrollToTop client:only="vue" />
       <div class="max-w-4xl mx-auto sm:pt-36 pt-26 pb-16 px-6 relative">
         <Footer client:only="vue"/>
