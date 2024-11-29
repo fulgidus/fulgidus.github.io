@@ -42,21 +42,8 @@ export default defineConfig({
             provider: 'google',
             fonts: {
                 title: 'Roboto:400,600,800',
-                sans: ['Roboto', 'sans-serif'],
+                sans: ['Roboto', 'Arial', 'sans-serif'],
                 mono: ['Fira Code', 'Fira Mono:400,700'],
-                roboto: [{
-                    name: 'Roboto',
-                    weights: ['400', '600', '800'],
-                    provider: 'google'
-                },
-                    {
-                        name: 'Arial',
-                        provider: 'none',
-                    },
-                    {
-                        name: 'sans-serif',
-                        provider: 'none',
-                    },]
             },
         }),
     ],

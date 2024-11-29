@@ -11,16 +11,12 @@ export async function getStaticPaths() {
     withDrafts: true,
     withUnlisted: true,
   });
-  console.log("Pages fetched:", pages);
   const returnedPages = pages.map((page: any) => {
     return {
       params: { slug: page.slug },
       props: { page },
     };
   });
-  console.log(
-    `SLUG ROUTER IT: Returning localized page: ${returnedPages.map((p) => "\n---> " + p.props.page.slug)}`
-  );
   return returnedPages;
 }
 

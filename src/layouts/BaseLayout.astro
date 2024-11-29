@@ -29,7 +29,7 @@ const lang = getLangFromUrl(Astro.url);
     <BaseHead {...head} />
     <ViewTransitions />
   </head>
-  <body class="bg-main text-main min-h-screen font-roboto w-full bg-dot">
+  <body class="bg-main text-main min-h-screen font-sans w-full bg-dot">
     <Header client:only="vue" />
     <HeaderAstro />
     <main
