@@ -5,7 +5,8 @@ import {
     translateFrom,
     translatePath,
     useSpecificPath,
-    stripLangFromPath
+    stripLangFromPath,
+    getLangFromSlug
 } from './utils';
 import { Languages, TranslationKeys, ui } from './ui';
 
@@ -54,6 +55,17 @@ describe('i18n/utils', () => {
     it('should return a specific translation', () => {
         expect(translateFrom('it', 'language')).toBe(ui.it['language']); // Replace 'nav.home' with an actual key from your ui object
         expect(translateFrom('fr' as Languages, 'nav.home')).toBe(ui.en['nav.home'] ?? '#nav.home#'); // Should handle missing languages gracefully. Modify based on your desired behavior.
+    });
+
+    it('should correctly extract language from slug', () => {
+        expect(getLangFromSlug('it/about')).toBe('it');
+        expect(getLangFromSlug('en/blog')).toBe('en');
+        expect(getLangFromSlug('about')).toBe('en'); // Defaults to English if no language is specified
+        expect(getLangFromSlug('it/contact')).toBe('it');
+        expect(getLangFromSlug('contact')).toBe('en');
+        expect(getLangFromSlug('fr/contact')).toBe('en'); // Unknown language defaults to 'en'
+        expect(getLangFromSlug('')).toBe('en'); // Empty slug defaults to 'en'
+        expect(getLangFromSlug('/')).toBe('en'); // Empty slug defaults to 'en'
     });
 
     describe('useTranslatedPath', () => {

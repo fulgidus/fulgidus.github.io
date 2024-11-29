@@ -2,6 +2,7 @@ import { getCollection } from 'astro:content'
 import type { CollectionEntry } from 'astro:content'
 import { CollectionPages, PAGE_KEY, POST_KEY, type CollectionPost, type PageKey, type PostKey } from '@/types'
 import { defaultLang, Languages } from '@/i18n/ui'
+import { getLangFromSlug } from '@/i18n/utils'
 
 type SortParams = { elements: CollectionPost[]|CollectionPages[] }
 export function sortPostsByDate(params: SortParams): CollectionPost[] | CollectionPages[] {
@@ -47,7 +48,7 @@ export async function getPosts(params: GetPostsParams = {}): Promise<GetPostsRet
             elements: await getCollection(collection, (post) => {
                 if ((import.meta.env.PROD && post.data.draft)
                     || (!withDrafts && post.data.draft) // FAIL when wihtout draft and it's a draft
-                || (post.data.lang && post.data.lang !== lang)
+                || (getLangFromSlug(post.slug) !== lang)
                 || (!withUnlisted && post.data.unlisted) // FAIL if unlisted
                 || (path && !post.slug.includes(path))) { // Fail if it doesn't match search
                     return false
@@ -60,7 +61,7 @@ export async function getPosts(params: GetPostsParams = {}): Promise<GetPostsRet
     }
     if (isPages(collection)) {
         const pages = await getCollection(collection, (page) => {
-            if ((page.data.lang && page.data.lang !== lang)
+            if ((getLangFromSlug(page.slug) !== lang)
                 || (path && !page.slug.includes(path))) {
                 return false
             }
@@ -79,14 +80,14 @@ export async function getLastTenPosts(params: GetPostsParams = {}) {
 
 /** Note: this function filters out draft posts based on the environment */
 export async function getAllPosts(lang: Languages = defaultLang) {
-    return await getCollection(POST_KEY, ({ data }) => {
-        if (data.lang && data.lang !== lang) { // FAIL when post has language different from either default or specified
+    return await getCollection(POST_KEY, (item) => {
+        if (getLangFromSlug(item.slug) !== lang) { // FAIL when post has language different from either default or specified
             return false
         }
-        if (data.unlisted) { // FAIL when post is unlisted
+        if (item.data.unlisted) { // FAIL when post is unlisted
             return false
         }
-        if (import.meta.env.PROD && data.draft) { // FAIL when is draft under PROD env
+        if (import.meta.env.PROD && item.data.draft) { // FAIL when is draft under PROD env
             return false
         }
         return true

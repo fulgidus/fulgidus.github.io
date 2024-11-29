@@ -4,17 +4,18 @@ import LanguageFlag from "@/components/LanguageFlags.vue";
 import TagsList from "@/components/TagsList.vue";
 import type { ImageSize } from "@/content/config";
 import { Languages } from "@/i18n/ui";
-import {
-  getLangFromUrl,
-  useTranslate,
-} from "@/i18n/utils";
+import { getLangFromSlug, getLangFromUrl, useTranslate } from "@/i18n/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { type CollectionPost } from "@/types";
 import { getPosts } from "@/utils/posts";
 import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
-  const posts = await getPosts({ lang: "en", withUnlisted: true, withDrafts: true }); // This need to be with unlisted, otherwise they won't ever exist in SSG
+  const posts = await getPosts({
+    lang: "en",
+    withUnlisted: true,
+    withDrafts: true,
+  }); // This need to be with unlisted, otherwise they won't ever exist in SSG
   return posts.map((post: CollectionPost) => {
     return {
       params: { slug: post.slug },
@@ -37,9 +38,9 @@ const {
   pubDate,
   duration,
   tags,
-  lang,
   unlisted,
 } = post.data;
+const { slug } = post;
 
 const { Content } = await post.render();
 
@@ -120,7 +121,7 @@ const t = useTranslate(currentLang as Languages);
         }
         {duration && <span>· {duration}</span>}
         {"· "}
-        <LanguageFlag lang={lang} client:only="vue" verbose />
+        <LanguageFlag lang={getLangFromSlug(slug)} client:only="vue" verbose />
         {
           tags && tags.length > 0 && (
             <span class="flex flex-wrap flex-gap-1">

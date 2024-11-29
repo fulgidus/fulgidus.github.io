@@ -9,12 +9,13 @@ const imageSizeSchema = z.union([
     z.literal('xs'),
 ]).default('md')
 export type ImageSize = z.infer<typeof imageSizeSchema>
-const supportedLanguagesSchema = z.union([
-    z.literal('en'),
-    z.literal('it'),
-    z.literal('zh'),
-]).default('en')
-export type SupportedLanguages = z.infer<typeof supportedLanguagesSchema>
+// const supportedLanguagesSchema = z.union([
+//     z.literal('en'),
+//     z.literal('it'),
+//     z.literal('zh'),
+// ]).default('en')
+// export type SupportedLanguages = z.infer<typeof supportedLanguagesSchema>
+export type SupportedLanguages = 'en' | 'it' | 'zh'
 export type ImageFormat = "png" | "jpg" | "jpeg" | "tiff" | "webp" | "gif" | "svg" | "avif"
 
 const pages = defineCollection({
@@ -27,7 +28,6 @@ const pages = defineCollection({
                 alt: z.string(),
             })
             .optional(),
-        lang: supportedLanguagesSchema,
         tags: z.array(z.string()).default([]),
     }),
 })
@@ -47,7 +47,7 @@ const blog = defineCollection({
             .transform((val: string | number | Date) => new Date(val).toLocaleDateString(siteConfig.date.locale, siteConfig.date.options)),
         draft: z.boolean().default(false),
         unlisted: z.boolean().default(false),
-        lang: supportedLanguagesSchema,
+        // lang: supportedLanguagesSchema,
         tags: z.array(z.string()).default([]),
         redirect: z.string().optional(),
         video: z.boolean().default(false),

@@ -3,7 +3,7 @@ import GoBackToBlog from "@/components/GoBackToBlog.vue";
 import LanguageFlag from "@/components/LanguageFlags.vue";
 import TagsList from "@/components/TagsList.vue";
 import { Languages } from "@/i18n/ui";
-import { getLangFromUrl, useTranslate } from "@/i18n/utils";
+import { getLangFromSlug, getLangFromUrl, useTranslate } from "@/i18n/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { composeImageSizeClasses } from "@/pages/posts/[...slug].astro";
 import { type CollectionPost } from "@/types";
@@ -37,9 +37,9 @@ const {
   pubDate,
   duration,
   tags,
-  lang,
   unlisted,
 } = post.data;
+const { slug } = post;
 
 const { Content } = await post.render();
 
@@ -99,7 +99,7 @@ const t = useTranslate(currentLang as Languages);
         }
         {duration && <span>· {duration}</span>}
         {"· "}
-        <LanguageFlag lang={lang} client:only="vue" verbose />
+        <LanguageFlag lang={getLangFromSlug(slug)} client:only="vue" verbose />
         {
           tags && tags.length > 0 && (
             <span class="flex flex-wrap flex-gap-1">

@@ -12,6 +12,14 @@ export function getLangFromUrl(url: URL | string): Languages {
     return defaultLang;
 }
 
+export function getLangFromSlug(slug: string): Languages {
+    const [lang] = slug.split('/');
+    if (isValidLanguage(lang)) {
+        return lang
+    }
+    return defaultLang;
+}
+
 export function useTranslate(lang: Languages) {
     return function translate(key: TranslationKeys): string {
         return ui[lang][key] ?? ui[defaultLang][key] ?? `#${key}#`;
