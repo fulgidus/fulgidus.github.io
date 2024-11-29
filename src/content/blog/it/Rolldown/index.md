@@ -3,7 +3,7 @@ title: "Introduzione a Rolldown: Un Bundler JavaScript Basato su Rust per Vite"
 description: "Scopri Rolldown, un bundler JavaScript ad alte prestazioni basato su Rust, progettato per unificare e ottimizzare il processo di build in Vite. Questo articolo esplora le motivazioni dietro il suo sviluppo e come mira a migliorare le soluzioni esistenti"
 image: rolldown.jpeg
 imageAlt: "A futuristic cityscape at night with neon lights, symbolizing innovation and technology. In the foreground, code appears in floating holographic screens, with lines of JavaScript and Rust code highlighting the cutting-edge nature of Rolldown."
-imageSize: xs
+imageSize: md
 pubDate: 2024-11-22T19:08:13
 duration: 8m
 tags:
