@@ -6,6 +6,7 @@ import Header from "@/components/Header.vue";
 import HeaderAstro from "@/components/Header.astro";
 import Footer from "@/components/Footer.vue";
 import ScrollToTop from "@/components/ScrollToTop.vue";
+import DownloadFile from "@/components/DownloadFile.astro";
 import { getLangFromUrl } from "@/i18n/utils";
 interface Props {
   title?: string;
@@ -28,7 +29,7 @@ const lang = getLangFromUrl(Astro.url);
     <BaseHead {...head} />
     <ViewTransitions />
   </head>
-  <body class="bg-main text-main min-h-screen font-sans w-full bg-dot">
+  <body class="bg-main text-main min-h-screen font-roboto w-full bg-dot">
     <Header client:only="vue" />
     <HeaderAstro />
     <main
@@ -37,6 +38,7 @@ const lang = getLangFromUrl(Astro.url);
       text-pretty
     >
       <slot />
+      <DownloadFile fileName="example.pdf" lang={lang} />
       <ScrollToTop client:only="vue" />
       <div class="max-w-4xl mx-auto sm:pt-36 pt-26 pb-16 px-6 relative">
         <Footer client:only="vue"/>

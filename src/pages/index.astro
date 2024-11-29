@@ -3,7 +3,8 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import siteConfig from "@/site-config";
 import EmailObfuscator from "@/components/EmailObfuscator.vue";
 import PokerPic from "@/components/PokerPic.astro";
-import meImg from '/public/img/me.jpg';
+import meImg from "/public/img/me.jpg";
+import DownloadFile from "@/components/DownloadFile.astro";
 
 // Convert email to HTML entities
 const email = "alessio.corsi@gmail.com";
@@ -20,12 +21,31 @@ const emailEntities = Array.from(email)
     <div class="markdown-heading" dir="auto">
       <h2 class="heading-element" dir="auto" text-nowrap>👨&zwj;💻 About Me</h2>
     </div>
-    <PokerPic
-      img={meImg}
-      alt="Alessio Corsi a.k.a. Fulgidus with suspenders"
-      class="flex m-x-auto w-50% sm-w-33% aspect-ratio-square m-2 sm-float-end clear-both"
-    />
-    
+
+    <div class="flex
+      flex-col
+      flex-nowrap
+      gap-4
+      content-center
+      items-center
+      m-x-auto
+      w-50%
+      sm-w-33%
+      aspect-ratio-square
+      m-2
+      sm-float-end
+      clear-both"
+    >
+      <PokerPic
+        img={meImg}
+        alt="Alessio Corsi a.k.a. Fulgidus with suspenders"
+      />
+      <DownloadFile
+        fileName="CV-Alessio-Corsi-EN.pdf"
+        description="downloadButton.cv"
+      />
+    </div>
+
     <p dir="auto">
       I am a versatile <strong>Full-Stack Developer</strong> with a focus on creating
       efficient, scalable, and user-friendly digital solutions. My expertise spans
@@ -74,9 +94,10 @@ const emailEntities = Array.from(email)
     <ul dir="auto">
       <li>
         🖥️ <strong>Video Chat and Remote Management System</strong>: Developed a
-        sophisticated tool for videoconference, remote file management, and server control,
-        focusing on front-end architecture using React.js and TypeScript,
-        integrated with a Node.js, S3, backend and PostgreSQL database.
+        sophisticated tool for videoconference, remote file management, and
+        server control, focusing on front-end architecture using React.js and
+        TypeScript, integrated with a Node.js, S3, backend and PostgreSQL
+        database.
       </li>
       <li>
         ⚕️ <strong>Medical Services Platform</strong>: Built the back-end for

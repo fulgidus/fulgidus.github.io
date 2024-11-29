@@ -24,6 +24,8 @@ export const ui = {
         'footer.postProps':'Posts Props',
         'footer.style':'MD Files Styles',
         'footer.tags':'All Tags',
+        'downloadButton.title':'Download',
+        'downloadButton.cv':'my CV',
     },
     it: {
         'flag': '🇮🇹',
@@ -50,6 +52,8 @@ export const ui = {
         'footer.postProps': 'Prop dei Post',
         'footer.style': 'Stili dei File MD',
         'footer.tags': 'Tutti i Tag',
+        'downloadButton.title':'Scarica',
+        'downloadButton.cv':'il mio CV',
     },
     nl: {
         'disabled': 'true',
@@ -73,6 +77,8 @@ export const ui = {
         '404.description': 'Sorry, we konden niet vinden waar je naar op zoek was!',
         '404.backButtonLabel': 'Ga naar Huis',
         'langSelector.empty': 'Selecteer taal',
+        'downloadButton.title':'Download',
+        'downloadButton.cv':'mijn CV',
     },
     
 
@@ -96,8 +102,9 @@ export const routesFromEnToLocalized = {
     '/posts/{{lang}}': '/{{lang}}/posts/{{lang}}{{path}}', // correct, exactly 4 chars in "lang"
     '/posts/notes': '/{{lang}}/posts/{{lang}}/notes{{path}}',
     '/posts/talks': '/{{lang}}/posts/{{lang}}/talks{{path}}',
-    '/posts/': '/{{lang}}/posts/{{lang}}{{path}}',
     '/blog/notes/': '/{{lang}}/blog/notes',
+    '/posts/': '/{{lang}}/posts/{{lang}}{{path}}',
+    '/files': '/files/{{lang}}{{path}}',
     '/blog': '/{{lang}}/blog',
     '/projects': '/{{lang}}/projects',
     '/': '/{{lang}}{{path}}',

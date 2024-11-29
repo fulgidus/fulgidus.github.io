@@ -4,6 +4,7 @@ import siteConfig from "@/site-config";
 import EmailObfuscator from "@/components/EmailObfuscator.vue";
 import PokerPic from "@/components/PokerPic.astro";
 import meImg from "/public/img/me.jpg";
+import DownloadFile from "@/components/DownloadFile.astro";
 
 // Convert email to HTML entities
 const email = "alessio.corsi@gmail.com";
@@ -24,11 +25,30 @@ const emailEntities = Array.from(email)
     <div class="markdown-heading" dir="auto">
       <h2 class="heading-element" dir="auto" text-nowrap>👨‍💻 Su di me</h2>
     </div>
-    <PokerPic
-      img={meImg}
-      alt="Alessio Corsi alias Fulgidus con bretelle"
-      class="flex m-x-auto w-50% sm-w-33% aspect-ratio-square m-2 sm-float-end clear-both"
-    />
+    <div
+      class="flex
+      flex-col
+      flex-nowrap
+      gap-4
+      content-center
+      items-center
+      m-x-auto
+      w-50%
+      sm-w-33%
+      aspect-ratio-square
+      m-2
+      sm-float-end
+      clear-both"
+    >
+      <PokerPic
+        img={meImg}
+        alt="Alessio Corsi a.k.a. Fulgidus with suspenders"
+      />
+      <DownloadFile
+        fileName="CV-Alessio-Corsi-IT.pdf"
+        description="downloadButton.cv"
+      />
+    </div>
     <p dir="auto">
       Sono uno <strong>sviluppatore Full-Stack</strong> versatile, specializzato
       nella creazione di soluzioni digitali efficienti, scalabili e user-friendly.
@@ -78,10 +98,11 @@ const emailEntities = Array.from(email)
     </div>
     <ul dir="auto">
       <li>
-        🖥️ <strong>Sistema di video chat e gestione remota</strong>: Ho sviluppato
-        uno strumento sofisticato per la video conferenza, gestione remota di file, e il controllo
-        dei server, concentrandomi sull'architettura front-end con React.js e
-        TypeScript, integrato con un back-end Node.js, S3, e database PostgreSQL.
+        🖥️ <strong>Sistema di video chat e gestione remota</strong>: Ho
+        sviluppato uno strumento sofisticato per la video conferenza, gestione
+        remota di file, e il controllo dei server, concentrandomi
+        sull'architettura front-end con React.js e TypeScript, integrato con un
+        back-end Node.js, S3, e database PostgreSQL.
       </li>
       <li>
         ⚕️ <strong>Piattaforma di servizi medici</strong>: Realizzato il
@@ -132,9 +153,8 @@ const emailEntities = Array.from(email)
       <li>
         <strong>Email:</strong>
         <EmailObfuscator emailEntities={emailEntities} client:only="vue"
-          ><span slot="fallback">
-            Email non disponibile
-          </span></EmailObfuscator>
+          ><span slot="fallback"> Email non disponibile </span></EmailObfuscator
+        >
       </li>
       <li><strong>Luogo:</strong> Torino, Italia</li>
     </ul>

@@ -74,6 +74,7 @@ describe('i18n/utils', () => {
             expect(translatePath('/about', 'en')).toBe('/about');
             expect(translatePath('/about', 'it')).toBe('/it/about');
             expect(translatePath('/posts-props', 'it')).toBe('/it/posts-props');
+            expect(translatePath('/posts/i18n', 'it')).toBe('/it/posts/it/i18n');
             expect(translatePath('/it/about', 'en')).toBe('/about'); // Strips language prefix if targetLang is defaultLang
             expect(translatePath('/it/about', 'pirate' as Languages)).toBe('/pirate/about'); // Doesn't care if it's not in ui... Theoretically it shouldn't be possible anyway due to TS
         });
