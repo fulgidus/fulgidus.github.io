@@ -98,12 +98,12 @@ export function getLangLabel(lang: Languages) {
 
 // You can have only one template variable in the route description and it must always be {{4-chars-of-length}} no less, no more
 export const routesFromEnToLocalized = {
-    '/posts/{{lang}}/notes/': '/{{lang}}/posts/{{lang}}/notes{{path}}', // correct, exactly 4 chars in "lang"
+    '/posts/{{lang}}/notes/': '/{{lang}}/posts/{{lang}}/notes/{{path}}', // correct, exactly 4 chars in "lang"
     '/posts/{{lang}}': '/{{lang}}/posts/{{lang}}{{path}}', // correct, exactly 4 chars in "lang"
     '/posts/notes': '/{{lang}}/posts/{{lang}}/notes{{path}}',
     '/posts/talks': '/{{lang}}/posts/{{lang}}/talks{{path}}',
-    '/blog/notes/': '/{{lang}}/blog/notes',
-    '/posts/': '/{{lang}}/posts/{{lang}}{{path}}',
+    '/blog/notes': '/{{lang}}/blog/notes',
+    '/posts/': '/{{lang}}/posts/{{lang}}/{{path}}',
     '/files': '/files/{{lang}}{{path}}',
     '/blog': '/{{lang}}/blog',
     '/projects': '/{{lang}}/projects',
