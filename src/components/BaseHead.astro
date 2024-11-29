@@ -71,7 +71,7 @@ const availableLanguages = Object.keys(ui) as (Languages)[];
   lang="en"
 />
 {
-  availableLanguages.map((lang) => {
+  availableLanguages.filter(l => l !== 'en' && !ui[l]['disabled']).map((lang) => {
     if (lang !== defaultLang) {
       return (
         <>
