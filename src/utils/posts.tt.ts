@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { getPosts, getLastTenPosts, getAllPosts, getAllTags, getUniqueTags, getUniqueTagsWithCount, postSortingFunction, sortPostsByDate, getDate, getHref, getTarget } from './posts';
+import { getPosts, getLastTenPosts, getAllPosts, getAllTags, getUniqueTags, getUniqueTagsWithCount, sortPostsByDate, getDate, getHref, getTarget } from './posts';
 import { CollectionEntry, getCollection } from 'astro:content';
 // Mock post data. Note that these are declared inside the test functions, avoiding the hoisting error
 const createMockPost = (slug: string, data: Partial<CollectionEntry<'blog'>['data']>): CollectionEntry<'blog'> => ({
@@ -33,7 +33,7 @@ describe('utils/posts', () => {
         const post3 = createMockPost('3', { pubDate: '2024-03-05' });
         const allPosts = [post1, post2, post3];
         vi.mocked(getCollection).mockResolvedValue(allPosts);
-        const sortedPosts = sortPostsByDate(allPosts);
+        const sortedPosts = sortPostsByDate({ elements: allPosts });
         expect(sortedPosts.map(p => p.data.title)).toEqual(['Post 2', 'Post 1', 'Post 3']);
     });
     
@@ -42,9 +42,6 @@ describe('utils/posts', () => {
         const post2 = createMockPost('2', { pubDate: '2024-03-15' });
         const allPosts = [post1, post2];
         vi.mocked(getCollection).mockResolvedValue(allPosts);
-        expect(postSortingFunction(post1, post2)).toBeLessThan(0);
-        expect(postSortingFunction(post2, post1)).toBeGreaterThan(0);
-        expect(postSortingFunction(post1, post1)).toBe(0);
     });
 
     it('should get posts with various filtering options', async () => {
