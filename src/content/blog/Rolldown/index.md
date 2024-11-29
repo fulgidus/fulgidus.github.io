@@ -1,9 +1,9 @@
 ---
 title: "Introducing Rolldown: A Rust-Based JavaScript Bundler for Vite"
 description: "Discover Rolldown, a high-performance Rust-based JavaScript bundler designed to unify and optimize the build process in Vite. This article explores the motivations behind its development and how it aims to improve upon existing solutions"
-image: rolldown-round.png
+image: rolldown.jpeg
 imageAlt: "A futuristic cityscape at night with neon lights, symbolizing innovation and technology. In the foreground, code appears in floating holographic screens, with lines of JavaScript and Rust code highlighting the cutting-edge nature of Rolldown."
-imageSize: xs
+imageSize: md
 pubDate: 2024-11-22T19:08:13
 duration: 8m
 tags:
@@ -46,9 +46,8 @@ Here's what this means in practice:
 
 Rolldown's build pipeline is straightforward but powerful:
 
-```
-Source → Parse → Optimize → Transform → Generate → Bundle
-```
+`Source` → `Parse` → `Optimize` → `Transform` → `Generate` → `Bundle`
+
 
 Each step takes full advantage of Rust's performance benefits:
 - Files get parsed in parallel
@@ -69,28 +68,6 @@ For production builds, you'll notice:
 - Better optimized bundles
 - Consistent output across different environments
 - Flexible browser targeting options
-
-## Getting Started
-
-Want to give it a shot? Here's how:
-
-```bash
-npm install --save-dev @rolldown/rolldown
-```
-
-Then in your Vite config:
-
-```javascript
-// vite.config.js
-import { defineConfig } from 'vite'
-import rolldown from '@rolldown/vite-plugin'
-
-export default defineConfig({
-  build: {
-    bundler: 'rolldown'
-  }
-})
-```
 
 ## What's Next for Rolldown?
 
