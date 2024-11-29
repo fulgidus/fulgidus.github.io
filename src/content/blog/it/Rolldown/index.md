@@ -20,7 +20,7 @@ redirect: ""
 unlisted: false
 video: false
 ---
-# Rolldown: Rust Incontra JavaScript nel Nuovo Bundler di Vite
+## Introduzione
 
 Gli sviluppatori web lo sanno bene: ogni progetto ha bisogno di un bundler, e scegliere quello giusto può fare la differenza tra un'esperienza di sviluppo ottimale e una problematica. Entra in scena Rolldown, un nuovo bundler JavaScript scritto in Rust che promette di rivoluzionare l'ecosistema Vite.
 
