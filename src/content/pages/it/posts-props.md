@@ -1,26 +1,30 @@
 ---
-title: Posts Props
+title: Proprietà dei Post
 ---
 
-Props in blog:
+Proprietà nel blog:
 
-| Field       | Req  | Description                                |
-| :---------- | :--- | :----------------------------------------- |
-| title       | Yes  | Title of the article.                      |
-| description | Yes  | Description of the article.                |
-| image       | No   | Hero image of the article.                 |
-| pubDate     | No   | The publication date of the article.       |
-| duration    | No   | The estimated viewing time of the article. |
-| lang        | No   | Article language, default en-US.           |
-| redirect    | No   | The redirected address of the article.     |
-| draft       | No   | The current article is in draft status.    |
-| tag         | No   | Custom tag text for the article.           |
-| video       | No   | The article contains a video.              |
+| Campo       | Richiesto | Descrizione                                                                                                       |
+| :---------- | :-------- | :---------------------------------------------------------------------------------------------------------------- |
+| title       | Sì        | Titolo dell'articolo.                                                                                             |
+| description | No        | Descrizione dell'articolo.                                                                                        |
+| duration    | No        | Tempo stimato di lettura dell'articolo.                                                                           |
+| image       | No        | Immagine principale dell'articolo.                                                                                |
+| imageAlt    | No        | Descrizione dell'immagine dell'articolo.                                                                          |
+| imageSize   | No        | Dimensione dell'immagine dell'articolo (xs/sm/md/lg/xl).                                                          |
+| pubDate     | No        | Data di pubblicazione dell'articolo.                                                                              |
+| draft       | No        | Stato di bozza dell'articolo (visibile solo in ambiente di sviluppo).                                             |
+| unlisted    | No        | Stato non in elenco dell'articolo (mai visibile nelle liste, ma instradato e disponibile sia in dev che in prod). |
+| lang        | No        | Lingua dell'articolo, predefinita en-US.                                                                          |
+| tags        | No        | Un elenco di argomenti a cui l'articolo è correlato.                                                              |
+| redirect    | No        | Indirizzo di reindirizzamento dell'articolo.                                                                      |
+| video       | No        | L'articolo contiene un video.                                                                                     |
 
-Props in pages:
+Proprietà nelle pagine:
 
-| Field       | Req  | Description                                          |
-| :---------- | :--- | :--------------------------------------------------- |
-| title       | Yes  | Title of the article.                      |
-| description | Yes  | Description of the article.                |
-| image       | No   | Hero image of the article.                 |
+| Campo       | Richiesto | Descrizione                                         |
+| :---------- | :-------- | :-------------------------------------------------- |
+| title       | Sì        | Titolo dell'articolo.                               |
+| description | No        | Descrizione dell'articolo.                          |
+| image       | No        | Immagine principale dell'articolo.                  |
+| tags        | No        | Un elenco di argomenti a cui la pagina è correlata. |
