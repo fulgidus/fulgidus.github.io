@@ -1,8 +1,9 @@
 ---
+import { getLangFromUrl, translatePath } from "@/i18n/utils";
 import PageLayout from "@/layouts/BaseLayout.astro";
-import { getAllPosts, getUniqueTagsWithCount } from "@/utils/posts";
+import { getPosts, getUniqueTagsWithCount } from "@/utils/posts";
 
-const allPosts = await getAllPosts();
+const allPosts = await getPosts({lang:'it'});
 const allTags = getUniqueTagsWithCount(allPosts);
 
 const meta = {
@@ -27,7 +28,7 @@ const meta = {
             <li class="flex items-center gap-x-1">
               <a
                 data-astro-prefetch
-                href={`/tags/${tag}/`}
+                href={translatePath(`/tags/${tag}/`, getLangFromUrl(Astro.url))}
                 title={`View posts with the tag: ${tag}`}
                 class="text-base b-rd prose-link bg-hex-38054110 dark:bg-hex-e8b5f105 dark:hover:bg-hex-e8b5f130 border-0 p-x-3 p-b-2"
               >

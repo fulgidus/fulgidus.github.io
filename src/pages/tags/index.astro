@@ -1,8 +1,8 @@
 ---
 import PageLayout from "@/layouts/BaseLayout.astro";
-import { getAllPosts, getUniqueTagsWithCount } from "@/utils/posts";
+import { getPosts, getUniqueTagsWithCount } from "@/utils/posts";
 
-const allPosts = await getAllPosts();
+const allPosts = await getPosts();
 const allTags = getUniqueTagsWithCount(allPosts);
 
 const meta = {

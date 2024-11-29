@@ -2,7 +2,7 @@
 import GoBackToBlog from "@/components/GoBackToBlog.vue";
 import LanguageFlag from "@/components/LanguageFlags.vue";
 import TagsList from "@/components/TagsList.vue";
-import { Languages, ui } from "@/i18n/ui";
+import { Languages } from "@/i18n/ui";
 import { getLangFromUrl, useTranslate } from "@/i18n/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { composeImageSizeClasses } from "@/pages/posts/[...slug].astro";
@@ -16,14 +16,13 @@ export async function getStaticPaths() {
     withUnlisted: true,
     withDrafts: true,
   }); // This need to be with unlisted, otherwise they won't ever exist in SSG
-  return posts.map((post: CollectionPost) => {
-    return {
-      params: { slug: post.slug },
-      props: {
-        post,
-      },
-    };
-  });
+
+  return posts.map((post: CollectionPost) => ({
+    params: { slug: post.slug },
+    props: {
+      post,
+    },
+  }));
 }
 
 type Props = { post: CollectionPost };

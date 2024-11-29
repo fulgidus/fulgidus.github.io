@@ -1,13 +1,14 @@
 import rss from '@astrojs/rss'
 import siteConfig from '@/site-config'
 import { getLastTenPosts } from '@/utils/posts'
+import { POST_KEY } from '@/types'
 
 interface Context {
     site: string
 }
 
 export async function GET(context: Context) {
-    const posts = (await getLastTenPosts({withDrafts: false, withUnlisted: false}))
+    const posts = (await getLastTenPosts({collection: POST_KEY, withDrafts: false, withUnlisted: false}))
 
     return rss({
         xmlns: {

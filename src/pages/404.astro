@@ -3,9 +3,9 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import dark from "../../public/img/404-dark.gif";
 import light from "../../public/img/404-light.gif";
 import { Image } from "astro:assets";
-import DottieErrorNumber from "@/components/error-numbers/LottieErrorNumber.vue";
 import Trans from "@/components/Trans.astro";
 import { getLangFromUrl, translatePath } from "@/i18n/utils";
+import LottieErrorNumber from "@/components/error-numbers/LottieErrorNumber.vue";
 const currentLang = getLangFromUrl(Astro.url);
 ---
 

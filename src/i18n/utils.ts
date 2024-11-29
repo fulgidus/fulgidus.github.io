@@ -94,13 +94,11 @@ export function useSpecificPath(lang: Languages, path: string) {
 }
 
 
-export function stripLangFromPath(path: string): string {
+export function     stripLangFromPath(path: string): string {
     const newPath = path.split('/').filter(p => !availableLanguages.includes(p as Languages)).join('/')
-    // if (possibleLang in ui) {
-    //     // Found prepended language
-    //     return `/${newPath.join('/')}`
-    // }
-    // Not foun any language in path
+    if (newPath === '') {
+        return '/'
+    }
     return newPath
 
 }

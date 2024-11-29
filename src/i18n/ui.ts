@@ -21,6 +21,9 @@ export const ui = {
         '404.description': 'Sorry, we couldn\'t find what you were looking for!',
         '404.backButtonLabel': 'Go back to Home',
         'langSelector.empty': 'Select language',
+        'footer.postProps':'Posts Props',
+        'footer.style':'MD Files Styles',
+        'footer.tags':'All Tags',
     },
     it: {
         'flag': '🇮🇹',
@@ -44,6 +47,9 @@ export const ui = {
         '404.description': 'Spiacenti, non siamo riusciti a trovare quel che cercavi!',
         '404.backButtonLabel': 'Torna all\'Inizio',
         'langSelector.empty': 'Seleziona lingua',
+        'footer.postProps': 'Prop dei Post',
+        'footer.style': 'Stili dei File MD',
+        'footer.tags': 'Tutti i Tag',
     },
     nl: {
         'disabled': 'true',
@@ -86,12 +92,12 @@ export function getLangLabel(lang: Languages) {
 
 // You can have only one template variable in the route description and it must always be {{4-chars-of-length}} no less, no more
 export const routesFromEnToLocalized = {
-    '/posts/{{lang}}/notes': '/{{lang}}/posts/{{lang}}/notes{{path}}', // correct, exactly 4 chars in "lang"
-    '/posts/{{lang}}': '/{{lang}}/posts/{{lang}}{{path}}', // correct, exactly 4 chars in "lang"
+    '/posts/{{lang}}/notes/': '/{{lang}}/posts/{{lang}}/notes{{path}}', // correct, exactly 4 chars in "lang"
+    '/posts/{{lang}}': '/{{lang}}/posts/{{lang}}/{{path}}', // correct, exactly 4 chars in "lang"
     '/posts/notes': '/{{lang}}/posts/{{lang}}/notes{{path}}',
     '/posts/talks': '/{{lang}}/posts/{{lang}}/talks{{path}}',
-    '/posts': '/{{lang}}/posts/{{lang}}{{path}}',
-    '/blog/notes': '/{{lang}}/blog/notes',
+    '/posts/': '/{{lang}}/posts/{{lang}}/{{path}}',
+    '/blog/notes/': '/{{lang}}/blog/notes',
     '/blog': '/{{lang}}/blog',
     '/projects': '/{{lang}}/projects',
     '/': '/{{lang}}{{path}}',

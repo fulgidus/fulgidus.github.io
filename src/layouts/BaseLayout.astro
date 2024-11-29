@@ -39,7 +39,7 @@ const lang = getLangFromUrl(Astro.url);
       <slot />
       <ScrollToTop client:only="vue" />
       <div class="max-w-4xl mx-auto sm:pt-36 pt-26 pb-16 px-6 relative">
-        <Footer />
+        <Footer client:only="vue"/>
       </div>
     </main>
   </body>
