@@ -20,65 +20,65 @@ redirect: ""
 unlisted: false
 video: false
 ---
-# Rolldown: Rust Meets JavaScript in Vite's New Bundler
+# Rolldown: Rust Incontra JavaScript nel Nuovo Bundler di Vite
 
-Web developers know the drill: every project needs a bundler, and choosing the right one can make or break your development experience. Enter Rolldown, a new JavaScript bundler written in Rust that's set to shake things up in the Vite ecosystem.
+Gli sviluppatori web lo sanno bene: ogni progetto ha bisogno di un bundler, e scegliere quello giusto può fare la differenza tra un'esperienza di sviluppo ottimale e una problematica. Entra in scena Rolldown, un nuovo bundler JavaScript scritto in Rust che promette di rivoluzionare l'ecosistema Vite.
 
-## Why Another Bundler?
+## Perché un Altro Bundler?
 
-Let's face it - bundling JavaScript in 2024 is still a compromise. Vite users currently juggle between esbuild for development and Rollup for production. While this works, it's not ideal. You might notice subtle differences between dev and prod builds, and your code gets parsed and transformed multiple times, slowing things down.
+Ammettiamolo: il bundling di JavaScript nel 2024 è ancora un compromesso. Gli utenti di Vite devono attualmente destreggiarsi tra esbuild per lo sviluppo e Rollup per la produzione. Anche se funziona, non è l'ideale. Potresti notare sottili differenze tra gli ambienti di sviluppo e produzione, e il tuo codice viene analizzato e trasformato più volte, rallentando il processo.
 
-Rolldown tackles these pain points head-on by bringing everything under one roof. Built from the ground up in Rust, it aims to give you the speed of esbuild with the flexibility of Rollup.
+Rolldown affronta questi problemi direttamente unificando tutto sotto un unico tetto. Costruito da zero in Rust, mira a offrirti la velocità di esbuild con la flessibilità di Rollup.
 
-## What Makes Rolldown Different?
+## Cosa Rende Rolldown Diverso?
 
-The secret sauce is Rust. But why does this matter for your everyday development work?
+L'ingrediente segreto è Rust. Ma perché questo è importante per il tuo lavoro quotidiano di sviluppo?
 
-Think about it - JavaScript runs in a single thread. No matter how clever traditional bundlers get, they're still bound by this limitation. Rust, on the other hand, lets Rolldown work across multiple CPU cores efficiently, handling tasks in parallel without breaking a sweat.
+Pensaci: JavaScript funziona in un singolo thread. Non importa quanto intelligenti siano i bundler tradizionali, sono comunque limitati da questo vincolo. Rust, d'altra parte, permette a Rolldown di lavorare efficientemente su più core della CPU, gestendo attività in parallelo senza sforzo.
 
-Here's what this means in practice:
-- Your builds finish faster - we're talking about significant speedups over JavaScript-based bundlers
-- Your computer's memory gets a break - Rolldown uses about half the memory of traditional bundlers
-- Your bundles end up smaller through smarter tree-shaking
-- Your dev server starts up almost instantly
+Ecco cosa significa in pratica:
+- Le build terminano più velocemente - parliamo di miglioramenti significativi rispetto ai bundler basati su JavaScript
+- La memoria del computer viene utilizzata meglio - Rolldown usa circa la metà della memoria rispetto ai bundler tradizionali
+- I bundle risultano più piccoli grazie a un tree-shaking più intelligente
+- Il server di sviluppo si avvia quasi istantaneamente
 
-## Under the Hood
+## Sotto il Cofano
 
-Rolldown's build pipeline is straightforward but powerful:
+La pipeline di build di Rolldown è semplice ma potente:
 
 ```
-Source → Parse → Optimize → Transform → Generate → Bundle
+Sorgente → Parsing → Ottimizzazione → Trasformazione → Generazione → Bundle
 ```
 
-Each step takes full advantage of Rust's performance benefits:
-- Files get parsed in parallel
-- The code gets optimized at the AST level
-- Transformations happen efficiently
-- Output generation is streamlined
+Ogni passaggio sfrutta appieno i vantaggi prestazionali di Rust:
+- I file vengono analizzati in parallelo
+- Il codice viene ottimizzato a livello AST
+- Le trasformazioni avvengono efficientemente
+- La generazione dell'output è ottimizzata
 
-What's cool is that Rolldown handles CommonJS modules out of the box - no extra plugins needed. It also comes with built-in support for TypeScript and JSX transformations.
+La cosa interessante è che Rolldown gestisce i moduli CommonJS nativamente - senza bisogno di plugin aggiuntivi. Include anche il supporto integrato per le trasformazioni TypeScript e JSX.
 
-## Working with Vite
+## Lavorare con Vite
 
-If you're using Vite, Rolldown fits right in. During development, you get:
-- Lightning-fast Hot Module Replacement
-- Smart caching that actually makes a difference
-- High-quality source maps without slowing things down
+Se usi Vite, Rolldown si integra perfettamente. Durante lo sviluppo, ottieni:
+- Hot Module Replacement velocissimo
+- Caching intelligente che fa davvero la differenza
+- Source map di alta qualità senza rallentamenti
 
-For production builds, you'll notice:
-- Better optimized bundles
-- Consistent output across different environments
-- Flexible browser targeting options
+Per le build di produzione, noterai:
+- Bundle meglio ottimizzati
+- Output consistente tra diversi ambienti
+- Opzioni flessibili per il targeting dei browser
 
-## Getting Started
+## Come Iniziare
 
-Want to give it a shot? Here's how:
+Vuoi provarlo? Ecco come:
 
 ```bash
 npm install --save-dev @rolldown/rolldown
 ```
 
-Then in your Vite config:
+Poi nel tuo config di Vite:
 
 ```javascript
 // vite.config.js
@@ -92,31 +92,31 @@ export default defineConfig({
 })
 ```
 
-## What's Next for Rolldown?
+## Il Futuro di Rolldown
 
-The team behind Rolldown has big plans:
+Il team dietro Rolldown ha grandi piani:
 
-Soon:
-- Matching all of Rollup's features
-- Better docs for plugin developers
-- More performance tools
-- Smarter caching
+A breve termine:
+- Raggiungere tutte le funzionalità di Rollup
+- Documentazione migliore per gli sviluppatori di plugin
+- Più strumenti per le prestazioni
+- Caching più intelligente
 
-Down the road:
-- Native CSS handling
-- Improved code splitting
-- Better static analysis
-- Smarter tree-shaking
+A medio termine:
+- Gestione nativa del CSS
+- Code splitting migliorato
+- Analisi statica migliore
+- Tree-shaking più intelligente
 
-Looking further ahead:
-- AI-powered optimizations
-- Predictive building
-- Better debugging tools
+Nel lungo periodo:
+- Ottimizzazioni basate su IA
+- Building predittivo
+- Strumenti di debugging migliori
 
-## The Bottom Line
+## Conclusioni
 
-Rolldown shows what's possible when you rethink JavaScript bundling from scratch. It's not just another tool - it's a fresh take on how we build web apps.
+Rolldown dimostra cosa è possibile quando si ripensa da zero il bundling JavaScript. Non è solo un altro strumento - è un approccio fresco a come costruiamo le applicazioni web.
 
-Whether you're working on a small side project or a massive enterprise app, Rolldown aims to make your builds faster and more reliable. It's still early days, but the future looks promising.
+Che tu stia lavorando su un piccolo progetto personale o su un'applicazione enterprise massiva, Rolldown punta a rendere le tue build più veloci e affidabili. Siamo ancora agli inizi, ma il futuro sembra promettente.
 
-Want to learn more or get involved? Check out the [Rolldown GitHub repository](https://github.com/rolldown/rolldown) or join the conversation in the [Vite Discord community](https://chat.vitejs.dev/).
+Vuoi saperne di più o partecipare? Dai un'occhiata al [repository GitHub di Rolldown](https://github.com/rolldown/rolldown) o unisciti alla conversazione nella [community Discord di Vite](https://chat.vitejs.dev/).
