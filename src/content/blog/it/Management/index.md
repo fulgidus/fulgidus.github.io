@@ -19,7 +19,6 @@ tags:
 imageAlt: Un middle manager che ti fissa
 imageSize: md
 duration: 10m
-unlisted: true
 ---
 Dopo dieci anni trascorsi attraversando il panorama delle società di consulenza tecnologica, ho osservato lo stesso schema ripetersi in diverse aziende, paesi e culture. I nomi cambiano, ma il problema fondamentale rimane: il middle management spesso si erge come barriera piuttosto che ponte verso uno sviluppo software efficace.
 
