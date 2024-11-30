@@ -38,7 +38,7 @@ const {
   pubDate,
   duration,
   tags,
-  unlisted,
+  draft,
 } = post.data;
 const { slug } = post;
 
@@ -104,12 +104,21 @@ const t = useTranslate(currentLang as Languages);
       <h1>
         {title}
       </h1>
-      {
+      <!-- {
         unlisted && (
           <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
-            <code important-m-0 important-p-0>
+            <span class="important-m-0 important-p-0 underline text-red">
               {t("slug.unlisted")}
-            </code>
+            </span>
+          </div>
+        )
+      } -->
+      {
+        draft && (
+          <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
+            <span class="important-m-0 important-p-0 underline text-red">
+              {t("slug.draft")}
+            </span>
           </div>
         )
       }

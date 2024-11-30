@@ -7,9 +7,12 @@
         <transition name="slide-fade">
             <ul v-if="isDropdownOpen" class="dropdown-menu bg-main">
                 <li v-for="([lang, label]) in languages" :key="lang" class="dropdown-item">
-                    <a v-if="ui[lang]?.disabled !== 'true'" :href="translatePath(url !== undefined ? stripLangFromPath(url.pathname) : '/', lang as Languages)" nav-link p-2 flex items-center justify-between gap-2
-                        @click="changeLanguage(lang)">
-                        <span class="flag-icon" v-if="ui[lang]?.flag">{{ui[lang].flag}}</span>
+                    <a v-if="ui[lang]?.disabled !== 'true'" :href="translatePath(url !== undefined ? stripLangFromPath(url.pathname) : '/', lang as Languages)" nav-link p-2 flex
+                        items-center justify-between gap-2 @click="(e) => {
+                            e.preventDefault();
+                            changeLanguage(lang as Languages);
+                        }">
+                        <span class="flag-icon" v-if="ui[lang]?.flag">{{ ui[lang].flag }}</span>
                         {{ label }}
                     </a>
                 </li>
@@ -29,8 +32,32 @@ const currentLang = ref(defaultLang);
 let url: URL | undefined
 let translate: (key: string) => string // Simplified type
 
-
-
+const changeLanguage = async (lang: Languages) => {
+    const newUrl = translatePath(url ? stripLangFromPath(url.pathname) : '/', lang);
+    const newUrlIsValid = await checkLink(newUrl);
+    if (newUrlIsValid) {
+        window.location.href = newUrl;
+    } else {
+        if (url?.pathname.includes('/posts/')) {
+            window.location.href = translatePath('/blog', lang);
+        }
+        window.location.href = translatePath('/', lang);
+    }
+};
+async function checkLink(newUrl: string): Promise<boolean> {
+    return await fetch(newUrl, { method: 'HEAD' })
+        .then(response => {
+            if (response.ok) {
+                return true;
+            } else {
+                return false;
+            }
+        })
+        .catch(() => {
+            return false;
+        });
+    
+}
 onMounted(() => {
     url = new URL(window.location.href);
     currentLang.value = getLangFromUrl(url); // Update currentLang reactively
@@ -60,10 +87,6 @@ const toggleDropdown = () => {
     isDropdownOpen.value = !isDropdownOpen.value;
 };
 
-const changeLanguage = (lang: string) => {
-    currentLang.value = lang;
-    isDropdownOpen.value = false;
-};
 </script>
 
 
@@ -89,8 +112,7 @@ const changeLanguage = (lang: string) => {
     margin: 0;
 }
 
-.dropdown-item {
-}
+.dropdown-item {}
 
 .slide-fade-enter-active {
     transition: all 0.3s ease-out;
@@ -105,5 +127,4 @@ const changeLanguage = (lang: string) => {
     transform: translateY(-20px);
     opacity: 0;
 }
-
 </style>
