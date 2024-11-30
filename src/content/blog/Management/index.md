@@ -19,7 +19,6 @@ tags:
 imageAlt: A middle manager in the middle of having a staring contest with you
 imageSize: md
 duration: 8m
-unlisted: true
 ---
 After ten years of traversing the landscape of tech consulting firms, I've witnessed the same pattern repeat itself across different companies, countries, and cultures. The names change, but the fundamental issue remains: middle management often stands as a barrier rather than a bridge to effective software development.
 
