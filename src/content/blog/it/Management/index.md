@@ -86,7 +86,7 @@ Avendo saltato tra diverse aziende, ho visto sviluppatori di talento abbandonare
 Basandomi sulla mia esperienza in diverse aziende, i manager efficaci dovrebbero:
 
 1. **Combattere Verso l'Alto, Non Verso il Basso**
-    - Sfidare richieste irragionevoli dal top management
+    - Sfidare richieste irragionevoli dal top management, sia in termini di prestazioni, che di gestione delle risorse
     - Difendere le decisioni del team
     - Spingere per migliori condizioni e strumenti
 2. **Abilitare Piuttosto che Controllare**

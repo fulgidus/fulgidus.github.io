@@ -86,7 +86,7 @@ Having jumped between firms, I've seen talented developers leave good projects s
 Based on my experience across multiple firms, effective middle managers should:
 
 1. **Fight Upward, Not Downward**
-    - Challenge unreasonable demands from upper management
+    - Challenge unreasonable demands from upper management, both in term of performance, and resource management
     - Defend team decisions
     - Push for better conditions and tools
 2. **Enable Rather Than Control**
