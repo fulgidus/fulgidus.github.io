@@ -11,9 +11,10 @@ export async function getStaticPaths() {
     withDrafts: true,
     withUnlisted: true,
   });
+
   const returnedPages = pages.map((page: any) => {
     return {
-      params: { slug: page.slug },
+      params: { slug: `${page.slug.replace(/^it/g, '')}` },
       props: { page },
     };
   });
