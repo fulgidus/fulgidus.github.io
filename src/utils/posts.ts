@@ -124,12 +124,11 @@ export function getUniqueTags(posts: Array<CollectionPost> | Array<CollectionPag
 export function getUniqueTagsWithCount(
     posts: Array<CollectionPost>
 ): Array<[string, number]> {
-    return Array.from(
-        getAllTags(posts).reduce(
-            (acc, t) => acc.set(t, (acc.get(t) ?? 0) + 1),
-            new Map<string, number>()
-        )
-    ).sort((a, b) => b[1] - a[1])
+    const tags: Map<string, number> = getAllTags(posts).reduce(
+        (acc, t) => acc.set(t, (acc.get(t) ?? 0) + 1),
+        new Map<string, number>()
+    )
+    return Array.from(tags).sort((a, b) => b[1] !== a[1] ? b[1] - a[1] : a[0].localeCompare(b[0]))
 }
 
 export type DateStringNumber = Date | string | number;
