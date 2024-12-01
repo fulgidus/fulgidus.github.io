@@ -1,6 +1,6 @@
 ---
-title: "Advent of Code 2024: Your Holiday Programming Challenge Awaits"
-description: Discover Advent of Code 2024, a unique programming challenge that turns December into a coding adventure. With daily puzzles ranging from beginner-friendly to expert level, this free event lets you practice coding skills, compete globally, and join a vibrant community of developers. Learn how to get started and make the most of this holiday coding tradition.
+title: "[Advent of Code 2024](https://adventofcode.com/2024): Your Holiday Programming Challenge Awaits"
+description: Discover [Advent of Code 2024](https://adventofcode.com/2024), a unique programming challenge that turns December into a coding adventure. With daily puzzles ranging from beginner-friendly to expert level, this free event lets you practice coding skills, compete globally, and join a vibrant community of developers. Learn how to get started and make the most of this holiday coding tradition.
 image: advent.png
 imageAlt: Screenshot of the 2024 advent calendar
 imageSize: lg
@@ -47,7 +47,7 @@ This year's edition comes with strong support from major tech companies includin
 
 ## How to Get Started
 
-1. Visit adventofcode.com
+1. Visit [adventofcode.com](https://adventofcode.com)
 2. Create an account (you can authenticate through various services)
 3. Choose your preferred programming language
 4. Start with Day 1 and progress at your own pace
