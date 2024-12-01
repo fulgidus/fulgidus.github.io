@@ -47,7 +47,7 @@ L'edizione di quest'anno vanta il supporto di importanti aziende tecnologiche tr
 
 ## Come Iniziare
 
-1. Visita [adventofcode.com](https://adventofcode.com)
+1. Visita <a href="https://adventofcode.com" target="_blank">adventofcode.com</a>
 2. Crea un account (puoi autenticarti attraverso vari servizi)
 3. Scegli il tuo linguaggio di programmazione preferito
 4. Inizia dal Giorno 1 e procedi al tuo ritmo

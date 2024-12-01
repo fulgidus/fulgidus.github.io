@@ -47,7 +47,7 @@ This year's edition comes with strong support from major tech companies includin
 
 ## How to Get Started
 
-1. Visit [adventofcode.com](https://adventofcode.com)
+1. Visit <a href="https://adventofcode.com" target="_blank">adventofcode.com</a>
 2. Create an account (you can authenticate through various services)
 3. Choose your preferred programming language
 4. Start with Day 1 and progress at your own pace
