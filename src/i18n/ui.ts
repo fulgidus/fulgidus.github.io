@@ -27,6 +27,8 @@ export const ui = {
         'footer.tags':'All Tags',
         'downloadButton.title':'Download',
         'downloadButton.cv':'my CV',
+        'sharePost.button':'Share this post',
+        'sharePost.copy':'Copy post link',
     },
     it: {
         'flag': '🇮🇹',
@@ -56,6 +58,8 @@ export const ui = {
         'footer.tags': 'Tutti i Tag',
         'downloadButton.title':'Scarica',
         'downloadButton.cv':'il mio CV',
+        'sharePost.button':'Condividi questo post',
+        'sharePost.copy':'Copia il link',
     },
     nl: {
         'disabled': 'true',
@@ -82,6 +86,8 @@ export const ui = {
         'langSelector.empty': 'Selecteer taal',
         'downloadButton.title':'Download',
         'downloadButton.cv':'mijn CV',
+        'sharePost.button':'Deel dit bericht',
+        'sharePost.copy':'Kopieer link',
     },
     
 

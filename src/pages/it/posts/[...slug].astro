@@ -1,6 +1,7 @@
 ---
 import GoBackToBlog from "@/components/GoBackToBlog.vue";
 import LanguageFlag from "@/components/LanguageFlags.vue";
+import SharePost from "@/components/SharePost.vue";
 import TagsList from "@/components/TagsList.vue";
 import { Languages } from "@/i18n/ui";
 import { getLangFromSlug, getLangFromUrl, useTranslate } from "@/i18n/utils";
@@ -72,7 +73,7 @@ const t = useTranslate(currentLang as Languages);
   pageType="article"
   imageSize={imageSize}
 >
-  <a
+  <!-- <a
     title="Back"
     href="javascript:history.back()"
     style="button"
@@ -81,7 +82,7 @@ const t = useTranslate(currentLang as Languages);
     m-t-1
   >
     <i aria-label="Go back" i-ri-arrow-go-back-line></i>
-  </a>
+  </a> -->
   <article class="prose">
     <div class="max-w-4xl mx-auto relative">
       <h1>
@@ -105,6 +106,7 @@ const t = useTranslate(currentLang as Languages);
           </div>
         )
       }
+      <SharePost shareTitle={title} client:only="vue" />
       <p h-initial class="flex flex-wrap flex-gap-1">
         {
           pubDate && (
