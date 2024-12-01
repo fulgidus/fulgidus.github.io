@@ -1,5 +1,5 @@
 ---
-title: "[Advent of Code 2024](https://adventofcode.com/2024): Your Holiday Programming Challenge Awaits"
+title: "Advent of Code 2024: Your Holiday Programming Challenge Awaits"
 description: Discover [Advent of Code 2024](https://adventofcode.com/2024), a unique programming challenge that turns December into a coding adventure. With daily puzzles ranging from beginner-friendly to expert level, this free event lets you practice coding skills, compete globally, and join a vibrant community of developers. Learn how to get started and make the most of this holiday coding tradition.
 image: advent.png
 imageAlt: Screenshot of the 2024 advent calendar
