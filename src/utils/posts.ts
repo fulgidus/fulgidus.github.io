@@ -141,7 +141,11 @@ export function getHref(post: CollectionPost): string {
     if (post.data.redirect) {
         return post.data.redirect;
     }
-    return `/posts/${post.slug}`;
+    return `/posts/${removeLangFromSlug(post.slug)}`;
+}
+
+export function removeLangFromSlug(slug: string): string {
+    return slug.replace(/^[a-z]{2}\//, '');
 }
 
 export function getTarget(post: CollectionPost) {

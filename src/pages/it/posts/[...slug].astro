@@ -7,7 +7,7 @@ import { getLangFromSlug, getLangFromUrl, useTranslate } from "@/i18n/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { composeImageSizeClasses } from "@/pages/posts/[...slug].astro";
 import { type CollectionPost } from "@/types";
-import { getPosts } from "@/utils/posts";
+import { getPosts, removeLangFromSlug } from "@/utils/posts";
 import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
@@ -17,12 +17,17 @@ export async function getStaticPaths() {
     withDrafts: true,
   }); // This need to be with unlisted, otherwise they won't ever exist in SSG
 
-  return posts.map((post: CollectionPost) => ({
-    params: { slug: post.slug },
+  const returnedPosts = posts.map((post: CollectionPost) => ({
+    params: { slug: removeLangFromSlug(post.slug) },
     props: {
       post,
     },
   }));
+  console.log(
+    "\n=======================\nPOSTS IT \n\n" +
+      returnedPosts.map((p) => p.params.slug + "\n").join("")
+  );
+  return returnedPosts;
 }
 
 type Props = { post: CollectionPost };

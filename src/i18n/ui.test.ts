@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { languages, defaultLang, ui, getLangLabel, routesFromEnToLocalized, substituteTemplate } from './ui';
+import { languages, defaultLang, ui, getLangLabel, substituteTemplate } from './ui';
 
 describe('i18n/ui', () => {
 
@@ -43,14 +43,6 @@ describe('i18n/ui', () => {
         //Then the test could be:
         // expect(getLangLabel('fr' as keyof typeof ui)).toBe('Unknown Language');
 
-    });
-
-
-    describe('routesFromEnToLocalized', () => {
-        it('should correctly define route mappings', () => {
-            expect(routesFromEnToLocalized['/posts/notes']).toBe('/{{lang}}/posts/{{lang}}/notes{{path}}');
-            // Add more assertions for other routes
-        });
     });
 
     describe('substituteTemplate', () => {

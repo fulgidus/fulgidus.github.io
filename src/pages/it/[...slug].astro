@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { PAGE_KEY, type CollectionPages } from "@/types";
-import { getPosts } from "@/utils/posts";
+import { getPosts, removeLangFromSlug } from "@/utils/posts";
 
 export async function getStaticPaths() {
   //   const pages = await getCollection("pages");
@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 
   const returnedPages = pages.map((page: any) => {
     return {
-      params: { slug: `${page.slug.replace(/^it/g, '')}` },
+      params: { slug: `${removeLangFromSlug(page.slug)}` },
       props: { page },
     };
   });

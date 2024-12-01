@@ -74,15 +74,16 @@ describe('i18n/utils', () => {
             expect(translatePath('/about', 'en')).toBe('/about');
             expect(translatePath('/about', 'it')).toBe('/it/about');
             expect(translatePath('/posts-props', 'it')).toBe('/it/posts-props');
-            expect(translatePath('/posts/i18n', 'it')).toBe('/it/posts/it/i18n');
+            expect(translatePath('/posts/i18n', 'it')).toBe('/it/posts/i18n');
             expect(translatePath('/it/about', 'en')).toBe('/about'); // Strips language prefix if targetLang is defaultLang
             expect(translatePath('/it/about', 'pirate' as Languages)).toBe('/pirate/about'); // Doesn't care if it's not in ui... Theoretically it shouldn't be possible anyway due to TS
         });
 
         it('should handle complex paths correctly', () => {
             expect(translatePath('/posts/my-post')).toBe('/posts/my-post');
-            expect(translatePath('/posts/my-post', 'it')).toBe('/it/posts/it/my-post'); // This depends on your route mappings. Adjust as needed.
-            expect(translatePath('/posts/notes/stuff-1', 'it')).toBe('/it/posts/it/notes/stuff-1');
+            expect(translatePath('/posts/my-post', 'it')).toBe('/it/posts/my-post'); // This depends on your route mappings. Adjust as needed.
+            expect(translatePath('/posts/notes/stuff-1', 'it')).toBe('/it/posts/notes/stuff-1');
+            expect(translatePath('/posts/notes/devfest-2024-css', 'it')).toBe('/it/posts/notes/devfest-2024-css');
             expect(translatePath('/it/blog/notes', 'en')).toBe('/blog/notes');
         });
 
@@ -105,9 +106,9 @@ describe('i18n/utils', () => {
 
     it('should strip language from path', () => {
         expect(stripLangFromPath('/it/about')).toBe('/about');
-        expect(stripLangFromPath('/en/about')).toBe('/about');
+        expect(stripLangFromPath('/about')).toBe('/about');
         expect(stripLangFromPath('/about')).toBe('/about'); // Should handle paths without language prefix
-        expect(stripLangFromPath('/it/posts/it/my-post')).toBe('/posts/my-post'); // Test with more complex path
+        expect(stripLangFromPath('/it/posts/my-post')).toBe('/posts/my-post'); // Test with more complex path
     });
 
     it('should handle edge cases for getLangFromUrl', () => {
@@ -141,7 +142,7 @@ describe('i18n/utils', () => {
         expect(stripLangFromPath('/it/about')).toBe('/about');
         expect(stripLangFromPath('/en/about')).toBe('/about');
         expect(stripLangFromPath('/about')).toBe('/about'); //Should handle paths without language prefix
-        expect(stripLangFromPath('/it/posts/it/my-post')).toBe('/posts/my-post'); // Test with more complex path
+        expect(stripLangFromPath('/it/posts/my-post')).toBe('/posts/my-post'); // Test with more complex path
     });
 
 });
