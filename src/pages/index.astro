@@ -22,7 +22,8 @@ const emailEntities = Array.from(email)
       <h2 class="heading-element" dir="auto" text-nowrap>👨&zwj;💻 About Me</h2>
     </div>
 
-    <div class="flex
+    <div
+      class="flex
       flex-col
       flex-nowrap
       gap-4
@@ -142,14 +143,23 @@ const emailEntities = Array.from(email)
       <h2 class="heading-element" dir="auto">📬 Let's Connect</h2>
     </div>
     <p dir="auto">Feel free to explore my repositories and connect with me:</p>
-    <ul dir="auto">
-      <li>
-        <strong>Email:</strong>
-        <EmailObfuscator emailEntities={emailEntities} client:only="vue">
-          <span slot="fallback"> Email not available </span>
-        </EmailObfuscator>
+
+    <ul dir="auto" class="list-none w-100% sm-w70 px-6">
+      <li class="flex items-center gap-2 justify-between !pl-0">
+        <i class="i-ri-at-line"></i>
+        <EmailObfuscator emailEntities={emailEntities} client:only="vue"
+          ><span slot="fallback"> Email not available </span></EmailObfuscator
+        >
       </li>
-      <li><strong>Location:</strong> Torino, Italy</li>
+      <li class="flex items-center gap-2 justify-between !pl-0">
+        <i class="i-ri-github-line"></i>
+        <a href="https://github.com/fulgidus" target="_blank"
+          >https://github.com/fulgidus</a
+        >
+      </li>
+      <li class="flex items-center gap-2 justify-between !pl-0">
+        <i class="i-ri-map-pin-user-line"></i> Torino, Italy
+      </li>
     </ul>
     <p dir="auto">Let's innovate and build the future together!</p>
 

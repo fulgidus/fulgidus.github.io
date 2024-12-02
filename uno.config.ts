@@ -69,5 +69,6 @@ export default defineConfig({
         'i-ri-youtube-line',
         'i-simple-icons-x',
         'i-ri-twitter-x-line',
+        'i-ri-map-pin-user-line',
     ],
 })

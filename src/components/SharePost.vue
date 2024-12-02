@@ -85,7 +85,7 @@ function copyLink() {
                     <button class="flex flex-nowrap items-center justify-center" @click="shareOn('linkedin')"><i
                             i-ri-linkedin-box-line /></button>
                     <button class="flex flex-nowrap items-center justify-center" @click="shareOn('email')"><i
-                            i-ri-mail-line /></button>
+                            i-ri-at-line /></button>
                     <button class="flex flex-nowrap items-center justify-center" @click="copyLink"><i
                             i-ri-file-copy-line /><!-- {{t('sharePost.copy')}} --></button>
                     <button class="flex flex-nowrap items-center justify-center" @click="() => isHidden = true"><i
@@ -108,7 +108,7 @@ function copyLink() {
                 <button class="flex flex-nowrap items-center justify-center" @click="shareOn('linkedin')"><i
                         i-ri-linkedin-box-line /></button>
                 <button class="flex flex-nowrap items-center justify-center" @click="shareOn('email')"><i
-                        i-ri-mail-line /></button>
+                        i-ri-at-line /></button>
                 <button class="flex flex-nowrap items-center justify-center" @click="copyLink"><i
                         i-ri-file-copy-line /><!-- {{t('sharePost.copy')}} --></button>
                 <button class="flex flex-nowrap items-center justify-center" @click="() => isHidden = true"><i

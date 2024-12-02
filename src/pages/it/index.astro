@@ -149,14 +149,22 @@ const emailEntities = Array.from(email)
     <p dir="auto">
       Sentiti libero di esplorare i miei repository e connetterti con me:
     </p>
-    <ul dir="auto">
-      <li>
-        <strong>Email:</strong>
+    <ul dir="auto" class="list-none w-100% sm-w70">
+      <li class="flex items-center gap-2 justify-between  !pl-0">
+        <i class="i-ri-at-line"></i>
         <EmailObfuscator emailEntities={emailEntities} client:only="vue"
           ><span slot="fallback"> Email non disponibile </span></EmailObfuscator
         >
       </li>
-      <li><strong>Luogo:</strong> Torino, Italia</li>
+      <li class="flex items-center gap-2 justify-between  !pl-0">
+        <i class="i-ri-github-line"></i>
+        <a href="https://github.com/fulgidus" target="_blank"
+          >https://github.com/fulgidus</a
+        >
+      </li>
+      <li class="flex items-center gap-2 justify-between  !pl-0">
+        <i class="i-ri-map-pin-user-line"></i> Torino, Italia
+      </li>
     </ul>
     <p dir="auto">Innoviamo e costruiamo il futuro insieme!</p>
     <hr class="hr-line" />
