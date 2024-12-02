@@ -70,5 +70,7 @@ export default defineConfig({
         'i-simple-icons-x',
         'i-ri-twitter-x-line',
         'i-ri-map-pin-user-line',
+        'i-carbon-strategy-play',
+        'i-ri-bit-coin-line',
     ],
 })
