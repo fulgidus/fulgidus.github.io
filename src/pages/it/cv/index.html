@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alessio Giulio Corsi - CV</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        .skill-bar {
+            height: 4px;
+            background-color: #38054120;
+            border-radius: 2px;
+            margin-top: 4px;
+        }
+
+        .skill-level {
+            height: 100%;
+            background-color: #380541;
+            border-radius: 2px;
+        }
+
+        .border-color-my-purple {
+            border-color: #380541;
+        }
+
+        .text-my-purple {
+            color: #380541;
+        }
+        .bg-by-purple {
+            background-color: #380541;
+        }
+        .bg-my-purple-light {
+            background-color: #38054110;
+        }
+        .bg-my-purple-lighter {
+            background-color: #38054105;
+        }
+
+        @media print {
+            .no-print,
+            .no-print * {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-my-purple-lighter text-sm">
+    <div class="container mx-auto p-8 max-w-6xl">
+        <div class="flex flex-row gap-8">
+            <!-- Colonna sinistra (35%) -->
+            <div class="md:w-[35%] bg-my-purple-light rounded-lg shadow-lg p-6">
+                <!-- Foto profilo -->
+                <div class="flex justify-center mb-6">
+                    <img src="/public/img/me.jpg" alt="Profilo"
+                        class="rounded-full w-32 h-32 object-cover border-4 border-color-my-purple">
+                </div>
+
+                <!-- Dati personali -->
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold  text-my-purple mb-2">Alessio Giulio Corsi</h1>
+                    <p class="text-lg mb-4">Sviluppatore Software Senior</p>
+                    <div class="space-y-2 text-gray-600">
+                        <p class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Torino, Italia
+                        </p>
+                        <p class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            (+39) 347 1870275
+                        </p>
+                        <p class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            alessio.corsi@gmail.com
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Punti di forza -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold  text-my-purple mb-4 border-b border-color-my-purple pb-2">Punti di forza</h2>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-my-purple" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Sviluppo frontend moderno
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-my-purple" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Competenza full-stack
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-my-purple" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Leadership tecnica
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-my-purple" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Innovazione e best practices
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Skills -->
+                <div>
+                    <h2 class="text-xl font-bold  text-my-purple mb-4 border-b border-color-my-purple pb-2">Skills</h2>
+
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-2">Frontend</h3>
+                            <div class="space-y-2">
+                                <div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-600">React/Redux</span>
+                                        <span class="text-sm text-gray-600">95%</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-level" style="width: 95%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-600">TypeScript</span>
+                                        <span class="text-sm text-gray-600">90%</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-level" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-600">Angular</span>
+                                        <span class="text-sm text-gray-600">85%</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-level" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-2">Backend</h3>
+                            <div class="space-y-2">
+                                <div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-600">Node.js</span>
+                                        <span class="text-sm text-gray-600">90%</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-level" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-600">C# (.NET)</span>
+                                        <span class="text-sm text-gray-600">80%</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-level" style="width: 80%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-2">Database</h3>
+                            <div class="space-y-2">
+                                <div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-600">PostgreSQL</span>
+                                        <span class="text-sm text-gray-600">85%</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-level" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-600">MongoDB</span>
+                                        <span class="text-sm text-gray-600">80%</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-level" style="width: 80%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Colonna destra (65%) -->
+            <div class="md:w-[65%] space-y-8 ">
+                <!-- Profilo -->
+                <div class="bg-my-purple-light rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold  text-my-purple mb-4 border-b border-color-my-purple pb-2">Profilo</h2>
+                    <p class="text-gray-600 leading-relaxed">
+                        Sviluppatore Full-Stack con oltre 7 anni di esperienza nello sviluppo di soluzioni enterprise e
+                        startup.
+                        Specializzato nella realizzazione di applicazioni web moderne e scalabili, con particolare focus
+                        su React,
+                        TypeScript e architetture cloud-native. Ho guidato lo sviluppo tecnico di progetti critici nel
+                        settore
+                        bancario, assicurativo e sanitario, dimostrando una solida capacità di gestire l'intero ciclo di
+                        vita
+                        del software, dalla progettazione al deploy in produzione.
+                    </p>
+                </div>
+
+                <!-- Esperienza Professionale -->
+                <div class="bg-my-purple-light rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold  text-my-purple mb-4 border-b border-color-my-purple pb-2">Esperienza
+                        Professionale</h2>
+
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between items-baseline mb-2">
+                                <h3 class="text-lg font-semibold  text-my-purple">QCSNET S.R.L.</h3>
+                                <span class="text-sm text-gray-600">01/2023 - Presente</span>
+                            </div>
+                            <p class="text-gray-600 italic mb-2">Sviluppatore Software</p>
+                            <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                <li>Sviluppo full-stack di una piattaforma di video chat con React/TypeScript</li>
+                                <li>Implementazione backend in Node.js con Prisma e PostgreSQL</li>
+                                <li>Gestione monorepo con Turborepo</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-baseline mb-2">
+                                <h3 class="text-lg font-semibold  text-my-purple">Epicura</h3>
+                                <span class="text-sm text-gray-600">07/2021 - 06/2022</span>
+                            </div>
+                            <p class="text-gray-600 italic mb-2">Sviluppatore Software</p>
+                            <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                <li>Senior developer backend per piattaforma di telemedicina</li>
+                                <li>Implementazione sistema di abbonamenti con Stripe</li>
+                                <li>Deploy e gestione infrastruttura su AWS</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-baseline mb-2">
+                                <h3 class="text-lg font-semibold  text-my-purple">Ulixe Link</h3>
+                                <span class="text-sm text-gray-600">08/2019 - 07/2021</span>
+                            </div>
+                            <p class="text-gray-600 italic mb-2">Consulente Senior</p>
+                            <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                <li>Migrazione componenti da AngularJS a Angular 8 per Intesa San Paolo</li>
+                                <li>Sviluppo webapp Edison Risolve con React/TypeScript</li>
+                                <li>Sviluppo frontend Allianz Ultra con Angular 7/RxJS</li>
+                                <li>Implementazione componenti per il sito delle Olimpiadi di Tokyo 2020</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-baseline mb-2">
+                                <h3 class="text-lg font-semibold  text-my-purple">Telematica Informatica</h3>
+                                <span class="text-sm text-gray-600">04/2016 - 08/2019</span>
+                            </div>
+                            <p class="text-gray-600 italic mb-2">Consulente Programmatore</p>
+                            <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                <li>Sviluppo sito di onboarding bancario con React/Redux Saga e WebRTC</li>
+                                <li>Realizzazione applicazioni IoT enterprise con React e TypeScript</li>
+                                <li>Sviluppo applicazione "PassbookGenerator" per Reply in Node.js</li>
+                                <li>Implementazione app Windows Phone per FCA in C#/XAML</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-baseline mb-2">
+                                <h3 class="text-lg font-semibold  text-my-purple">Betacom s.r.l.</h3>
+                                <span class="text-sm text-gray-600">09/2015 - 02/2016</span>
+                            </div>
+                            <p class="text-gray-600 italic mb-2">Programmatore Junior</p>
+                            <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                <li>Sviluppo applicazioni web con WCF e Web API</li>
+                                <li>Implementazione frontend con AngularJS e Bootstrap</li>
+                                <li>Gestione database SQL Server</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formazione -->
+                <div class="bg-my-purple-light rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold  text-my-purple mb-4 border-b border-color-my-purple pb-2">Formazione</h2>
+
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-baseline mb-2">
+                                <h3 class="text-lg font-semibold  text-my-purple">ITS ICT Piemonte</h3>
+                                <span class="text-sm text-gray-600">2013 - 2015</span>
+                            </div>
+                            <p class="text-gray-600">Diploma di Tecnico Superiore - Mobile App Design</p>
+                            <p class="text-gray-600">Livello EQF 5</p>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-baseline mb-2">
+                                <h3 class="text-lg font-semibold  text-my-purple">British Council</h3>
+                                <span class="text-sm text-gray-600">2013</span>
+                            </div>
+                            <p class="text-gray-600">IELTS - Punteggio 7.5/9 (C1)</p>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-baseline mb-2">
+                                <h3 class="text-lg font-semibold  text-my-purple">Istituto Flora</h3>
+                                <span class="text-sm text-gray-600">2001 - 2006</span>
+                            </div>
+                            <p class="text-gray-600">Diploma Scientifico</p>
+                            <p class="text-gray-600">Livello EQF 4</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button
+        class="bg-by-purple text-white no-print flex flex-row items-center justify-center p-6 my-6 !b-rd-3 w-100vw pos-fixed bottom-0 left-0 right-0 b-rd-3 border-1 border-color-white mx-auto"
+        style="border-radius: 0.5rem;" onClick="window.print()">Stampa CV
+    </button>
+</body>
+
+</html>

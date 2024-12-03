@@ -48,6 +48,7 @@ const emailEntities = Array.from(email)
         fileName="CV-Alessio-Corsi-IT.pdf"
         description="downloadButton.cv"
       />
+      <span><a href="/it/cv">... oppure semplicemente aprilo</a></span>
     </div>
     <p dir="auto">
       Sono uno <strong>sviluppatore Full-Stack</strong> versatile, specializzato
@@ -150,19 +151,19 @@ const emailEntities = Array.from(email)
       Sentiti libero di esplorare i miei repository e connetterti con me:
     </p>
     <ul dir="auto" class="list-none w-100% sm-w70">
-      <li class="flex items-center gap-2 justify-between  !pl-0">
+      <li class="flex items-center gap-2 justify-between !pl-0">
         <i class="i-ri-at-line"></i>
         <EmailObfuscator emailEntities={emailEntities} client:only="vue"
           ><span slot="fallback"> Email non disponibile </span></EmailObfuscator
         >
       </li>
-      <li class="flex items-center gap-2 justify-between  !pl-0">
+      <li class="flex items-center gap-2 justify-between !pl-0">
         <i class="i-ri-github-line"></i>
         <a href="https://github.com/fulgidus" target="_blank"
           >https://github.com/fulgidus</a
         >
       </li>
-      <li class="flex items-center gap-2 justify-between  !pl-0">
+      <li class="flex items-center gap-2 justify-between !pl-0">
         <i class="i-ri-map-pin-user-line"></i> Torino, Italia
       </li>
     </ul>
