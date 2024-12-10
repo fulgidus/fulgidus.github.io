@@ -21,7 +21,7 @@ tags:
     - methodology
     - business-strategy
     - organizational-development
-draft: true
+draft: false
 lang: en
 redirect: ""
 unlisted: false
