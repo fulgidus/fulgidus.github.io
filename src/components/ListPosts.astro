@@ -133,7 +133,7 @@ const currentLang = getLangFromUrl(Astro.url.pathname);
                 </time>
               )}
               {post.data.duration && <span>· {post.data.duration}</span>}
-              <TagsList tags={post.data.tags} link={false} verbose={false} />
+              <TagsList tags={post.data.tags} link={false} verbose={false} noDot={false} />
               {"· "}
               <LanguageFlag lang={getLangFromSlug(post.slug)} verbose={false} />
             </div>
