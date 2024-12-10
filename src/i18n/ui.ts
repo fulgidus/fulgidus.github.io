@@ -5,7 +5,7 @@ export const ui = {
         'language': 'English',
         'nav.home': 'Home',
         'nav.blog': 'Blog',
-        'nav.notes': 'Note',
+        'nav.notes': 'Notes',
         'nav.projects': 'Projects',
         'nav.about': 'About',
         'nav.twitter': 'Twitter',
