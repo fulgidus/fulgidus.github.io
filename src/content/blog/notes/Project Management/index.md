@@ -1,5 +1,5 @@
 ---
-title: Project Management notes
+title: edX Verified Certificate for Introduction to Project Management
 description: Note from the "Introduction to Project Management" course on EdX. A comprehensive overview of a 6-week project management course from the University of Adelaide. These notes cover the complete project lifecycle, from initiation to closure, with practical insights on planning, risk management, and leadership. Suitable for beginners and experienced professionals looking to strengthen their project management fundamentals. Topics include project canvas methodology, stakeholder engagement, and real-world scenarios across various industries.
 image: cover.png
 imageAlt: A project manager sitting at a desk managing a project
@@ -7,7 +7,20 @@ imageSize: md
 pubDate: 2024-12-09T21:20:01
 duration: 0m
 tags:
-  - made-with-obsidian
+    - made-with-obsidian
+    - best-practices
+    - professional-development
+    - leadership
+    - management
+    - agile
+    - team-building
+    - workplace
+    - project-management
+    - risk-management
+    - planning
+    - methodology
+    - business-strategy
+    - organizational-development
 draft: true
 lang: en
 redirect: ""
@@ -39,18 +52,18 @@ video: false
 ### Process Steps:
 - Create high-level plan (bird's eye view)
 - Set SMART targets:
-	   - **S**pecific
-	   - **M**easurable
-	   - **A**ligned
-	   - **R**ealistic
-	   - **T**ime bound
+       - **S**pecific
+       - **M**easurable
+       - **A**ligned
+       - **R**ealistic
+       - **T**ime bound
 ### Important Elements 🔍:
 - Develop success criteria
 - Establish clear scope
 - Balance time, cost, quality
 - Ensure proper authority for resource management
 
-	Key Requirement ⚡: Must have clear understanding before moving to next phase
+    Key Requirement ⚡: Must have clear understanding before moving to next phase
 
 ## Planning Phase
 ![Planning](Planning.jpg)
@@ -124,17 +137,17 @@ Project planning maturity involves:
 ## Scoping the Project
 ### Key Elements for Scope Definition 
 1. Clear Project Objectives 
-	- Builds on objectives established during initiation 
-	- Requires formal clarification before scope planning 
-	- Must be broken down into manageable components 
+    - Builds on objectives established during initiation 
+    - Requires formal clarification before scope planning 
+    - Must be broken down into manageable components 
 1. Task Identification
-	- Determining specific activities needed 
-	- Mapping required resources
-	- Setting clear project parameters 
+    - Determining specific activities needed 
+    - Mapping required resources
+    - Setting clear project parameters 
 2. Scope Boundaries
-	- "In Scope" vs "Out of Scope" elements
-	- Clear identification of excluded aspects 
-	- Prevention of scope creep and additional functionality
+    - "In Scope" vs "Out of Scope" elements
+    - Clear identification of excluded aspects 
+    - Prevention of scope creep and additional functionality
 ### Core Principles 
 - Represents complete project scope
 - Organizes all deliverables systematically
@@ -156,21 +169,21 @@ Project planning maturity involves:
 ## Planning Phase Best Practices 
 ![](Pasted%20image%2020241209233302.png)
 1. Thorough Objective Analysis 
-	- Review and understand initial project goals 
-	-  Break down broad objectives into specific components 
-	- Ensure alignment with stakeholder expectations 
+    - Review and understand initial project goals 
+    -  Break down broad objectives into specific components 
+    - Ensure alignment with stakeholder expectations 
 2. Scope Control 
-	- Clear definition of included/excluded elements
-	- Early identification of potential scope creep
-	- Regular scope review and validation 
+    - Clear definition of included/excluded elements
+    - Early identification of potential scope creep
+    - Regular scope review and validation 
 3. Resource Integration
-	- Early identification of required resources 
-	- Clear allocation planning 
-	- Consideration of resource constraints
+    - Early identification of required resources 
+    - Clear allocation planning 
+    - Consideration of resource constraints
 4. Documentation
-	- Detailed recording of all scope decisions 
-	- Clear communication of scope boundaries 
-	- Regular updates as project evolves
+    - Detailed recording of all scope decisions 
+    - Clear communication of scope boundaries 
+    - Regular updates as project evolves
 
 ## Project Scheduling and Time Management
 

@@ -106,7 +106,6 @@ const t = useTranslate(currentLang as Languages);
           </div>
         )
       }
-      <SharePost shareTitle={title} client:only="vue" />
       <p h-initial class="flex flex-wrap flex-gap-1">
         {
           pubDate && (
@@ -116,13 +115,7 @@ const t = useTranslate(currentLang as Languages);
         {duration && <span>· {duration}</span>}
         {"· "}
         <LanguageFlag lang={getLangFromSlug(slug)} client:only="vue" verbose />
-        {
-          tags && tags.length > 0 && (
-            <span class="flex flex-wrap flex-gap-1">
-              <TagsList tags={tags} link={true} verbose />
-            </span>
-          )
-        }
+        <SharePost shareTitle={title} client:only="vue" />
       </p>
     </div>
     {
@@ -137,6 +130,14 @@ const t = useTranslate(currentLang as Languages);
       )
     }
     <Content />
+    <SharePost shareTitle={title} client:only="vue" />
+    {
+      tags && tags.length > 0 && (
+        <span class="flex flex-wrap flex-gap-1 py1rem">
+          <TagsList tags={tags} link={true} verbose noDot />
+        </span>
+      )
+    }
     <ul>
       <GoBackToBlog client:only="vue" />
     </ul>
