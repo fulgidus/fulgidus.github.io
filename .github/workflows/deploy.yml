@@ -15,7 +15,7 @@ permissions:
   id-token: write
 
 jobs:
-  build:
+  Build:
     runs-on: ubuntu-latest
     steps:
       # Step 1: Checkout the repository
@@ -30,19 +30,6 @@ jobs:
           path: .
           node-version: 20 # Default version of Node.js to use
           package-manager: pnpm@latest # Use pnpm as the package manager
-
-  deploy:
-    # Deploy job depends on the build job
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
+          
       - name: Testing
         run: pnpm run test
-
-      # Step 2: Deploy to GitHub Pages
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
