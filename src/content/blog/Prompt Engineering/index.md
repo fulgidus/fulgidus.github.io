@@ -8,6 +8,16 @@ pubDate: 2024-12-17T22:50:33
 duration: 5m
 tags:
   - made-with-obsidian
+  - best-practices
+  - tutorial
+  - professional-development
+  - methodology
+  - prompt-engineering
+  - generative-ai
+  - ai-tools
+  - communication
+  - content-creation
+  - writing-tips
 draft: false
 lang: en
 redirect: ""

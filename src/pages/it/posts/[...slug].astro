@@ -130,14 +130,16 @@ const t = useTranslate(currentLang as Languages);
       )
     }
     <Content />
-    <SharePost shareTitle={title} client:only="vue" />
-    {
-      tags && tags.length > 0 && (
-        <span class="flex flex-wrap flex-gap-1 py1rem">
-          <TagsList tags={tags} link={true} verbose noDot />
-        </span>
-      )
-    }
+    <div class="!mt-10 !mb--10">
+      <SharePost shareTitle={title} client:only="vue" />
+      {
+        tags && tags.length > 0 && (
+          <span class="flex flex-wrap flex-gap-1 py1rem !mt-10 !mb--10">
+            <TagsList tags={tags} link={true} verbose noDot />
+          </span>
+        )
+      }
+    </div>
     <ul>
       <GoBackToBlog client:only="vue" />
     </ul>

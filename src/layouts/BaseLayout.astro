@@ -4,7 +4,7 @@ import { ViewTransitions } from "astro:transitions";
 import BaseHead from "@/components/BaseHead.astro";
 import Header from "@/components/Header.vue";
 import HeaderAstro from "@/components/Header.astro";
-import Footer from "@/components/Footer.vue";
+import Footer from "@/components/FooterComponent.vue";
 import ScrollToTop from "@/components/ScrollToTop.vue";
 import { getLangFromUrl } from "@/i18n/utils";
 interface Props {
@@ -37,7 +37,7 @@ const lang = getLangFromUrl(Astro.url);
     >
       <slot />
       <ScrollToTop client:only="vue" />
-      <div class="max-w-4xl mx-auto sm:pt-36 pt-26 pb-16 px-6 relative">
+      <div class="max-w-4xl mx-auto sm:pt-18 pt-12 pb-16 px-6 relative">
         <Footer client:only="vue"/>
       </div>
     </main>

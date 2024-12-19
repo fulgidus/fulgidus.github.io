@@ -23,7 +23,7 @@ watchEffect(() => {
 
 <template>
     <footer
-        class="w-full mt-18 pt-6 pb-8 max-w-4xl text-sm flex flex-col gap-4 border-main border-t !border-op-50 text-dark dark:text-white print:static print:bottom-0 important:print:w-full important:print:p-0 important:print:m-0">
+        class="w-full mt-6 pt-6 pb-6 max-w-4xl text-sm flex flex-col gap-4 border-main border-t !border-op-50 text-dark dark:text-white print:static print:bottom-0 important:print:w-full important:print:p-0 important:print:m-0">
         <div v-if="siteConfig.footer.navLinks && siteConfig.footer.navLinks.length > 0"
             class="flex flex-wrap gap-4 align-center justify-center print:hidden">
             <template v-for="(link, index) in siteConfig.footer.navLinks" :key="link.text">
