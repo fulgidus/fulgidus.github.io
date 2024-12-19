@@ -39,9 +39,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # Step 1: Disable Jekyll to avoid conflicts
-      #  - name: Disable Jekyll
-      #    run: echo "" > dist/.nojekyll
+      - name: Testing
+        run: pnpm test
 
       # Step 2: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
