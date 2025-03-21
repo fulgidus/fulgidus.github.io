@@ -5,7 +5,7 @@ image: cover.png
 imageAlt: Cover
 imageSize: md
 pubDate: 2025-03-21T09:52:49
-duration: 15m
+duration: 5m
 tags:
   - rust
   - web-development
