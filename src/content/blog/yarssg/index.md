@@ -22,14 +22,6 @@ redirect: ""
 unlisted: true
 video: false
 ---
-
----
-title: "Yet Another Rust SSG"
-tags: ["Rust", "Static Site Generator", "SSG", "Personal Project", "Learning"]
----
-
-# Yet Another Rust SSG
-
 ## 🚀 A Personal Detour into Rust
 
 When I first started learning Rust, I did what most developers do: I went through the official book, wrote a few small CLI tools, played around with ownership and lifetimes, and got used to the compiler yelling at me. But eventually, I hit that point where I wanted to build something "real"—something that had a bit of structure, some actual user-facing output, and forced me to deal with files, rendering, and maybe even some HTML.
