@@ -179,4 +179,4 @@ If you're learning Rust and want a project that forces you to engage with the la
 
 > Thanks for reading.  
 >  
-> The source code is available on my machine. Maybe one day I’ll publish it. 😄  
+> The source code is available on https://github.com/fulgidus/yet-another-rust-ssg. 😄  
