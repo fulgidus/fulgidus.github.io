@@ -19,7 +19,7 @@ tags:
 draft: false
 lang: en
 redirect: ""
-unlisted: true
+unlisted: false
 video: false
 ---
 ## 🚀 A Personal Detour into Rust
