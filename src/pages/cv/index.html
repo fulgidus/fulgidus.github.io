@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alessio Giulio Corsi - CV</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
             --primary-color: #380541;
@@ -42,10 +43,12 @@
 
         @media print {
             @page {
-                margin: 1.5cm;
+                size: A4;
+                margin: 0.75cm;
             }
 
             body {
+                font-size: 0.85rem;
                 print-color-adjust: exact;
                 -webkit-print-color-adjust: exact;
             }
@@ -54,6 +57,8 @@
                 border: 1px solid #666;
                 background-color: white !important;
                 color: black !important;
+                height: 1rem;
+                line-height: .25rem;
             }
 
             .bg-primary-light {
@@ -72,6 +77,30 @@
                 display: none !important;
             }
 
+            .print-p-0 {
+                padding: 0 !important;
+            }
+
+            .print-p-1 {
+                padding: 1 !important;
+            }
+
+            .print-p-2 {
+                padding: 2 !important;
+            }
+
+            .print-p-3 {
+                padding: 3 !important;
+            }
+
+            .print-p-4 {
+                padding: 4 !important;
+            }
+
+            .print-mb-0 {
+                margin-bottom: 0 !important;
+            }
+
             a {
                 text-decoration: none;
                 color: black;
@@ -80,21 +109,21 @@
     </style>
 </head>
 
-<body class="bg-gray-50">
-    <div class="max-w-4xl mx-auto p-8">
+<body class="bg-gray-50 print:text-sm">
+    <div class="max-w-4xl mx-auto p-8 print-p-0">
         <!-- Header -->
-        <header class="bg-primary-light rounded-lg p-4 mb-3">
+        <header class="bg-primary-light rounded-lg p-4 print-p-0 mb-3">
             <div class="flex justify-between items-center">
                 <div class="flex-grow">
                     <div class="flex items-baseline gap-4">
                         <h1 class="text-2xl font-bold text-primary">Alessio Giulio Corsi</h1>
                         <p class="text-lg text-gray-700">Senior Software Developer</p>
                     </div>
-                    <div class="flex gap-6 mt-2 text-sm text-gray-600">
-                        <div>Turin, Italy</div>
-                        <div>(+39) 347 1870275</div>
-                        <div>alessio.corsi@gmail.com</div>
-                        <div><a href="https://github.com/fulgidus"
+                    <div class="flex gap-4 mt-2 text-sm text-gray-600">
+                        <div><i class="fas fa-map-marker-alt"></i> Turin, Italy</div>
+                        <div><i class="fas fa-phone"></i> (+39) 347 1870275</div>
+                        <div><i class="fas fa-envelope"></i> alessio.corsi@gmail.com</div>
+                        <div><i class="fab fa-github"></i> <a href="https://github.com/fulgidus"
                                 class="text-primary hover:underline">github.com/fulgidus</a>
                         </div>
                     </div>
@@ -107,51 +136,85 @@
         </header>
 
         <!-- Profile -->
-        <section class="bg-primary-light rounded-lg p-6 mb-6">
-            <h2 class="text-2xl font-bold text-primary mb-4 pb-2 border-b border-primary">Profile</h2>
+        <section class="bg-primary-light rounded-lg p-4 print-p-0 mb-6">
+            <h2 class="text-xl font-bold text-primary mb-2 pb-2 border-b border-primary">Profile</h2>
             <p class="text-gray-700 leading-relaxed mb-4">
-                Senior Full-Stack Developer with 7+ years of experience architecting and delivering enterprise-scale
-                applications across banking, healthcare, and insurance sectors. Proven track record of optimizing
-                development processes, including reducing execution times by up to 97% and mentoring junior developers.
-                Expertise in modern JavaScript ecosystems with a focus on scalable, maintainable solutions and best
-                practices in software development.
+                Experienced Senior Full-Stack Developer with expertise in designing and delivering scalable applications
+                for banking, healthcare, and insurance industries. Skilled in optimizing processes, improving system
+                performance, and mentoring developers. Proficient in React, TypeScript, and cloud-native solutions.
             </p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tech-tag">React</span>
-                <span class="tech-tag">TypeScript</span>
-                <span class="tech-tag">Node.js</span>
-                <span class="tech-tag">MongoDB</span>
-                <span class="tech-tag">PostgreSQL</span>
-                <span class="tech-tag">AWS</span>
-                <span class="tech-tag">REST APIs</span>
-                <span class="tech-tag">Microservices</span>
-                <span class="tech-tag">CI/CD</span>
+        </section>
+
+        <!-- Education -->
+        <section class="bg-primary-light rounded-lg p-4 print-p-0 mb-6">
+            <h2 class="text-xl font-bold text-primary mb-2 pb-2 border-b border-primary">Education & Certifications
+            </h2>
+
+            <div class="grid grid-cols-2 gap-6">
+                <!-- edX -->
+                <div>
+                    <h3 class="text-xl font-semibold text-primary">edX - Introduction to Project Management</h3>
+                    <p class="text-sm text-gray-600">2024</p>
+                    <p class="text-sm text-gray-700">Verified Certificate</p>
+                    <p class="text-sm text-gray-600">
+                        <a href="https://courses.edx.org/certificates/ae7374a890f64b34bbff16b46096eece"
+                            class="hover:underline">
+                            Certificate ID: ae7374a890f64b34bbff16b46096eece
+                        </a>
+                    </p>
+                </div>
+
+                <!-- Google Data Analytics -->
+                <div>
+                    <h3 class="text-xl font-semibold text-primary">Google Data Analytics Specialization</h3>
+                    <p class="text-sm text-gray-600">2024</p>
+                    <p class="text-sm text-gray-700">Verified Certificate</p>
+                    <p class="text-sm text-gray-600">
+                        <a href="https://www.coursera.org/verify/professional-cert/LT80LN9PPQ0B"
+                            class="hover:underline">
+                            Certificate ID: LT80LN9PPQ0B
+                        </a>
+                    </p>
+                </div>
+
+                <!-- ITS ICT Piemonte -->
+                <div>
+                    <h3 class="text-xl font-semibold text-primary">Higher Technical Diploma - Mobile App Design</h3>
+                    <p class="text-sm text-gray-600">2013 - 2015</p>
+                    <p class="text-sm text-gray-700">ITS ICT Piemonte</p>
+                    <p class="text-sm text-gray-600">EQF level 5</p>
+                </div>
+
+                <!-- British Council -->
+                <div>
+                    <h3 class="text-xl font-semibold text-primary">IELTS - Score 7.5/9 (C1)</h3>
+                    <p class="text-sm text-gray-600">2013</p>
+                    <p class="text-sm text-gray-700">British Council</p>
+                </div>
             </div>
         </section>
 
-        <!-- Experience -->
-        <section class="bg-primary-light rounded-lg p-6 mb-6">
-            <h2 class="text-2xl font-bold text-primary mb-4 pb-2 border-b border-primary">Professional Experience</h2>
+        <!-- Professional Experience -->
+        <section class="bg-primary-light rounded-lg p-4 print-p-0 mb-6 print-mb-0">
+            <h2 class="text-xl font-bold text-primary mb-2 pb-2 border-b border-primary">Professional Experience</h2>
 
             <!-- QCSNET -->
-            <div class="mb-8">
-                <div class="flex justify-between items-baseline mb-2">
-                    <h3 class="text-xl font-semibold text-primary">QCSNET S.R.L.</h3>
-                    <span class="text-sm text-gray-600">01/2023 - Present</span>
+            <div class="mb-2">
+                <div class="flex justify-start gap-2 items-baseline">
+                    <h3 class="text-xl font-semibold text-primary">QCSNET</h3>
+                    <p class="font-medium text-gray-700">Software Developer</p>
+                    <span class="text-sm text-gray-600 ml-auto">01/2023 - Present</span>
                 </div>
-                <p class="font-medium text-gray-700 mb-2">Software Developer</p>
-                <ul class="list-disc list-inside mb-3 space-y-2 text-gray-700">
-                    <li>Spearheaded frontend development of an enterprise-grade video conferencing platform supporting
-                        up to 16 concurrent participants per session</li>
-                    <li>Engineered a sophisticated TypeScript-based CRUD table system with automated API integration,
-                        leveraging advanced type inference</li>
-                    <li>Developed and maintained key components within an 11-package Turborepo monorepo architecture
-                    </li>
-                    <li>Implemented high-availability features targeting 99%+ uptime for enterprise clients</li>
+                <ul class="list-disc list-inside text-gray-700">
+                    <li>Led frontend development for enterprise-grade video conferencing platform.</li>
+                    <li>Developed a template-driven system for CRUD tables, improving scalability and reducing development time.</li>
+                    <!-- <li>Maintained core components of an 11-package Turborepo architecture.</li> -->
                 </ul>
-                <div class="flex flex-wrap gap-2 mt-2">
+                <div class="flex flex-wrap gap-2">
                     <span class="tech-tag">React</span>
                     <span class="tech-tag">TypeScript</span>
+                    <span class="tech-tag">Vue</span>
+                    <span class="tech-tag">Nuxt</span>
                     <span class="tech-tag">Turborepo</span>
                     <span class="tech-tag">PostgreSQL</span>
                     <span class="tech-tag">WebRTC</span>
@@ -159,20 +222,17 @@
             </div>
 
             <!-- Epicura -->
-            <div class="mb-8">
-                <div class="flex justify-between items-baseline mb-2">
+            <div class="mb-2">
+                <div class="flex justify-start gap-2 items-baseline">
                     <h3 class="text-xl font-semibold text-primary">Epicura</h3>
-                    <span class="text-sm text-gray-600">07/2021 - 06/2022</span>
+                    <p class="font-medium text-gray-700">Software Developer</p>
+                    <span class="text-sm text-gray-600 ml-auto">07/2021 - 06/2022</span>
                 </div>
-                <p class="font-medium text-gray-700 mb-2">Software Developer</p>
-                <ul class="list-disc list-inside mb-3 space-y-2 text-gray-700">
-                    <li>Developed backend features for telemedicine platform serving hundreds of healthcare providers
-                    </li>
-                    <li>Created data anonymization system for secure pentesting environments</li>
-                    <li>Optimized data deduplication processes, reducing execution time from 4 hours to 2.5 minutes</li>
-                    <li>Implemented premium subscription system using Stripe API integration</li>
+                <ul class="list-disc list-inside text-gray-700">
+                    <li>Built backend features for telemedicine platform serving healthcare providers.</li>
+                    <li>Integrated Stripe API for premium subscription services.</li>
                 </ul>
-                <div class="flex flex-wrap gap-2 mt-2">
+                <div class="flex flex-wrap gap-2">
                     <span class="tech-tag">Node.js</span>
                     <span class="tech-tag">TypeScript</span>
                     <span class="tech-tag">MongoDB</span>
@@ -181,20 +241,18 @@
                 </div>
             </div>
 
-            <!-- Remaining experience sections follow same pattern -->
             <!-- Ulixe Link -->
-            <div class="mb-8">
-                <div class="flex justify-between items-baseline mb-2">
+            <div class="mb-2">
+                <div class="flex justify-start gap-2 items-baseline">
                     <h3 class="text-xl font-semibold text-primary">Ulixe Link</h3>
-                    <span class="text-sm text-gray-600">08/2019 - 07/2021</span>
+                    <p class="font-medium text-gray-700">Senior Consultant</p>
+                    <span class="text-sm text-gray-600 ml-auto">08/2019 - 07/2021</span>
                 </div>
-                <p class="font-medium text-gray-700 mb-2">Senior Consultant</p>
-                <ul class="list-disc list-inside mb-3 space-y-2 text-gray-700">
-                    <li>Developed AA-compliant video playback interface for Tokyo 2020 Olympics CMS</li>
-                    <li>Contributed to Intesa San Paolo's platform modernization</li>
-                    <li>Participated in frontend development for Edison Risolve customer care platform</li>
+                <ul class="list-disc list-inside text-gray-700">
+                    <li>Contributed to platform modernization projects, including Intesa San Paolo and Edison
+                        Risolve.</li>
                 </ul>
-                <div class="flex flex-wrap gap-2 mt-2">
+                <div class="flex flex-wrap gap-2">
                     <span class="tech-tag">Angular 8</span>
                     <span class="tech-tag">React</span>
                     <span class="tech-tag">TypeScript</span>
@@ -203,24 +261,17 @@
             </div>
 
             <!-- Telematica Informatica -->
-            <div class="mb-8">
-                <div class="flex justify-between items-baseline mb-2">
+            <div class="mb-2">
+                <div class="flex justify-start gap-2 items-baseline">
                     <h3 class="text-xl font-semibold text-primary">Telematica Informatica</h3>
-                    <span class="text-sm text-gray-600">04/2016 - 08/2019</span>
+                    <p class="font-medium text-gray-700">Software Consultant</p>
+                    <span class="text-sm text-gray-600 ml-auto">04/2016 - 08/2019</span>
                 </div>
-                <p class="font-medium text-gray-700 mb-2">Software Consultant</p>
-                <ul class="list-disc list-inside mb-3 space-y-2 text-gray-700">
-                    <li>Architected critical video identification system for banking onboarding using WebRTC,
-                        implementing
-                        client-side capability validation</li>
-                    <li>Developed IoT monitoring interface for agricultural equipment, implementing real-time CAN bus
-                        data
-                        visualization</li>
-                    <li>Created Node.js digital ticket generator with cryptographic signing for large-scale event
-                        management</li>
-                    <li>Built Windows Phone museum companion app with multi-threaded audio playback system</li>
+                <ul class="list-disc list-inside text-gray-700">
+                    <li>Designed video identification systems for banking onboarding via WebRTC.</li>
+                    <li>Developed IoT monitoring tools for real-time agricultural data visualization.</li>
                 </ul>
-                <div class="flex flex-wrap gap-2 mt-2">
+                <div class="flex flex-wrap gap-2">
                     <span class="tech-tag">React</span>
                     <span class="tech-tag">Redux Saga</span>
                     <span class="tech-tag">WebRTC</span>
@@ -231,67 +282,22 @@
             </div>
 
             <!-- Betacom -->
-            <div class="mb-8">
-                <div class="flex justify-between items-baseline mb-2">
+            <div class="mb-2">
+                <div class="flex justify-start gap-2 items-baseline">
                     <h3 class="text-xl font-semibold text-primary">Betacom s.r.l.</h3>
-                    <span class="text-sm text-gray-600">09/2015 - 02/2016</span>
+                    <p class="font-medium text-gray-700">Junior Developer</p>
+                    <span class="text-sm text-gray-600 ml-auto">09/2015 - 02/2016</span>
                 </div>
-                <p class="font-medium text-gray-700 mb-2">Junior Developer</p>
-                <ul class="list-disc list-inside mb-3 space-y-2 text-gray-700">
-                    <li>Developed manufacturing quality control dashboard with real-time data visualization</li>
-                    <li>Implemented secure authentication combining LDAP and SHA-512 password hashing</li>
-                    <li>Created data processing pipeline for manufacturing statistics using Entity Framework</li>
+                <ul class="list-disc list-inside text-gray-700">
+                    <li>Developed secure authentication systems with LDAP and SHA-512 hashing.</li>
                 </ul>
-                <div class="flex flex-wrap gap-2 mt-2">
+                <div class="flex flex-wrap gap-2">
                     <span class="tech-tag">WCF</span>
                     <span class="tech-tag">Web API</span>
                     <span class="tech-tag">Entity Framework</span>
                     <span class="tech-tag">SQL Server</span>
                     <span class="tech-tag">AngularJS</span>
                 </div>
-            </div>
-        </section>
-
-        <!-- Education -->
-        <section class="bg-primary-light rounded-lg p-6 mb-6">
-            <h2 class="text-2xl font-bold text-primary mb-4 pb-2 border-b border-primary">Education & Certifications
-            </h2>
-            
-            <div class="mb-6">
-                <div class="flex justify-between items-baseline mb-2">
-                    <h3 class="text-xl font-semibold text-primary">edX - Introduction to Project Management</h3>
-                    <span class="text-sm text-gray-600">2024</span>
-                </div>
-                <p class="text-gray-700">Verified Certificate</p>
-                <p class="text-gray-600"><a href="https://courses.edx.org/certificates/ae7374a890f64b34bbff16b46096eece"
-                        class="hover:underline">Certificate ID: ae7374a890f64b34bbff16b46096eece</a></p>
-            </div>
-
-            <div class="mb-6">
-                <div class="flex justify-between items-baseline mb-2">
-                    <h3 class="text-xl font-semibold text-primary">Google Data Analytics Specialization</h3>
-                    <span class="text-sm text-gray-600">2024</span>
-                </div>
-                <p class="text-gray-700">Verified Certificate</p>
-                <p class="text-gray-600"><a href="https://www.coursera.org/verify/professional-cert/LT80LN9PPQ0B"
-                        class="hover:underline">Certificate ID: LT80LN9PPQ0B</a></p>
-            </div>
-
-            <div class="mb-6">
-                <div class="flex justify-between items-baseline mb-2">
-                    <h3 class="text-xl font-semibold text-primary">ITS ICT Piemonte</h3>
-                    <span class="text-sm text-gray-600">2013 - 2015</span>
-                </div>
-                <p class="text-gray-700">Higher Technical Diploma - Mobile App Design</p>
-                <p class="text-gray-600">EQF level 5</p>
-            </div>
-
-            <div>
-                <div class="flex justify-between items-baseline mb-2">
-                    <h3 class="text-xl font-semibold text-primary">British Council</h3>
-                    <span class="text-sm text-gray-600">2013</span>
-                </div>
-                <p class="text-gray-700">IELTS - Score 7.5/9 (C1)</p>
             </div>
         </section>
     </div>
