@@ -72,5 +72,6 @@ export default defineConfig({
         'i-ri-map-pin-user-line',
         'i-carbon-strategy-play',
         'i-ri-bit-coin-line',
+        'i-carbon-machine-learning-model',
     ],
 })

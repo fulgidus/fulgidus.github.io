@@ -2,6 +2,18 @@ import type { ProjectData } from '@/types'
 
 export const projectData: ProjectData = [
     {
+        title: 'Esperimenti con Rust',
+        projects: [
+            {
+                text: 'Robo-Dino',
+                description: 'Una simulazione interattiva di neuroevoluzione sviluppata con Rust, WebAssembly e TypeScript. Guarda centinaia di dinosauri imparare a saltare gli ostacoli grazie a reti neurali in continua evoluzione — tutto renderizzato in tempo reale con HTML5 Canvas. Niente framework, niente backend, solo pura intelligenza artificiale e sopravvivenza a pixel.',
+                icon: 'i-carbon-machine-learning-model',
+                href: 'https://github.com/fulgidus/robo-dino',
+            },
+
+        ],
+    },
+    {
         title: 'Sfide di coding',
         projects: [
             {
