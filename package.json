@@ -1,9 +1,8 @@
 {
   "name": "Fulgidus' personal Blog",
-  "type": "module",
-  "version": "0.2.0",
-  "packageManager": "pnpm@latest",
-  "description": "A minimal, SEO-friendly portfolio and blog theme for Astro, supports Vue and UnoCSS.",
+  "version": "1.0.0",
+  "packageManager": "pnpm",
+  "description": "A minimal, SEO-friendly portfolio and blog.",
   "author": "Alessio Corsi (alessio.corsi@gmail.com)",
   "license": "MIT",
   "keywords": [
