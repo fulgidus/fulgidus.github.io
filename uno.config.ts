@@ -73,5 +73,7 @@ export default defineConfig({
         'i-carbon-strategy-play',
         'i-ri-bit-coin-line',
         'i-carbon-machine-learning-model',
+        'i-ri-rocket-line',
+        'i-ri-lightbulb-flash-line',
     ],
 })

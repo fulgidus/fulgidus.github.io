@@ -2,6 +2,18 @@ import type { ProjectData } from '@/types'
 
 export const projectData: ProjectData = [
     {
+        title: 'Progetti FOSS mantenuti',
+        projects: [
+            {
+                text: 'ZigNet',
+                description: 'Un server MCP ibrido deterministico/stocastico per assistere su Zig. Fornisce completamento del codice, controllo errori, e altre feature da IDE agli sviluppatori Zig usando il Model Context Protocol.',
+                icon: 'i-ri-lightbulb-flash-line',
+                href: 'https://github.com/fulgidus/zignet',
+            },
+
+        ],
+    },
+    {
         title: 'Esperimenti con Rust',
         projects: [
             {
