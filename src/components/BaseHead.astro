@@ -4,10 +4,7 @@ import "@/styles/global.css";
 import "@/styles/prose.css";
 import "@/styles/dot.css";
 import { defaultLang, Languages, ui } from "@/i18n/ui";
-import {
-  useSpecificPath,
-  translateFrom,
-} from "@/i18n/utils";
+import { useSpecificPath, translateFrom } from "@/i18n/utils";
 
 interface Props {
   title?: string;
@@ -41,7 +38,7 @@ function formatCanonicalURL(url: string | URL) {
 }
 
 // const currentLang = getLangFromUrl(Astro.url.pathname);
-const availableLanguages = Object.keys(ui) as (Languages)[];
+const availableLanguages = Object.keys(ui) as Languages[];
 // const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
 // const t = useTranslations(currentLang as Languages);
 // const tp = useTranslatedPath(currentLang as Languages);
@@ -71,28 +68,30 @@ const availableLanguages = Object.keys(ui) as (Languages)[];
   lang="en"
 />
 {
-  availableLanguages.filter(l => l !== 'en' && !ui[l]['disabled']).map((lang) => {
-    if (lang !== defaultLang) {
-      return (
-        <>
-          <link
-            rel="alternate"
-            type="application/rss+xml"
-            href={useSpecificPath(lang, `/rss.xml`)}
-            title={translateFrom(lang, "rss.titleAll")}
-            lang={lang}
+  availableLanguages
+    .filter((l) => l !== "en" && !ui[l]["disabled"])
+    .map((lang) => {
+      if (lang !== defaultLang) {
+        return (
+          <>
+            <link
+              rel="alternate"
+              type="application/rss+xml"
+              href={useSpecificPath(lang, `/rss.xml`)}
+              title={translateFrom(lang, "rss.titleAll")}
+              lang={lang}
             />
-          <link
-            rel="alternate"
-            type="application/rss+xml"
-            href={useSpecificPath(lang, `/last-ten.xml`)}
-            title={translateFrom(lang, "rss.titleLastTen")}
-            lang={lang}
-          />
-        </>
-      );
-    }
-  })
+            <link
+              rel="alternate"
+              type="application/rss+xml"
+              href={useSpecificPath(lang, `/last-ten.xml`)}
+              title={translateFrom(lang, "rss.titleLastTen")}
+              lang={lang}
+            />
+          </>
+        );
+      }
+    })
 }
 
 <!-- Page Metadata -->
@@ -139,6 +138,23 @@ const availableLanguages = Object.keys(ui) as (Languages)[];
     nprogress.done();
   });
 </script>
-<script defer src="https://cloud.umami.is/script.js" data-website-id="e4492488-53e1-4115-8b3b-f07c527d973b"></script>
+<script
+  defer
+  src="https://cloud.umami.is/script.js"
+  data-website-id="e4492488-53e1-4115-8b3b-f07c527d973b"></script>
 <!-- Privacy-friendly analytics by Plausible -->
-<script defer data-domain="fulgid.us" src="https://analytics.fulgid.us/js/script.js"></script>
+<script async src="https://analytics.fulgid.us/js/pa-F_72gHvHi83JjPwjHEWhv.js"
+></script>
+<script in-line>
+  (window.plausible =
+    window.plausible ||
+    function () {
+      (plausible.q = plausible.q || []).push(arguments);
+    }),
+    (plausible.init =
+      plausible.init ||
+      function (i) {
+        plausible.o = i || {};
+      });
+  plausible.init();
+</script>
