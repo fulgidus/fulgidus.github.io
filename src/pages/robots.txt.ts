@@ -8,42 +8,28 @@ interface Context {
 
 export async function generateDisallowedPaths() {
     const blogPosts = await getCollection('blog', p => p.data.unlisted);
-    return blogPosts.map(p => `
-
-User-agent: *
-Disallow: ${siteConfig.basePath ?? '/'}posts/${p.slug}
-
-User-agent: AdsBot-Google
-Disallow: ${siteConfig.basePath ?? '/'}posts/${p.slug}
-
-User-agent: AdsBot-Google-Mobile
-Disallow: ${siteConfig.basePath ?? '/'}posts/${p.slug}
-
-User-agent: *
-Allow: /
-
-`.trim()).join('\n\n');
+    const base = siteConfig.basePath ?? '/'
+    return blogPosts.map(p => `Disallow: ${base}posts/${p.slug}`).join('\n');
 }
 
 export async function GET(context: Context) {
-    const robots = `
+    const unlistedRules = await generateDisallowedPaths()
 
+    const robots = `
 User-agent: *
 Disallow: /well/
+${unlistedRules}
+Allow: /
 
 User-agent: AdsBot-Google
 Disallow: /well/
+${unlistedRules}
 
 User-agent: AdsBot-Google-Mobile
 Disallow: /well/
-
-User-agent: *
-Disallow: 
-
-${await generateDisallowedPaths()}
+${unlistedRules}
 
 Sitemap: ${new URL('sitemap-index.xml', context.site).href}
-
 `.trim()
     return new Response(robots, {
         headers: { 'Content-Type': 'text/plain; charset=utf-8' },

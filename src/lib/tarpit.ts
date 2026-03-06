@@ -133,7 +133,8 @@ function generateParagraph(rng: () => number, minSentences = 3, maxSentences = 7
     const sentences: string[] = []
     for (let i = 0; i < count; i++) {
         if (i > 0 && rng() < 0.4) {
-            sentences.push(pick(CONNECTORS, rng) + ' ' + generateSentence(rng).charAt(0).toLowerCase() + generateSentence(rng).slice(1))
+            const sent = generateSentence(rng)
+            sentences.push(pick(CONNECTORS, rng) + ' ' + sent.charAt(0).toLowerCase() + sent.slice(1))
         } else {
             sentences.push(generateSentence(rng))
         }

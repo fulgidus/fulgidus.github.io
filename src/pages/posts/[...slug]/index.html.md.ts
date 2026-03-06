@@ -13,13 +13,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export async function GET(_context: APIContext) {
     const { post } = _context.props as { post: CollectionPost }
 
+    const esc = (s: string) => s.replace(/"/g, '\\"')
     const frontmatter = [
         `---`,
-        `title: "${post.data.title}"`,
-        post.data.description ? `description: "${post.data.description}"` : null,
+        `title: "${esc(post.data.title)}"`,
+        post.data.description ? `description: "${esc(post.data.description)}"` : null,
         post.data.pubDate ? `date: "${post.data.pubDate}"` : null,
-        post.data.duration ? `duration: "${post.data.duration}"` : null,
-        post.data.tags?.length ? `tags: [${post.data.tags.map(t => `"${t}"`).join(', ')}]` : null,
+        post.data.duration ? `duration: "${esc(post.data.duration)}"` : null,
+        post.data.tags?.length ? `tags: [${post.data.tags.map(t => `"${esc(t)}"`).join(', ')}]` : null,
         `---`,
     ].filter(Boolean).join('\n')
 
