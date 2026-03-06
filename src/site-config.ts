@@ -115,6 +115,10 @@ export const siteConfig = {
                 text: 'footer.tags',
                 href: '/tags',
             },
+            {
+                text: 'footer.llmsTxt',
+                href: '/llms.txt',
+            },
         ],
     },
 

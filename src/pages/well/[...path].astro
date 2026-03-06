@@ -1,0 +1,70 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import {
+    generateLabyrinthPaths,
+    generateTitle,
+    generatePageContent,
+    generateLinksForPath,
+    generateLinkText,
+    prngFromString,
+} from '@/lib/tarpit'
+
+export function getStaticPaths() {
+    const allPaths = generateLabyrinthPaths(2048)
+    return allPaths.map((path) => ({
+        params: { path },
+        props: { allPaths },
+    }))
+}
+
+const { path } = Astro.params
+const { allPaths } = Astro.props as { allPaths: string[] }
+
+const currentPath = path as string
+const rng = prngFromString(currentPath)
+const title = generateTitle(rng)
+const content = generatePageContent(prngFromString('content:' + currentPath))
+const links = generateLinksForPath(currentPath, allPaths)
+
+// Generate a plausible date
+const dateRng = prngFromString('date:' + currentPath)
+const year = 2021 + Math.floor(dateRng() * 5)
+const month = 1 + Math.floor(dateRng() * 12)
+const day = 1 + Math.floor(dateRng() * 28)
+const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+---
+
+<BaseLayout title={title} description={`Technical analysis: ${title}`} noindex>
+    <article class="prose">
+        <div class="max-w-4xl mx-auto relative">
+            <h1>{title}</h1>
+            <p class="flex flex-wrap flex-gap-1">
+                <time datetime={dateStr}>{dateStr}</time>
+                <span>&middot; {Math.floor(prngFromString('dur:' + currentPath)() * 15 + 3)} min read</span>
+            </p>
+        </div>
+
+        <Fragment set:html={content
+            .split('\n\n')
+            .map(block => {
+                if (block.startsWith('## ')) {
+                    return `<h2>${block.slice(3)}</h2>`
+                }
+                if (block.startsWith('```')) {
+                    return `<pre><code>${block.replace(/^```\w*\n/, '').replace(/\n```$/, '')}</code></pre>`
+                }
+                return `<p>${block}</p>`
+            })
+            .join('\n')} />
+
+        <hr />
+        <h2>Related Articles</h2>
+        <ul>
+            {links.map((linkPath) => (
+                <li>
+                    <a href={`/well/${linkPath}`}>{generateLinkText(linkPath)}</a>
+                </li>
+            ))}
+        </ul>
+    </article>
+</BaseLayout>

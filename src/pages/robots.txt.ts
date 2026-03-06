@@ -29,6 +29,15 @@ export async function GET(context: Context) {
     const robots = `
 
 User-agent: *
+Disallow: /well/
+
+User-agent: AdsBot-Google
+Disallow: /well/
+
+User-agent: AdsBot-Google-Mobile
+Disallow: /well/
+
+User-agent: *
 Disallow: 
 
 ${await generateDisallowedPaths()}

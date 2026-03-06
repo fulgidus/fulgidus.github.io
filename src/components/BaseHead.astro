@@ -11,12 +11,14 @@ interface Props {
   description?: string;
   image?: { src: string; alt?: string };
   pageType?: "website" | "article";
+  noindex?: boolean;
 }
 
 const {
   description = siteConfig.description,
   image = siteConfig.siteImage,
   pageType = "website",
+  noindex = false,
 } = Astro.props;
 
 const title = [Astro.props.title, siteConfig.title].filter(Boolean).join(" | ");
@@ -98,6 +100,10 @@ const availableLanguages = Object.keys(ui) as Languages[];
 <link rel="canonical" href={formatCanonicalURL(canonicalURL)} />
 <meta name="description" content={description} />
 <meta name="theme-color" content="#380541" />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- LLM-friendly content -->
+<link rel="alternate" type="text/plain" href="/llms.txt" title="LLMs.txt - LLM-friendly site content" />
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={pageType} />

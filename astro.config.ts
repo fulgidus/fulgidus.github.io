@@ -27,7 +27,8 @@ export default defineConfig({
             i18n: {
                 defaultLocale: 'en',
                 locales: languages
-            }
+            },
+            filter: (page) => !page.includes('/well/'),
         }),
         UnoCSS({
             injectReset: true, 
