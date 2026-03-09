@@ -32,16 +32,16 @@ const lang = getLangFromUrl(Astro.url);
     <ViewTransitions />
   </head>
   <body class="bg-main text-main min-h-screen font-sans w-full bg-dot">
-    <Header client:only="vue" />
+    <Header client:only="vue" transition:persist="header" />
     <HeaderAstro />
     <main
       class=`grow ${imageSize === 'xl' ? 'max-w-100vw':'max-w-4xl'} mx-auto sm:pt-36 pt-26 pb-16 px-6 relative important:print:max-w-100vw important:print:p0 text-pretty`
       transition:animate={fade({ duration: "0.4s" })}
     >
       <slot />
-      <ScrollToTop client:only="vue" />
+      <ScrollToTop client:only="vue" transition:persist="scroll-to-top" />
       <div class="max-w-4xl mx-auto sm:pt-18 pt-12 pb-16 px-6 relative">
-        <Footer client:only="vue"/>
+        <Footer client:only="vue" transition:persist="footer" />
       </div>
     </main>
     <!-- Honeypot: invisible link to tarpit for misbehaving crawlers -->
