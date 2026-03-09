@@ -51,6 +51,8 @@ const blog = defineCollection({
         tags: z.array(z.string()).default([]),
         redirect: z.string().optional(),
         video: z.boolean().default(false),
+        series: z.string().optional(),
+        seriesOrder: z.number().optional(),
     }),
 })
 

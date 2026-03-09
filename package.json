@@ -36,6 +36,8 @@
     "astro": "^4.16.16",
     "html-entities": "^2.5.2",
     "nprogress": "^0.2.0",
+    "satori": "^0.25.0",
+    "satori-html": "^0.3.2",
     "sharp": "^0.33.5",
     "typescript": "^5.7.2",
     "unocss": "^0.61.9",

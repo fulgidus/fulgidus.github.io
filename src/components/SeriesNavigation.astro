@@ -1,0 +1,81 @@
+---
+import type { CollectionPost } from "@/types";
+import type { Languages } from "@/i18n/ui";
+import { getPosts } from "@/utils/posts";
+
+interface Props {
+  currentSlug: string;
+  series: string;
+  lang?: Languages;
+}
+
+const { currentSlug, series, lang = "en" } = Astro.props;
+
+// Fetch all posts in this series for the current language
+const allPosts = await getPosts({ lang, withDrafts: false });
+const seriesPosts = allPosts
+  .filter((p: CollectionPost) => p.data.series === series)
+  .sort((a: CollectionPost, b: CollectionPost) => {
+    const orderA = a.data.seriesOrder ?? 0;
+    const orderB = b.data.seriesOrder ?? 0;
+    return orderA - orderB;
+  });
+
+const currentIndex = seriesPosts.findIndex((p: CollectionPost) => p.slug === currentSlug);
+const prevPost = currentIndex > 0 ? seriesPosts[currentIndex - 1] : null;
+const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentIndex + 1] : null;
+const totalParts = seriesPosts.length;
+const currentPart = currentIndex + 1;
+
+function getPostHref(post: CollectionPost): string {
+  const slug = post.slug;
+  if (slug.startsWith("it/")) {
+    return `/it/posts/${slug.replace(/^it\//, "")}`;
+  }
+  return `/posts/${slug}`;
+}
+---
+
+{seriesPosts.length > 1 && (
+  <nav class="series-nav my-8 border border-solid border-gray-300 dark:border-gray-700 rounded-lg p-4" aria-label="Post series navigation">
+    <div class="series-header mb-3">
+      <span class="text-sm opacity-60 uppercase tracking-wider font-semibold">Series</span>
+      <h3 class="text-lg font-bold mt-1 mb-0 !opacity-100">{series}</h3>
+      <span class="text-sm opacity-50">Part {currentPart} of {totalParts}</span>
+    </div>
+
+    <details class="mb-3">
+      <summary class="cursor-pointer text-sm opacity-70 hover:opacity-100 transition-opacity select-none">
+        All parts in this series
+      </summary>
+      <ol class="mt-2 !list-decimal !pl-6">
+        {seriesPosts.map((post: CollectionPost, i: number) => (
+          <li class={`text-sm my-1 ${i === currentIndex ? 'font-bold' : ''}`}>
+            {i === currentIndex ? (
+              <span>{post.data.title} (current)</span>
+            ) : (
+              <a href={getPostHref(post)} class="prose-link">{post.data.title}</a>
+            )}
+          </li>
+        ))}
+      </ol>
+    </details>
+
+    <div class="flex justify-between items-center gap-4 flex-wrap">
+      {prevPost ? (
+        <a href={getPostHref(prevPost)} class="prose-link text-sm flex items-center gap-1">
+          <i class="i-ri-arrow-left-line" /> Previous: {prevPost.data.title}
+        </a>
+      ) : (
+        <span />
+      )}
+      {nextPost ? (
+        <a href={getPostHref(nextPost)} class="prose-link text-sm flex items-center gap-1 text-right">
+          Next: {nextPost.data.title} <i class="i-ri-arrow-right-line" />
+        </a>
+      ) : (
+        <span />
+      )}
+    </div>
+  </nav>
+)}

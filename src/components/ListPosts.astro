@@ -102,7 +102,7 @@ const currentLang = getLangFromUrl(Astro.url.pathname);
         >
           <div class="flex flex-col md:flex-row flex-gap-2 md:flex-items-center">
             <div class="flex flex-gap-2 flex-items-center text-wrap">
-              <span lh-normal>
+              <span lh-normal transition:name={`post-title-${post.slug}`}>
                 {post.data.draft && (
                   <i
                     text-red-700

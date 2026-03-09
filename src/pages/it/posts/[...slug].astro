@@ -1,6 +1,9 @@
 ---
 import GoBackToBlog from "@/components/GoBackToBlog.vue";
+import GiscusComments from "@/components/GiscusComments.vue";
 import LanguageFlag from "@/components/LanguageFlags.vue";
+import ReadingProgress from "@/components/ReadingProgress.vue";
+import SeriesNavigation from "@/components/SeriesNavigation.astro";
 import SharePost from "@/components/SharePost.vue";
 import TagsList from "@/components/TagsList.vue";
 import { Languages } from "@/i18n/ui";
@@ -44,6 +47,7 @@ const {
   duration,
   tags,
   draft,
+  series,
 } = post.data;
 const { slug } = post;
 
@@ -70,9 +74,11 @@ const t = useTranslate(currentLang as Languages);
   title={title}
   description={description}
   image={articleImage}
+  ogImage={`/og/${slug}.png`}
   pageType="article"
   imageSize={imageSize}
 >
+  <ReadingProgress client:only="vue" />
   <!-- <a
     title="Back"
     href="javascript:history.back()"
@@ -85,7 +91,7 @@ const t = useTranslate(currentLang as Languages);
   </a> -->
   <article class="prose">
     <div class="max-w-4xl mx-auto relative">
-      <h1>
+      <h1 transition:name={`post-title-${slug}`}>
         {title}
       </h1>
       <!-- {
@@ -130,6 +136,7 @@ const t = useTranslate(currentLang as Languages);
       )
     }
     <Content />
+    {series && <SeriesNavigation currentSlug={slug} series={series} lang="it" />}
     <div class="!mt-10 !mb--10">
       <SharePost shareTitle={title} client:only="vue" />
       {
@@ -144,4 +151,6 @@ const t = useTranslate(currentLang as Languages);
       <GoBackToBlog client:only="vue" />
     </ul>
   </article>
+
+  {!draft && <GiscusComments client:only="vue" />}
 </BaseLayout>
