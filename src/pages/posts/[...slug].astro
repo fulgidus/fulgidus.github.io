@@ -40,6 +40,7 @@ const {
   duration,
   tags,
   draft,
+  unlisted,
 } = post.data;
 const { slug } = post;
 
@@ -89,6 +90,7 @@ const t = useTranslate(currentLang as Languages);
   image={articleImage}
   pageType="article"
   imageSize={imageSize}
+  noindex={unlisted}
 >
   <!-- <a
     title="Back"
