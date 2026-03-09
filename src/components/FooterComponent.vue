@@ -3,22 +3,28 @@ import { defaultLang, Languages } from '@/i18n/ui';
 import { getLangFromUrl, translatePath, useTranslate } from '@/i18n/utils';
 import siteConfig from '@/site-config'
 import { getLinkTarget } from '@/utils/link'
-import { onMounted, ref, watchEffect } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 
 const currentLang = ref<Languages>(defaultLang);
 let currentUrl: URL | undefined
 let translate: (key: string) => string
-onMounted(() => {
+
+function updateLangFromUrl() {
     currentUrl = new URL(window.location.href);
-    currentLang.value = getLangFromUrl(currentUrl); // Update currentLang reactively
-    translate = useTranslate(currentLang.value );
-})
-watchEffect(() => {
-    currentUrl = new URL(window.location.href);
-    currentLang.value = getLangFromUrl(currentUrl); // Update currentLang reactively
+    currentLang.value = getLangFromUrl(currentUrl);
     translate = useTranslate(currentLang.value as Languages);
-});
+}
+
+onMounted(() => {
+    updateLangFromUrl();
+    // Re-read URL after view transition navigation
+    document.addEventListener('astro:page-load', updateLangFromUrl);
+})
+
+onUnmounted(() => {
+    document.removeEventListener('astro:page-load', updateLangFromUrl);
+})
 </script>
 
 <template>

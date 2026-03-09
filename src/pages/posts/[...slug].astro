@@ -110,7 +110,7 @@ const t = useTranslate(currentLang as Languages);
   </a> -->
   <article class="prose">
     <div class="max-w-4xl mx-auto relative">
-      <h1 transition:name={`post-title-${slug}`}>
+      <h1 transition:name={`post-title-${slug.replace(/\//g, '-')}`}>
         {title}
       </h1>
       <!-- {

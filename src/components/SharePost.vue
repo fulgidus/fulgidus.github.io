@@ -4,7 +4,7 @@ import {
     getLangFromUrl, useTranslate
 } from "@/i18n/utils";
 
-import { ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 type Props = {
     id?: string;
@@ -12,11 +12,23 @@ type Props = {
 };
 
 const { id = "default-share-id", shareTitle } = defineProps<Props>();
-// Dynamically construct languages array based on available translations
-// const availableLanguages = Object.keys(ui) as (Languages)[];
-// const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
-const currentLang = getLangFromUrl(window.location.pathname);
-const t = useTranslate(currentLang as Languages);
+
+const currentLang = ref<Languages>('en' as Languages);
+let t: (key: string) => string = (key) => key;
+
+function updateLangFromUrl() {
+    currentLang.value = getLangFromUrl(window.location.pathname) as Languages;
+    t = useTranslate(currentLang.value);
+}
+
+onMounted(() => {
+    updateLangFromUrl();
+    document.addEventListener('astro:page-load', updateLangFromUrl);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('astro:page-load', updateLangFromUrl);
+});
 
 const isHidden = ref(true);
 

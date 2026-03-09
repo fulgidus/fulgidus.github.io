@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useDark, useToggle } from '@vueuse/core'
-import { onMounted, watchEffect } from 'vue'
+import { onMounted, onUnmounted, watchEffect } from 'vue'
 
 const isDark = useDark()
 
@@ -12,15 +12,22 @@ watchEffect(() => {
   }
 })
 
-function setDarkMode(document: Document) {
+function setDarkMode(doc: Document) {
   if (isDark.value) {
-    document.documentElement.classList.add('dark')
+    doc.documentElement.classList.add('dark')
   }
 }
+
+function handleBeforeSwap(event: any) {
+  setDarkMode(event.newDocument)
+}
+
 onMounted(() => {
-  document.addEventListener('astro:before-swap', (event) => {
-    setDarkMode(event.newDocument)
-  })
+  document.addEventListener('astro:before-swap', handleBeforeSwap)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('astro:before-swap', handleBeforeSwap)
 })
 
 function toggleTheme(event: MouseEvent) {

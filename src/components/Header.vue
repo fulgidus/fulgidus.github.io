@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script lang="ts" setup>
 import { useEventListener, useWindowScroll } from '@vueuse/core'
-import { computed, onMounted, ref, watchEffect, onBeforeMount } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watchEffect, onBeforeMount } from 'vue'
 import ThemeToggle from './ThemeToggle.vue'
 import { getLinkTarget } from '@/utils/link'
 import siteConfig from '@/site-config'
@@ -51,10 +51,17 @@ onBeforeMount(()=> {
     noJsHeader?.remove()
 });
 
-onMounted(() => {
+function updateLangFromUrl() {
     currentUrl = new URL(window.location.href);
-    currentLang.value = getLangFromUrl(currentUrl); // Update currentLang reactively
+    currentLang.value = getLangFromUrl(currentUrl);
     translate = useTranslate(currentLang.value as Languages);
+}
+
+onMounted(() => {
+    updateLangFromUrl();
+
+    // Re-read URL after view transition navigation
+    document.addEventListener('astro:page-load', updateLangFromUrl);
 
     useEventListener('scroll', () => {
         const currentScrollPosition = scroll.value;
@@ -72,45 +79,11 @@ onMounted(() => {
         }
         previousScrollPosition.value = currentScrollPosition;
     });
-    // const navMask = document.querySelector('.nav-drawer-mask') as HTMLElement
-
-    // navMask?.addEventListener('touchmove', (event) => {
-    //     event.preventDefault()
-    // })
-
-    // const headerEl = document.querySelector('#header') as HTMLElement
-    // if (!headerEl) {
-    //     return
-    // }
-
-    // if (document.documentElement.scrollTop > 100) {
-    //     headerEl.classList.add('header-bg-blur')
-    // }
-
-    // window.addEventListener('scroll', () => {
-    //     if (scroll.value < 150) {
-    //         headerEl.classList.remove('header-hide')
-    //         return
-    //     }
-
-    //     if (scroll.value - oldScroll.value > 150) {
-    //         headerEl.classList.add('header-hide')
-    //         oldScroll.value = scroll.value
-    //     }
-
-    //     if (oldScroll.value - scroll.value > 150) {
-    //         headerEl.classList.remove('header-hide')
-    //         oldScroll.value = scroll.value
-    //     }
-    // })
 })
 
-
-// Watch currentLang for changes and update translations
-watchEffect(() => {
-    currentUrl = new URL(window.location.href);
-    translate = useTranslate(currentLang.value as Languages);
-});
+onUnmounted(() => {
+    document.removeEventListener('astro:page-load', updateLangFromUrl);
+})
 
 
 function toggleNavDrawer() {

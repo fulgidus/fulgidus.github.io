@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watchEffect, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { getLangFromUrl, stripLangFromPath, translatePath, useTranslate } from '../i18n/utils';
 import { defaultLang, Languages, ui } from '@/i18n/ui';
 
@@ -58,18 +58,22 @@ async function checkLink(newUrl: string): Promise<boolean> {
         });
     
 }
-onMounted(() => {
+function updateLangFromUrl() {
     url = new URL(window.location.href);
-    currentLang.value = getLangFromUrl(url); // Update currentLang reactively
+    currentLang.value = getLangFromUrl(url);
     translate = useTranslate(currentLang.value as Languages);
+    isDropdownOpen.value = false;
+}
+
+onMounted(() => {
+    updateLangFromUrl();
+    // Re-read URL after view transition navigation
+    document.addEventListener('astro:page-load', updateLangFromUrl);
 })
 
-
-// Watch currentLang for changes and update translations
-watchEffect(() => {
-    url = new URL(window.location.href);
-    translate = useTranslate(currentLang.value as Languages);
-});
+onUnmounted(() => {
+    document.removeEventListener('astro:page-load', updateLangFromUrl);
+})
 
 
 
