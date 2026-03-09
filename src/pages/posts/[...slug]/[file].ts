@@ -1,11 +1,11 @@
 import type { CollectionPost } from '@/types'
-import { getPosts, removeLangFromSlug } from '@/utils/posts'
+import { getPosts } from '@/utils/posts'
 import type { APIContext, GetStaticPaths } from 'astro'
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    const posts = await getPosts({ lang: 'it', withDrafts: false, withUnlisted: false })
+    const posts = await getPosts({ lang: 'en', withDrafts: false, withUnlisted: false })
     return posts.map((post: CollectionPost) => ({
-        params: { slug: removeLangFromSlug(post.slug) },
+        params: { slug: post.slug, file: 'index.html.md' },
         props: { post },
     }))
 }
