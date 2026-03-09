@@ -44,7 +44,7 @@ const { y: scroll } = useWindowScroll();
 // Reactive language based on URL
 const currentLang = ref(defaultLang);
 let currentUrl: URL | undefined
-let translate: (key: string) => string
+const translate = computed(() => useTranslate(currentLang.value as Languages))
 
 onBeforeMount(()=> {
     const noJsHeader = document.getElementById('no-js-header')
@@ -54,7 +54,6 @@ onBeforeMount(()=> {
 function updateLangFromUrl() {
     currentUrl = new URL(window.location.href);
     currentLang.value = getLangFromUrl(currentUrl);
-    translate = useTranslate(currentLang.value as Languages);
 }
 
 onMounted(() => {

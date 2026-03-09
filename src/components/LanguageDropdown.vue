@@ -30,19 +30,27 @@ import { defaultLang, Languages, ui } from '@/i18n/ui';
 const isDropdownOpen = ref(false);
 const currentLang = ref(defaultLang);
 let url: URL | undefined
-let translate: (key: string) => string // Simplified type
+const translate = computed(() => useTranslate(currentLang.value as Languages))
 
 const changeLanguage = async (lang: Languages) => {
     const newUrl = translatePath(url ? stripLangFromPath(url.pathname) : '/', lang);
     const newUrlIsValid = await checkLink(newUrl);
-    if (newUrlIsValid) {
-        window.location.href = newUrl;
-    } else {
-        if (url?.pathname.includes('/posts/')) {
-            window.location.href = translatePath('/blog', lang);
-        }
-        window.location.href = translatePath('/', lang);
-    }
+    const targetUrl = newUrlIsValid
+        ? newUrl
+        : url?.pathname.includes('/posts/')
+            ? translatePath('/blog', lang)
+            : translatePath('/', lang);
+
+    // Use Astro's view transition router by simulating a link click
+    // instead of window.location.href which causes a full page reload
+    const link = document.createElement('a');
+    link.href = targetUrl;
+    link.setAttribute('data-astro-prefetch', '');
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    isDropdownOpen.value = false;
 };
 async function checkLink(newUrl: string): Promise<boolean> {
     return await fetch(newUrl, { method: 'HEAD' })
@@ -61,7 +69,6 @@ async function checkLink(newUrl: string): Promise<boolean> {
 function updateLangFromUrl() {
     url = new URL(window.location.href);
     currentLang.value = getLangFromUrl(url);
-    translate = useTranslate(currentLang.value as Languages);
     isDropdownOpen.value = false;
 }
 

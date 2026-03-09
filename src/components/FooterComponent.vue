@@ -3,17 +3,16 @@ import { defaultLang, Languages } from '@/i18n/ui';
 import { getLangFromUrl, translatePath, useTranslate } from '@/i18n/utils';
 import siteConfig from '@/site-config'
 import { getLinkTarget } from '@/utils/link'
-import { onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 
 const currentLang = ref<Languages>(defaultLang);
 let currentUrl: URL | undefined
-let translate: (key: string) => string
+const translate = computed(() => useTranslate(currentLang.value as Languages))
 
 function updateLangFromUrl() {
     currentUrl = new URL(window.location.href);
     currentLang.value = getLangFromUrl(currentUrl);
-    translate = useTranslate(currentLang.value as Languages);
 }
 
 onMounted(() => {

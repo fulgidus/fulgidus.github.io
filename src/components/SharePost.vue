@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Languages } from "@/i18n/ui";
+import { Languages, defaultLang } from "@/i18n/ui";
 import {
     getLangFromUrl, useTranslate
 } from "@/i18n/utils";
 
-import { onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 type Props = {
     id?: string;
@@ -13,12 +13,12 @@ type Props = {
 
 const { id = "default-share-id", shareTitle } = defineProps<Props>();
 
-const currentLang = ref<Languages>('en' as Languages);
-let t: (key: string) => string = (key) => key;
+const currentLang = ref<Languages>(defaultLang);
+
+const t = computed(() => useTranslate(currentLang.value));
 
 function updateLangFromUrl() {
     currentLang.value = getLangFromUrl(window.location.pathname) as Languages;
-    t = useTranslate(currentLang.value);
 }
 
 onMounted(() => {
