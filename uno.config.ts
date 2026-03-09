@@ -75,5 +75,8 @@ export default defineConfig({
         'i-carbon-machine-learning-model',
         'i-ri-rocket-line',
         'i-ri-lightbulb-flash-line',
+        'i-ri-file-copy-line',
+        'i-ri-check-line',
+        'i-ri-error-warning-line',
     ],
 })

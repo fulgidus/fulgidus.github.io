@@ -155,16 +155,19 @@
   position: absolute;
   top: 0.5em;
   right: 0.5em;
-  padding: 0.25em 0.5em;
-  font-size: 0.75rem;
+  padding: 0.35em;
+  font-size: 1rem;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid rgba(125, 125, 125, 0.3);
   border-radius: 0.25rem;
   background: rgba(50, 50, 50, 0.6);
   color: #ccc;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   z-index: 1;
 }
 .prose pre:hover .copy-code-btn {
