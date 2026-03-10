@@ -18,6 +18,10 @@ interface Props {
   pageNav?: boolean;
   pageOperate?: boolean;
   noindex?: boolean;
+  postSlug?: string;
+  pubDate?: string;
+  tags?: string[];
+  readingTime?: string;
 }
 const { ...head } = Astro.props;
 const { imageSize } = Astro.props;

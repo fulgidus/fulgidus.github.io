@@ -5,6 +5,7 @@ import "@/styles/prose.css";
 import "@/styles/dot.css";
 import { defaultLang, Languages, ui } from "@/i18n/ui";
 import { useSpecificPath, translateFrom } from "@/i18n/utils";
+import { getHreflangLinks } from "@/utils/hreflang";
 
 interface Props {
   title?: string;
@@ -13,6 +14,10 @@ interface Props {
   ogImage?: string;
   pageType?: "website" | "article";
   noindex?: boolean;
+  postSlug?: string;
+  pubDate?: string;
+  tags?: string[];
+  readingTime?: string;
 }
 
 const {
@@ -21,6 +26,10 @@ const {
   ogImage,
   pageType = "website",
   noindex = false,
+  postSlug,
+  pubDate,
+  tags,
+  readingTime,
 } = Astro.props;
 
 const title = [Astro.props.title, siteConfig.title].filter(Boolean).join(" | ");
@@ -52,6 +61,72 @@ const availableLanguages = Object.keys(ui) as Languages[];
 // const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
 // const t = useTranslations(currentLang as Languages);
 // const tp = useTranslatedPath(currentLang as Languages);
+
+// Hreflang alternate links for SEO
+const hreflangLinks = await getHreflangLinks(
+  canonicalURL,
+  Astro.site ?? siteConfig.title,
+  postSlug,
+);
+
+// JSON-LD structured data
+function buildJsonLd() {
+  const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://fulgidus.github.io';
+  const pageUrl = formatCanonicalURL(canonicalURL);
+
+  if (pageType === 'article' && Astro.props.title) {
+    // BlogPosting schema
+    const blogPosting: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: Astro.props.title,
+      url: pageUrl,
+      author: {
+        '@type': 'Person',
+        name: siteConfig.author,
+        url: siteUrl,
+      },
+      publisher: {
+        '@type': 'Person',
+        name: siteConfig.author,
+        url: siteUrl,
+      },
+    };
+
+    if (description) blogPosting.description = description;
+    if (resolvedImage?.src) blogPosting.image = resolvedImage.src;
+    if (pubDate) {
+      const isoDate = new Date(pubDate).toISOString();
+      blogPosting.datePublished = isoDate;
+      blogPosting.dateModified = isoDate;
+    }
+    if (tags && tags.length > 0) blogPosting.keywords = tags;
+    if (readingTime) {
+      // Convert "5m" to ISO 8601 duration "PT5M"
+      const minutes = parseInt(readingTime, 10);
+      if (!isNaN(minutes)) {
+        blogPosting.timeRequired = `PT${minutes}M`;
+      }
+    }
+
+    return blogPosting;
+  }
+
+  // WebSite schema for non-article pages
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: siteConfig.title,
+    description: siteConfig.description,
+    url: siteUrl,
+    author: {
+      '@type': 'Person',
+      name: siteConfig.author,
+    },
+  };
+}
+
+const jsonLd = buildJsonLd();
 ---
 
 <!-- High Priority Global Metadata -->
@@ -110,6 +185,11 @@ const availableLanguages = Object.keys(ui) as Languages[];
 <meta name="theme-color" content="#380541" />
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 
+<!-- Hreflang alternate links -->
+{hreflangLinks.map((link) => (
+  <link rel="alternate" hreflang={link.lang} href={link.href} />
+))}
+
 <!-- LLM-friendly content -->
 <link rel="alternate" type="text/plain" href="/llms.txt" title="LLMs.txt - LLM-friendly site content" />
 
@@ -140,6 +220,9 @@ const availableLanguages = Object.keys(ui) as Languages[];
     <meta name="twitter:image:alt" content={resolvedImage?.alt} />
   )
 }
+
+<!-- JSON-LD structured data -->
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
 <script>
   import nprogress from "nprogress";
