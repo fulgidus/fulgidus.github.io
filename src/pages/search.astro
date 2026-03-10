@@ -20,86 +20,81 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 </BaseLayout>
 
 <script is:inline>
-  (function() {
-    var pagefind = null;
+  document.addEventListener('astro:page-load', async function() {
+    var input = document.getElementById('search-input');
+    var results = document.getElementById('search-results');
+    if (!input || !results) return;
 
-    async function initPagefind() {
-      var input = document.getElementById('search-input');
-      var results = document.getElementById('search-results');
-      if (!input || !results) return;
+    // Abort any previous event listeners from prior navigations
+    if (window.__pagefindAbort) {
+      window.__pagefindAbort.abort();
+    }
+    window.__pagefindAbort = new AbortController();
+    var signal = window.__pagefindAbort.signal;
 
-      // If pagefind was loaded before (e.g. view transition from another lang page),
-      // destroy and re-init so it picks up the current <html lang> attribute.
-      try {
-        if (!pagefind) {
-          pagefind = await import('/pagefind/pagefind.js');
-        } else {
-          await pagefind.destroy();
-        }
-        await pagefind.options({ ranking: { pageLength: 0.5 } });
-        await pagefind.init();
-      } catch (e) {
-        results.innerHTML = '<p class="search-no-results">Search index not available. Please try again later.</p>';
-        return;
+    // Always destroy + re-init so pagefind reads the current <html lang>
+    try {
+      if (!window.__pagefind) {
+        window.__pagefind = await import('/pagefind/pagefind.js');
+      } else {
+        await window.__pagefind.destroy();
       }
+      await window.__pagefind.options({ ranking: { pageLength: 0.5 } });
+      await window.__pagefind.init();
+    } catch (e) {
+      results.innerHTML = '<p class="search-no-results">Search index not available. Please try again later.</p>';
+      return;
+    }
 
-      var debounceTimer;
+    var pagefind = window.__pagefind;
+    var debounceTimer;
 
-      input.addEventListener('input', function() {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(async function() {
-          var query = input.value.trim();
+    input.addEventListener('input', function() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(async function() {
+        var query = input.value.trim();
 
-          if (!query) {
-            results.innerHTML = '';
-            return;
-          }
-
-          var search = await pagefind.search(query);
-
-          if (search.results.length === 0) {
-            results.innerHTML = '<p class="search-no-results">No results found.</p>';
-            return;
-          }
-
-          var newResults = document.createDocumentFragment();
-
-          var loaded = await Promise.all(
-            search.results.slice(0, 10).map(function(r) { return r.data(); })
-          );
-
-          for (var i = 0; i < loaded.length; i++) {
-            var data = loaded[i];
-            var item = document.createElement('a');
-            item.href = data.url;
-            item.className = 'search-result-item';
-            item.style.animationDelay = (i * 30) + 'ms';
-
-            var title = data.meta && data.meta.title ? data.meta.title : 'Untitled';
-            var excerpt = data.excerpt || '';
-
-            item.innerHTML =
-              '<span class="search-result-title">' + title + '</span>' +
-              '<span class="search-result-excerpt">' + excerpt + '</span>';
-            newResults.appendChild(item);
-          }
-
+        if (!query) {
           results.innerHTML = '';
-          results.appendChild(newResults);
-        }, 200);
-      });
+          return;
+        }
 
-      input.focus();
-    }
+        var search = await pagefind.search(query);
 
-    document.addEventListener('astro:page-load', initPagefind);
+        if (search.results.length === 0) {
+          results.innerHTML = '<p class="search-no-results">No results found.</p>';
+          return;
+        }
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initPagefind);
-    } else {
-      initPagefind();
-    }
-  })();
+        var newResults = document.createDocumentFragment();
+
+        var loaded = await Promise.all(
+          search.results.slice(0, 10).map(function(r) { return r.data(); })
+        );
+
+        for (var i = 0; i < loaded.length; i++) {
+          var data = loaded[i];
+          var item = document.createElement('a');
+          item.href = data.url;
+          item.className = 'search-result-item';
+          item.style.animationDelay = (i * 30) + 'ms';
+
+          var title = data.meta && data.meta.title ? data.meta.title : 'Untitled';
+          var excerpt = data.excerpt || '';
+
+          item.innerHTML =
+            '<span class="search-result-title">' + title + '</span>' +
+            '<span class="search-result-excerpt">' + excerpt + '</span>';
+          newResults.appendChild(item);
+        }
+
+        results.innerHTML = '';
+        results.appendChild(newResults);
+      }, 200);
+    }, { signal: signal });
+
+    input.focus();
+  });
 </script>
 
 <style is:global>
