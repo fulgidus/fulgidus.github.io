@@ -158,7 +158,6 @@ const currentLang = getLangFromUrl(Astro.url.pathname);
                 src={post.data.image}
                 alt={post.data.imageAlt ?? null}
                 class={`${index % 2 === 0 ? "float-left mr-4" : "float-right ml-4"} mb-4 opacity-100 object-cover aspect-ratio-square ${composeImageSizeClasses(post)}`}
-                format="webp"
               />
             )}
             <span>{post.data.description}</span>

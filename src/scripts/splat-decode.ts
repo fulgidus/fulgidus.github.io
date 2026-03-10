@@ -220,6 +220,32 @@ function getCanvas(): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D
   return { canvas, ctx };
 }
 
+/**
+ * Set a blob: URL as the background-image on an element.
+ * Uses canvas.toBlob() to avoid base64 data URIs entirely.
+ */
+function setBlobBackground(img: HTMLImageElement, c: { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D }) {
+  c.canvas.toBlob(function (blob) {
+    if (!blob) return;
+    const url = URL.createObjectURL(blob);
+    img.style.backgroundImage = 'url(' + url + ')';
+    img.style.backgroundSize = 'cover';
+    img.style.backgroundRepeat = 'no-repeat';
+
+    // Revoke the blob URL and clean up after real image loads
+    img.addEventListener(
+      'load',
+      function () {
+        URL.revokeObjectURL(url);
+        img.style.backgroundImage = '';
+        img.style.backgroundColor = '';
+        img.removeAttribute('data-splat');
+      },
+      { once: true },
+    );
+  });
+}
+
 function processImages() {
   const imgList = document.querySelectorAll<HTMLImageElement>('img[data-splat]');
   if (imgList.length === 0) return;
@@ -245,31 +271,15 @@ function processImages() {
       // Decode base64 → Uint8Array
       const binary = atob(hashStr);
       const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      for (let j = 0; j < binary.length; j++) bytes[j] = binary.charCodeAt(j);
 
       // Decode hash → 32x32 RGBA
       const rgba = decodeSplatHash(bytes);
 
-      // Render to canvas and extract data URI
+      // Render to canvas, then set as blob: URL background
       const imageData = new ImageData(rgba, W, W);
       c.ctx.putImageData(imageData, 0, 0);
-      const dataUri = c.canvas.toDataURL();
-
-      // Set as background (replaces the solid avg color)
-      img.style.backgroundImage = `url(${dataUri})`;
-      img.style.backgroundSize = 'cover';
-      img.style.backgroundRepeat = 'no-repeat';
-
-      // Clean up after real image loads
-      img.addEventListener(
-        'load',
-        () => {
-          img.style.backgroundImage = '';
-          img.style.backgroundColor = '';
-          img.removeAttribute('data-splat');
-        },
-        { once: true },
-      );
+      setBlobBackground(img, c);
     } catch {
       // Silently fail — avg color fallback remains
     }

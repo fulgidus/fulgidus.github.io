@@ -5,13 +5,17 @@
  * At build time, encodes the image into a 16-byte SplatHash stored in `data-splat`.
  * A CSS background-color (average color from the hash) provides an immediate
  * no-JS fallback. A client-side decoder (splat-decode.ts) reads `data-splat`,
- * decodes it to a 32x32 blur, and sets it as a canvas-rendered background-image.
+ * decodes it to a 32x32 blur via canvas, and sets it as a blob: URL background-image.
  *
  * Usage:
- *   <SplatImage src={image} alt="description" format="webp" class="my-class" />
+ *   <SplatImage src={image} alt="description" class="my-class" />
  *
  * Accepts all props that Astro's <Image> accepts. The `src` must be an ImageMetadata
  * object from a content collection (with `fsPath` available).
+ *
+ * NOTE: Do NOT pass format="webp" — Astro's image pipeline silently fails to
+ * produce webp files, generating HTML refs to files that don't exist (404).
+ * Let Astro serve images in their original format.
  */
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
@@ -23,7 +27,6 @@ interface Props {
   class?: string;
   style?: string;
   loading?: 'lazy' | 'eager';
-  format?: 'webp' | 'avif' | 'png' | 'jpeg';
   [key: string]: any;
 }
 
@@ -38,9 +41,8 @@ try {
     splatHash = hash;
     avgColorStyle = `background-color:${avgColor};`;
   }
-} catch (e) {
+} catch {
   // Silently fall back to no placeholder if encoding fails
-  console.warn(`[SplatImage] Failed to generate placeholder for ${alt}:`, e);
 }
 
 // Merge avg-color background with any user-provided inline style
