@@ -1,7 +1,7 @@
 ---
 import LanguageFlag from "./LanguageFlags.vue";
 import TagsList from "./TagsList.vue";
-import { Image } from "astro:assets";
+import SplatImage from "./SplatImage.astro";
 import {
   getDate,
   getHref,
@@ -153,7 +153,7 @@ const currentLang = getLangFromUrl(Astro.url.pathname);
           </div>
           <div text-sm>
             {post.data.image !== undefined && (
-              <Image
+              <SplatImage
                 src={post.data.image}
                 alt={post.data.imageAlt ?? null}
                 class={`${index % 2 === 0 ? "float-left mr-4" : "float-right ml-4"} mb-4 opacity-100 object-cover aspect-ratio-square ${composeImageSizeClasses(post)}`}

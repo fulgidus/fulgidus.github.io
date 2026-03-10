@@ -1,0 +1,56 @@
+---
+/**
+ * SplatImage — Drop-in replacement for Astro's <Image> with SplatHash blur placeholder.
+ *
+ * Generates a 32x32 blurry preview at build time and applies it as a CSS background
+ * directly on the <img> element. The image's own width/height attributes (set by Astro)
+ * ensure correct sizing, and the background shows through until the real image loads.
+ * No wrapper div — all classes apply directly to the <img>, so layout classes like
+ * float, object-cover, aspect-ratio, max-width all work exactly as with plain <Image>.
+ *
+ * Usage:
+ *   <SplatImage src={image} alt="description" format="webp" class="my-class" />
+ *
+ * Accepts all props that Astro's <Image> accepts. The `src` must be an ImageMetadata
+ * object from a content collection (with `fsPath` available).
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { generatePlaceholder } from '@/utils/splathash';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string | null;
+  class?: string;
+  style?: string;
+  loading?: 'lazy' | 'eager';
+  format?: 'webp' | 'avif' | 'png' | 'jpeg';
+  [key: string]: any;
+}
+
+const { src, alt, style, ...rest } = Astro.props;
+
+// Generate the blur placeholder at build time
+let placeholderStyle: string | undefined;
+try {
+  // fsPath is available on ImageMetadata from content collections
+  if ((src as any).fsPath) {
+    const uri = await generatePlaceholder((src as any).fsPath);
+    placeholderStyle = `background-image:url(${uri});background-size:cover;background-repeat:no-repeat;`;
+  }
+} catch (e) {
+  // Silently fall back to no placeholder if encoding fails
+  console.warn(`[SplatImage] Failed to generate placeholder for ${alt}:`, e);
+}
+
+// Merge placeholder background with any user-provided inline style
+const mergedStyle = [placeholderStyle, style].filter(Boolean).join('') || undefined;
+---
+
+<Image
+  src={src}
+  alt={alt}
+  style={mergedStyle}
+  data-splat={placeholderStyle ? '' : undefined}
+  {...rest}
+/>

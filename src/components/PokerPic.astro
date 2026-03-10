@@ -1,6 +1,6 @@
 ---
 import type { HTMLAttributes } from "astro/types";
-import { Image } from "astro:assets";
+import SplatImage from "./SplatImage.astro";
 
 type Props = HTMLAttributes<any> & {
   img: ImageMetadata;
@@ -19,6 +19,6 @@ const imgClasses = `important-m-0 w-full h-full b-rd-full`;
 
 <span {...Astro.props} class="bg-hex-380541 b-rd-full p-1 flex">
   <span class={spanClasses}>
-    <Image src={img} alt={alt} class={imgClasses} format="webp" quality={85} />
+    <SplatImage src={img} alt={alt} class={imgClasses} format="webp" quality={85} />
   </span>
 </span>

@@ -14,7 +14,7 @@ import { composeImageSizeClasses } from "@/pages/posts/[...slug].astro";
 import { type CollectionPost } from "@/types";
 import { getPosts, removeLangFromSlug } from "@/utils/posts";
 import { getOgImagePath } from "@/utils/og";
-import { Image } from "astro:assets";
+import SplatImage from "@/components/SplatImage.astro";
 
 export async function getStaticPaths() {
   const posts = await getPosts({
@@ -143,7 +143,7 @@ const t = useTranslate(currentLang as Languages);
     </div>
     {
       image && (
-        <Image
+        <SplatImage
           src={image}
           alt={imageAlt || ""}
           loading="lazy"
