@@ -3332,10 +3332,11 @@ archive:
     title: "SplatHash integration for ultrafast TTFF"
     description: >
       Integrated splathash-ts (zero-dep, 16-byte image hashes) for blur
-      placeholders. At build time, each image is encoded via sharp to a 32x32
-      PNG data URI and embedded as CSS background-image directly on the <img>
-      element. No wrapper div, no client-side JS. Applied to post templates
-      (EN/IT), ListPosts, and PokerPic.
+      placeholders. At build time, each image is encoded to a 16-byte hash
+      stored in data-splat attribute (~24 chars base64). Client-side decoder
+      renders hash to canvas and sets blob: URL as background-image on <img>.
+      No-JS fallback uses average color from hash as background-color.
+      Applied to post templates (EN/IT), ListPosts, and PokerPic.
     status: done
     completion: 100
     difficulty: hard
@@ -3343,6 +3344,8 @@ archive:
     started_at: "2026-03-10"
     ended_at: "2026-03-10"
     notes:
+      - "2026-03-10: Second bugfix — removed format=webp from SplatImage callers (caused 404s due to Astro cache), replaced canvas.toDataURL() base64 with toBlob()+createObjectURL() blob: URLs, fixed variable shadowing in decoder."
+      - "2026-03-10: Bugfix fix-splathash merged — replaced useless encode→decode→sharp→PNG round-trip with true 16-byte SplatHash: data-splat contains base64 of 16-byte hash (~24 chars), client-side decoder renders to canvas, no-JS fallback uses average color extracted from hash. Reduces per-image placeholder from ~1-3KB to 24 chars."
       - "2026-03-10: All 5 subtasks completed. splathash-ts v1.3.0 added as dependency. SplatImage.astro is a drop-in <Image> replacement. Hashes cached in-memory during build (~25ms/image). No persistent disk cache yet."
     subtasks:
       - id: splathash-research
