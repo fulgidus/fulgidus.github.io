@@ -4,7 +4,7 @@
  *
  * Accepts download items as props (no JSON fetch). Each item specifies
  * a label, href, file type for badge coloring, and an optional theme
- * variant ('light' | 'dark') for PDF files.
+ * variant ('light' | 'dark') for theme-specific files (PDF, PPTX, HTML).
  *
  * When both light and dark PDF variants are provided, only the one
  * matching the current site theme is shown. A MutationObserver watches
@@ -22,7 +22,7 @@ interface DownloadItem {
     href: string
     /** File type for badge styling (e.g. "pdf", "pptx", "md", "html") */
     type: string
-    /** Theme variant for PDFs: 'light' or 'dark'. Omit for non-variant items. */
+    /** Theme variant: 'light' or 'dark'. Omit for non-variant items (e.g. MD source). */
     variant?: 'light' | 'dark'
     /** Human-readable file size (e.g. "103 KB"). Computed at build time. */
     size?: string
@@ -49,27 +49,29 @@ function detectDarkMode() {
 }
 
 /**
- * Filter items to show only the PDF variant matching the current theme.
- * Non-PDF items and PDFs without a variant are always shown.
- * When both light and dark PDF variants exist, only the matching one is shown.
+ * Filter items to show only the variant matching the current theme.
+ * For each file type (pdf, pptx, html, …), if both light and dark variants
+ * exist, only the one matching the current site theme is shown.
+ * Items without a variant are always shown (e.g. MD source).
  */
 const visibleItems = computed(() => {
     const currentVariant = isDark.value ? 'dark' : 'light'
 
-    // Check if we have variant-specific PDFs
-    const hasLightPdf = props.items.some(i => i.type === 'pdf' && i.variant === 'light')
-    const hasDarkPdf = props.items.some(i => i.type === 'pdf' && i.variant === 'dark')
-    const hasBothVariants = hasLightPdf && hasDarkPdf
+    // For each type, check if both light and dark variants exist
+    const typesWithBothVariants = new Set<string>()
+    const types = new Set(props.items.map(i => i.type))
+    for (const type of types) {
+        const hasLight = props.items.some(i => i.type === type && i.variant === 'light')
+        const hasDark = props.items.some(i => i.type === type && i.variant === 'dark')
+        if (hasLight && hasDark) typesWithBothVariants.add(type)
+    }
 
     return props.items.filter(item => {
-        // Non-PDF items: always show
-        if (item.type !== 'pdf') return true
-
-        // PDF without variant: always show (e.g. pre-built PDFs from src prop)
+        // No variant specified: always show
         if (!item.variant) return true
 
-        // If we have both variants, show only the matching one
-        if (hasBothVariants) {
+        // If this type has both variants, show only the matching one
+        if (typesWithBothVariants.has(item.type)) {
             return item.variant === currentVariant
         }
 
@@ -110,7 +112,7 @@ onUnmounted(() => {
                 v-for="dl in visibleItems"
                 :key="dl.type + (dl.variant || '') + dl.href"
                 :href="dl.href"
-                :download="true"
+                :download="dl.href.split('/').pop()"
                 class="marp-downloads__btn"
                 :title="dl.label"
             >

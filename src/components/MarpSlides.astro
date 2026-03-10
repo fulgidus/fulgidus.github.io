@@ -61,7 +61,7 @@ interface DownloadItem {
     label: string
     href: string
     type: string
-    /** Theme variant: 'light' or 'dark'. Used by MarpDownloads to show the right PDF. */
+    /** Theme variant: 'light' or 'dark'. Used by MarpDownloads to show the matching variant. */
     variant?: 'light' | 'dark'
     /** Human-readable file size (e.g. "103 KB"). Computed at build time. */
     size?: string
@@ -161,6 +161,21 @@ ${html}
     viewerSrc = `/marp/${fileName}`
     format = 'html'
 
+    // ── Dark HTML variant for download ──────────────────────────────
+    // The viewer uses the light HTML and toggles dark mode dynamically
+    // via postMessage. For downloads, we generate a separate dark HTML
+    // with `.invert` pre-applied to all sections.
+    const darkHtmlFileName = `_compiled-${contentHash}-dark.html`
+    const darkHtmlOutPath = path.join(outDir, darkHtmlFileName)
+    if (!fs.existsSync(darkHtmlOutPath)) {
+        const lightHtml = fs.readFileSync(outPath, 'utf-8')
+        const darkHtml = lightHtml.replace(
+            /(<section\b[^>]*?\bclass=")([^"]*?)(")/g,
+            '$1$2 invert$3'
+        )
+        fs.writeFileSync(darkHtmlOutPath, darkHtml, 'utf-8')
+    }
+
     // ── PDF + PPTX export via Playwright (build-time) ────────────────
     // Generate BOTH light and dark PDF variants so the download component
     // can serve the one matching the user's current site theme.
@@ -168,16 +183,19 @@ ${html}
     // assembling them into a PPTX via pptxgenjs (light variant only).
     const pdfLightFileName = `_compiled-${contentHash}-light.pdf`
     const pdfDarkFileName = `_compiled-${contentHash}-dark.pdf`
-    const pptxFileName = `_compiled-${contentHash}.pptx`
+    const pptxLightFileName = `_compiled-${contentHash}-light.pptx`
+    const pptxDarkFileName = `_compiled-${contentHash}-dark.pptx`
     const pdfLightOutPath = path.join(outDir, pdfLightFileName)
     const pdfDarkOutPath = path.join(outDir, pdfDarkFileName)
-    const pptxOutPath = path.join(outDir, pptxFileName)
+    const pptxLightOutPath = path.join(outDir, pptxLightFileName)
+    const pptxDarkOutPath = path.join(outDir, pptxDarkFileName)
 
     let pdfLightAvailable = fs.existsSync(pdfLightOutPath)
     let pdfDarkAvailable = fs.existsSync(pdfDarkOutPath)
-    let pptxAvailable = fs.existsSync(pptxOutPath)
+    let pptxLightAvailable = fs.existsSync(pptxLightOutPath)
+    let pptxDarkAvailable = fs.existsSync(pptxDarkOutPath)
 
-    if (!pdfLightAvailable || !pdfDarkAvailable || !pptxAvailable) {
+    if (!pdfLightAvailable || !pdfDarkAvailable || !pptxLightAvailable || !pptxDarkAvailable) {
         try {
             const { chromium } = await import('playwright')
             const browser = await chromium.launch({ headless: true })
@@ -230,75 +248,83 @@ ${html}
                 console.log(`[MarpSlides] PDF exported (dark): ${pdfDarkFileName}`)
             }
 
-            // ── PPTX export: screenshot each slide → pptxgenjs ──
-            if (!pptxAvailable) {
+            // ── PPTX export helper: screenshot each slide → pptxgenjs ──
+            const widthInches = width / 96
+            const heightInches = height / 96
+
+            async function buildPptxFromPage(outputPath: string, label: string): Promise<boolean> {
+                await page.setViewportSize({ width: Math.round(width), height: Math.round(height) })
+
+                const slideCount = await page.evaluate(() =>
+                    document.querySelectorAll('svg[data-marpit-svg]').length
+                )
+                if (slideCount === 0) return false
+
+                const slideImages: Uint8Array[] = []
+                for (let i = 0; i < slideCount; i++) {
+                    await page.evaluate((idx) => {
+                        const svgs = document.querySelectorAll('svg[data-marpit-svg]')
+                        svgs.forEach((svg, j) => {
+                            ;(svg as HTMLElement).style.display = j === idx ? 'block' : 'none'
+                        })
+                    }, i)
+
+                    const slideEl = await page.$(`svg[data-marpit-svg]:nth-of-type(${i + 1})`)
+                    if (slideEl) {
+                        const png = await slideEl.screenshot({ type: 'png' })
+                        slideImages.push(new Uint8Array(png.buffer, png.byteOffset, png.byteLength))
+                    }
+                }
+
+                if (slideImages.length === 0) return false
+
+                const PptxGenJS = (await import('pptxgenjs')).default
+                const pptx = new PptxGenJS()
+                pptx.defineLayout({ name: 'MARP', width: widthInches, height: heightInches })
+                pptx.layout = 'MARP'
+
+                const titleMatch = md!.match(/^title:\s*["']?(.+?)["']?\s*$/m)
+                pptx.title = titleMatch?.[1] || 'Presentation'
+
+                for (const imgBuf of slideImages) {
+                    const slide = pptx.addSlide()
+                    const base64 = Buffer.from(imgBuf).toString('base64')
+                    slide.addImage({
+                        data: `image/png;base64,${base64}`,
+                        x: 0, y: 0, w: widthInches, h: heightInches,
+                    })
+                }
+
+                const pptxBuffer = await pptx.write({ outputType: 'nodebuffer' })
+                fs.writeFileSync(outputPath, new Uint8Array(pptxBuffer as ArrayBuffer))
+                console.log(`[MarpSlides] PPTX exported (${label}): ${path.basename(outputPath)} (${slideImages.length} slides)`)
+                return true
+            }
+
+            // ── Light PPTX ──
+            if (!pptxLightAvailable) {
                 try {
-                    // Reload to clean (light) state for PPTX screenshots
                     await page.goto(`file://${htmlAbsPath}`, { waitUntil: 'networkidle' })
-
-                    // Set viewport to match slide dimensions for clean screenshots
-                    await page.setViewportSize({ width: Math.round(width), height: Math.round(height) })
-
-                    // Count slides (each <svg data-marpit-svg> is one slide)
-                    const slideCount = await page.evaluate(() =>
-                        document.querySelectorAll('svg[data-marpit-svg]').length
-                    )
-
-                    if (slideCount > 0) {
-                        // Screenshot each slide individually
-                        const slideImages: Uint8Array[] = []
-
-                        for (let i = 0; i < slideCount; i++) {
-                            // Show only the i-th slide by hiding all others
-                            await page.evaluate((idx) => {
-                                const svgs = document.querySelectorAll('svg[data-marpit-svg]')
-                                svgs.forEach((svg, j) => {
-                                    ;(svg as HTMLElement).style.display = j === idx ? 'block' : 'none'
-                                })
-                            }, i)
-
-                            const slideEl = await page.$(`svg[data-marpit-svg]:nth-of-type(${i + 1})`)
-                            if (slideEl) {
-                                const png = await slideEl.screenshot({ type: 'png' })
-                                slideImages.push(new Uint8Array(png.buffer, png.byteOffset, png.byteLength))
-                            }
-                        }
-
-                        if (slideImages.length > 0) {
-                            // Build PPTX with one image per slide
-                            const PptxGenJS = (await import('pptxgenjs')).default
-                            const pptx = new PptxGenJS()
-
-                            // Set slide dimensions in inches (96 DPI)
-                            const widthInches = width / 96
-                            const heightInches = height / 96
-                            pptx.defineLayout({ name: 'MARP', width: widthInches, height: heightInches })
-                            pptx.layout = 'MARP'
-
-                            // Extract title from Marp frontmatter for PPTX metadata
-                            const pptxTitleMatch = md.match(/^title:\s*["']?(.+?)["']?\s*$/m)
-                            pptx.title = pptxTitleMatch?.[1] || 'Presentation'
-
-                            for (const imgBuf of slideImages) {
-                                const slide = pptx.addSlide()
-                                const base64 = Buffer.from(imgBuf).toString('base64')
-                                slide.addImage({
-                                    data: `image/png;base64,${base64}`,
-                                    x: 0,
-                                    y: 0,
-                                    w: widthInches,
-                                    h: heightInches,
-                                })
-                            }
-
-                            const pptxBuffer = await pptx.write({ outputType: 'nodebuffer' })
-                            fs.writeFileSync(pptxOutPath, new Uint8Array(pptxBuffer as ArrayBuffer))
-                            pptxAvailable = true
-                            console.log(`[MarpSlides] PPTX exported: ${pptxFileName} (${slideImages.length} slides)`)
-                        }
+                    if (await buildPptxFromPage(pptxLightOutPath, 'light')) {
+                        pptxLightAvailable = true
                     }
                 } catch (pptxErr: any) {
-                    console.warn(`[MarpSlides] PPTX export skipped (${pptxErr.message?.split('\n')[0] || 'unknown error'})`)
+                    console.warn(`[MarpSlides] PPTX export skipped (light): ${pptxErr.message?.split('\n')[0] || 'unknown error'}`)
+                }
+            }
+
+            // ── Dark PPTX ──
+            if (!pptxDarkAvailable) {
+                try {
+                    await page.goto(`file://${htmlAbsPath}`, { waitUntil: 'networkidle' })
+                    await page.evaluate(() => {
+                        document.querySelectorAll('section').forEach(s => s.classList.add('invert'))
+                    })
+                    if (await buildPptxFromPage(pptxDarkOutPath, 'dark')) {
+                        pptxDarkAvailable = true
+                    }
+                } catch (pptxErr: any) {
+                    console.warn(`[MarpSlides] PPTX export skipped (dark): ${pptxErr.message?.split('\n')[0] || 'unknown error'}`)
                 }
             }
 
@@ -316,9 +342,10 @@ ${html}
         fs.writeFileSync(mdOutPath, md, 'utf-8')
     }
 
-    // Offer compiled HTML, PDF (if available in both variants), PPTX, and raw MD source
+    // Offer compiled HTML (light+dark), PDF (light+dark), PPTX (light+dark), and raw MD source
     autoDownloads = [
-        { label: 'HTML', href: viewerSrc, type: 'html', size: getFileSize(outPath) },
+        { label: 'HTML', href: viewerSrc, type: 'html', variant: 'light' as const, size: getFileSize(outPath) },
+        { label: 'HTML', href: `/marp/${darkHtmlFileName}`, type: 'html', variant: 'dark' as const, size: getFileSize(darkHtmlOutPath) },
     ]
     if (pdfLightAvailable) {
         autoDownloads.push({ label: 'PDF', href: `/marp/${pdfLightFileName}`, type: 'pdf', variant: 'light', size: getFileSize(pdfLightOutPath) })
@@ -326,8 +353,11 @@ ${html}
     if (pdfDarkAvailable) {
         autoDownloads.push({ label: 'PDF', href: `/marp/${pdfDarkFileName}`, type: 'pdf', variant: 'dark', size: getFileSize(pdfDarkOutPath) })
     }
-    if (pptxAvailable) {
-        autoDownloads.push({ label: 'PPTX', href: `/marp/${pptxFileName}`, type: 'pptx', size: getFileSize(pptxOutPath) })
+    if (pptxLightAvailable) {
+        autoDownloads.push({ label: 'PPTX', href: `/marp/${pptxLightFileName}`, type: 'pptx', variant: 'light', size: getFileSize(pptxLightOutPath) })
+    }
+    if (pptxDarkAvailable) {
+        autoDownloads.push({ label: 'PPTX', href: `/marp/${pptxDarkFileName}`, type: 'pptx', variant: 'dark', size: getFileSize(pptxDarkOutPath) })
     }
     autoDownloads.push({ label: 'MD', href: `/marp/${mdFileName}`, type: 'md', size: getFileSize(mdOutPath) })
 } else if (src) {
