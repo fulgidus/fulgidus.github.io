@@ -44,6 +44,17 @@
 #                                  the same schema recursively (all fields
 #                                  apply, including nested subtasks).
 #
+# TOP-LEVEL STRUCTURE:
+#   features : list[feature]  - Active features in the pipeline (backlog through
+#                                in_review). This is where work is planned and
+#                                tracked.
+#   archive  : list[feature]  - Completed or cancelled features that have
+#                                reached the end of their life-cycle (status is
+#                                done or cancelled). Move features here once
+#                                finished to keep the active list focused.
+#                                Same schema as features — full history is
+#                                preserved for reference.
+#
 # STATUS UPDATE CONVENTION:
 #   When updating progress, prepend a new entry to the `notes` list with the
 #   current ISO 8601 date and a short description of what changed. Example:
@@ -2227,444 +2238,6 @@ features:
         references:
           - "src/layouts/BaseLayout.astro"
         notes: []
-        subtasks: []
-
-  # ---------------------------------------------------------------------------
-  # FEATURE 12: Bug fixes batch
-  # ---------------------------------------------------------------------------
-  - id: bug-fixes-batch
-    title: "Fix known bugs discovered during codebase audit"
-    description: >
-      Fix all 7 concrete bugs discovered during the comprehensive codebase
-      audit. These range from string immutability errors in utility code to
-      HTML tag mismatches, incorrect RSS self-references, missing RSS elements,
-      hardcoded language values, stray console.log statements in production,
-      and CI/CD pipeline ordering issues.
-    status: done
-    completion: 100
-    difficulty: easy
-    priority: critical
-    depends_on: []
-    effort: "PT4H"
-    started_at: "2026-03-10T13:06:00+01:00"
-    ended_at: "2026-03-10T15:35:00+01:00"
-    constraints:
-      - "Each fix must be verified by running the build successfully"
-      - "Fixes must not introduce regressions in other functionality"
-      - "All RSS/Atom feeds must validate after fixes"
-    forbidden:
-      - "Do not refactor beyond the minimal fix needed for each bug"
-      - "Do not introduce new dependencies to fix these bugs"
-    references:
-      - "src/utils/posts.ts"
-      - "src/components/Header.astro"
-      - "src/pages/it/rss.xml.ts"
-      - "src/pages/last-ten.xml.ts"
-      - "src/components/GiscusComments.vue"
-      - ".github/workflows/deploy.yml"
-    notes:
-      - "2026-03-10: Feature added to backlog at critical priority. 7 bugs identified during comprehensive codebase audit. All are concrete, reproducible issues with clear fixes."
-      - "2026-03-10: All 16 subtask bugs fixed and build verified. Committed on feature/bug-fixes-batch branch (5c872eb). bug-string-immutability was N/A (code already correct). 3 console.logs found in posts.ts (not 1). IT post template had additional parity issues fixed."
-    subtasks:
-
-      - id: bug-string-immutability
-        title: "Fix string immutability bug in posts.ts"
-        description: >
-          In src/utils/posts.ts line 55, path.replace() result is never
-          reassigned. JavaScript strings are immutable, so .replace() returns
-          a new string but the original variable is unchanged. Fix by
-          reassigning: path = path.replace(...).
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: critical
-        depends_on: []
-        effort: "PT10M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T13:30:00+01:00"
-        constraints: []
-        forbidden: []
-        references:
-          - "src/utils/posts.ts:55"
-        notes:
-          - "2026-03-10: N/A — path.replace() does not exist in current getPosts function. Bug was either already fixed or line numbers shifted. No action needed."
-        subtasks: []
-
-      - id: bug-header-tag-mismatch
-        title: "Fix <i> closed with </span> in Header.astro"
-        description: >
-          In src/components/Header.astro line 34, an <i> element used for
-          social link icons is incorrectly closed with </span>. Change
-          </span> to </i> to fix the HTML validity error.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: critical
-        depends_on: []
-        effort: "PT5M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T13:15:00+01:00"
-        constraints: []
-        forbidden: []
-        references:
-          - "src/components/Header.astro:34"
-        notes:
-          - "2026-03-10: DUPLICATE — this is the exact same fix as a11y-fix-malformed-html in accessibility-pass (Header.astro line 34: <i> closed with </span>). Completing either one resolves both. Coordinate to avoid double work."
-          - "2026-03-10: Fixed — changed </span> to </i> on line 34."
-        subtasks: []
-
-      - id: bug-it-rss-self-ref
-        title: "Fix Italian RSS atom:link self-reference"
-        description: >
-          In src/pages/it/rss.xml.ts, the atom:link self-reference points to
-          /rss.xml instead of /it/rss.xml. This means the Italian RSS feed
-          claims to live at the English feed URL. Fix the href to point to
-          the correct /it/rss.xml path.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT10M"
-        started_at: "2026-03-10T13:15:00+01:00"
-        ended_at: "2026-03-10T13:25:00+01:00"
-        constraints:
-          - "Must validate as valid Atom/RSS after fix"
-        forbidden: []
-        references:
-          - "src/pages/it/rss.xml.ts"
-        notes:
-          - "2026-03-10: Fixed — changed 'rss.xml' to 'it/rss.xml' in atom:link href."
-        subtasks: []
-
-      - id: bug-last-ten-missing-elements
-        title: "Add missing atom:link and XSL stylesheet to last-ten.xml"
-        description: >
-          The src/pages/last-ten.xml.ts feed is missing an atom:link
-          self-reference (required by Atom spec) and an XSL stylesheet
-          reference (present in other feeds for browser rendering). Add
-          both to match the structure of rss.xml.ts.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT15M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T15:30:00+01:00"
-        constraints:
-          - "Must validate as valid RSS/Atom after fix"
-          - "XSL stylesheet path must match the existing pattern used by rss.xml.ts"
-        forbidden: []
-        references:
-          - "src/pages/last-ten.xml.ts"
-          - "src/pages/rss.xml.ts"
-        notes:
-          - "2026-03-10: Fixed — added atom:link self-reference and XSL stylesheet to match rss.xml.ts structure."
-        subtasks: []
-
-      - id: bug-giscus-hardcoded-lang
-        title: "Fix Giscus hardcoded data-lang=en"
-        description: >
-          In src/components/GiscusComments.vue line 29, data-lang is hardcoded
-          to "en". This means Italian pages show English Giscus UI. Fix by
-          accepting a lang prop or detecting the current language from the URL
-          and passing it to the Giscus script configuration.
-        status: done
-        completion: 100
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT30M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T15:30:00+01:00"
-        constraints:
-          - "Must map site language codes to Giscus-supported language codes"
-          - "Must update when language changes (if applicable via View Transitions)"
-        forbidden: []
-        references:
-          - "src/components/GiscusComments.vue:29"
-          - "https://giscus.app"
-        notes:
-          - "2026-03-10: Note: This overlaps with feature J (giscus-i18n). This subtask covers the minimal bug fix; feature J covers the full i18n integration."
-          - "2026-03-10: Fixed — added lang prop and detectLang() function that reads language from URL path."
-        subtasks: []
-
-      - id: bug-console-log-production
-        title: "Remove stray console.log in posts.ts"
-        description: >
-          In src/utils/posts.ts line 59, there is a console.log statement
-          that logs all returned post slugs. This runs in production and
-          clutters the build output. Remove it or guard it behind an
-          environment check.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT5M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T15:30:00+01:00"
-        constraints:
-          - "Must not break the getPosts function"
-        forbidden:
-          - "Do not add a logging framework just for this"
-        references:
-          - "src/utils/posts.ts:59"
-        notes:
-          - "2026-03-10: Fixed — removed 3 console.log statements (lines 42, 59, 71), not just 1 as originally described."
-        subtasks: []
-
-      - id: bug-ci-test-ordering
-        title: "Fix test ordering in deploy workflow"
-        description: >
-          In .github/workflows/deploy.yml, tests run after the build artifact
-          is uploaded. This means a failing test does not prevent deployment.
-          Reorder the steps so that tests run before the artifact upload step.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT15M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T15:30:00+01:00"
-        constraints:
-          - "Tests must complete successfully before artifact upload"
-          - "Must not break the GitHub Actions workflow syntax"
-        forbidden: []
-        references:
-          - ".github/workflows/deploy.yml"
-        notes:
-          - "2026-03-10: Fixed — restructured workflow to run tests before build/upload step."
-        subtasks: []
-
-      - id: bug-trans-hardcoded-url
-        title: "Fix Trans.astro hardcoded URL with typo"
-        description: >
-          In src/components/Trans.astro line 17, getLangFromUrl() is called
-          with a hardcoded string "/it/blogss" (note the typo "blogss")
-          instead of using Astro.url. This means the component always
-          detects Italian language regardless of the actual page URL.
-          Fix to use the actual page URL from Astro.url.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT10M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T15:30:00+01:00"
-        constraints: []
-        forbidden: []
-        references:
-          - "src/components/Trans.astro:17"
-        notes:
-          - "2026-03-10: Fixed — replaced hardcoded '/it/blogss' with Astro.url."
-        subtasks: []
-
-      - id: bug-trans-console-log
-        title: "Remove console.log from Trans.astro"
-        description: >
-          In src/components/Trans.astro line 20, there is a debug
-          console.log("Received key:", key) statement that runs in
-          production on every use of the Trans component.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT5M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T15:30:00+01:00"
-        constraints: []
-        forbidden: []
-        references:
-          - "src/components/Trans.astro:20"
-        notes:
-          - "2026-03-10: Fixed — removed console.log('Received key:', key)."
-        subtasks: []
-
-      - id: bug-it-posts-console-log
-        title: "Remove console.log from Italian posts template"
-        description: >
-          In src/pages/it/posts/[...slug].astro lines 32-35, there is a
-          console.log that dumps all Italian post slugs during build.
-          This debug logging should be removed.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT5M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T15:30:00+01:00"
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/it/posts/[...slug].astro:32-35"
-        notes:
-          - "2026-03-10: Fixed — removed console.log dumping post slugs."
-        subtasks: []
-
-      - id: bug-tags-semantic-html
-        title: "Fix tags page content wrapped inside <a> tag"
-        description: >
-          In src/pages/tags/[tag]/[...page].astro (both EN and IT), the
-          entire content section (h1, post list, paginator) is wrapped
-          inside an <a> tag that serves as the "Back" button link. This
-          is semantically invalid HTML — block-level content should not
-          be inside an anchor element. It likely causes accessibility
-          issues with screen readers. Restructure so the back link is
-          separate from the content.
-        status: done
-        completion: 100
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT20M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T15:30:00+01:00"
-        constraints:
-          - "Must fix both EN and IT versions"
-          - "Must preserve the back navigation functionality"
-        forbidden: []
-        references:
-          - "src/pages/tags/[tag]/[...page].astro"
-          - "src/pages/it/tags/[tag]/[...page].astro"
-        notes:
-          - "2026-03-10: Fixed — extracted h1, section, Paginator out of <a> tag; back link is now a separate element."
-        subtasks: []
-
-      - id: bug-header-astro-noscript
-        title: "Fix Header.astro noscript fallback issues"
-        description: >
-          Header.astro (the noscript fallback header) has multiple issues:
-          (1) Line 15 uses :href (Vue bind syntax) instead of href — in
-          an Astro template this renders literally as a :href attribute,
-          not as a dynamic binding. (2) The <style> block at the bottom
-          (lines 49-75) appears truncated — .social-links ul rule has
-          'gap:' with no value and no closing brace.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: "PT15M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T15:30:00+01:00"
-        constraints:
-          - "Must use standard href= attribute syntax in Astro templates"
-        forbidden: []
-        references:
-          - "src/components/Header.astro:15"
-          - "src/components/Header.astro:49-75"
-        notes:
-          - "2026-03-10: Fixed — corrected :href to href on line 15; fixed truncated CSS (.social-links ul now has gap: 0.5rem and closing brace)."
-        subtasks: []
-
-      - id: bug-postpreview-i18n
-        title: "Fix PostPreview.astro hardcoded English URLs"
-        description: >
-          In src/components/PostPreview.astro line 34, the post link href
-          is hardcoded as /posts/${post.slug}/ without language prefix.
-          Italian tag pages that use this component will link to /posts/...
-          instead of /it/posts/..., sending Italian users to the English
-          version of the post. Must use translatePath or a language-aware
-          href construction.
-        status: done
-        completion: 100
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT20M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T15:30:00+01:00"
-        constraints:
-          - "Must work for all languages"
-          - "Must use the existing i18n utilities"
-        forbidden: []
-        references:
-          - "src/components/PostPreview.astro:34"
-          - "src/i18n/utils.ts"
-        notes:
-          - "2026-03-10: Fixed — added language detection from slug; builds href with lang prefix using getLangFromSlug and removeLangFromSlug."
-        subtasks: []
-
-      - id: bug-it-unlisted-noindex
-        title: "Fix Italian unlisted posts not set as noindex"
-        description: >
-          In src/pages/it/posts/[...slug].astro, the unlisted property
-          is never destructured from post.data and noindex is never
-          passed to BaseLayout for unlisted posts. The English version
-          correctly passes noindex={unlisted} to prevent search engine
-          indexing of unlisted posts. The Italian version must do the
-          same.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT10M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T15:30:00+01:00"
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/it/posts/[...slug].astro"
-          - "src/pages/posts/[...slug].astro"
-        notes:
-          - "2026-03-10: Fixed — added unlisted to destructured props and noindex={unlisted} to BaseLayout."
-        subtasks: []
-
-      - id: bug-it-unlisted-comments
-        title: "Fix Italian unlisted/draft posts showing comments"
-        description: >
-          In src/pages/it/posts/[...slug].astro, Giscus comments are
-          shown even for unlisted and draft posts. The English version
-          conditionally hides comments when !draft && !unlisted. The
-          Italian version must apply the same conditional logic.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: "PT10M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T15:30:00+01:00"
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/it/posts/[...slug].astro"
-          - "src/pages/posts/[...slug].astro"
-        notes:
-          - "2026-03-10: Fixed — changed condition to {!draft && !unlisted && <GiscusComments>} and same for RelatedPosts."
-        subtasks: []
-
-      - id: bug-link-mailto-target
-        title: "Fix link.ts incorrectly targeting mailto/tel as _blank"
-        description: >
-          In src/utils/link.ts, isExternalLink() uses a regex that
-          matches any URL with a protocol prefix (including mailto:
-          and tel:). This causes getLinkTarget() to return _blank for
-          mailto and tel links, which is incorrect — these should open
-          in _self (the current window). Fix the regex to exclude
-          mailto: and tel: protocols.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: "PT10M"
-        started_at: "2026-03-10T13:06:00+01:00"
-        ended_at: "2026-03-10T15:30:00+01:00"
-        constraints:
-          - "Must still correctly identify http:// and https:// as external"
-        forbidden: []
-        references:
-          - "src/utils/link.ts"
-        notes:
-          - "2026-03-10: Fixed — added isNonNavigableProtocol() function checking mailto:, tel:, sms:, geo:, data: before regex check. Note: existing regex /^[a-z0-9-]+:\\/\\//i already excludes mailto/tel since they lack ://, but guard added for robustness."
         subtasks: []
 
   # ---------------------------------------------------------------------------
@@ -4957,4 +4530,448 @@ features:
         references: []
         notes:
           - "2026-03-11: GitHub Pages serves static files with its own caching headers. Custom headers via _headers files are NOT supported. This may need to be implemented as a Cloudflare Workers or similar edge function if GitHub Pages cannot serve custom headers, or it may need to use HTML meta http-equiv as a workaround (which does not work for Cache-Control). Investigate feasibility."
+        subtasks: []
+
+# =============================================================================
+# Archive - completed or cancelled features (end of life-cycle)
+# =============================================================================
+archive:
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 12: Bug fixes batch (DONE 2026-03-10)
+  # ---------------------------------------------------------------------------
+  - id: bug-fixes-batch
+    title: "Fix known bugs discovered during codebase audit"
+    description: >
+      Fix all 7 concrete bugs discovered during the comprehensive codebase
+      audit. These range from string immutability errors in utility code to
+      HTML tag mismatches, incorrect RSS self-references, missing RSS elements,
+      hardcoded language values, stray console.log statements in production,
+      and CI/CD pipeline ordering issues.
+    status: done
+    completion: 100
+    difficulty: easy
+    priority: critical
+    depends_on: []
+    effort: "PT4H"
+    started_at: "2026-03-10T13:06:00+01:00"
+    ended_at: "2026-03-10T15:35:00+01:00"
+    constraints:
+      - "Each fix must be verified by running the build successfully"
+      - "Fixes must not introduce regressions in other functionality"
+      - "All RSS/Atom feeds must validate after fixes"
+    forbidden:
+      - "Do not refactor beyond the minimal fix needed for each bug"
+      - "Do not introduce new dependencies to fix these bugs"
+    references:
+      - "src/utils/posts.ts"
+      - "src/components/Header.astro"
+      - "src/pages/it/rss.xml.ts"
+      - "src/pages/last-ten.xml.ts"
+      - "src/components/GiscusComments.vue"
+      - ".github/workflows/deploy.yml"
+    notes:
+      - "2026-03-10: Feature added to backlog at critical priority. 7 bugs identified during comprehensive codebase audit. All are concrete, reproducible issues with clear fixes."
+      - "2026-03-10: All 16 subtask bugs fixed and build verified. Committed on feature/bug-fixes-batch branch (5c872eb). bug-string-immutability was N/A (code already correct). 3 console.logs found in posts.ts (not 1). IT post template had additional parity issues fixed."
+      - "2026-03-10: Merged into develop via git flow feature finish. Moved to archive."
+    subtasks:
+
+      - id: bug-string-immutability
+        title: "Fix string immutability bug in posts.ts"
+        description: >
+          In src/utils/posts.ts line 55, path.replace() result is never
+          reassigned. JavaScript strings are immutable, so .replace() returns
+          a new string but the original variable is unchanged. Fix by
+          reassigning: path = path.replace(...).
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: critical
+        depends_on: []
+        effort: "PT10M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T13:30:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/utils/posts.ts:55"
+        notes:
+          - "2026-03-10: N/A — path.replace() does not exist in current getPosts function. Bug was either already fixed or line numbers shifted. No action needed."
+        subtasks: []
+
+      - id: bug-header-tag-mismatch
+        title: "Fix <i> closed with </span> in Header.astro"
+        description: >
+          In src/components/Header.astro line 34, an <i> element used for
+          social link icons is incorrectly closed with </span>. Change
+          </span> to </i> to fix the HTML validity error.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: critical
+        depends_on: []
+        effort: "PT5M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T13:15:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/Header.astro:34"
+        notes:
+          - "2026-03-10: DUPLICATE — this is the exact same fix as a11y-fix-malformed-html in accessibility-pass (Header.astro line 34: <i> closed with </span>). Completing either one resolves both. Coordinate to avoid double work."
+          - "2026-03-10: Fixed — changed </span> to </i> on line 34."
+        subtasks: []
+
+      - id: bug-it-rss-self-ref
+        title: "Fix Italian RSS atom:link self-reference"
+        description: >
+          In src/pages/it/rss.xml.ts, the atom:link self-reference points to
+          /rss.xml instead of /it/rss.xml. This means the Italian RSS feed
+          claims to live at the English feed URL. Fix the href to point to
+          the correct /it/rss.xml path.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT10M"
+        started_at: "2026-03-10T13:15:00+01:00"
+        ended_at: "2026-03-10T13:25:00+01:00"
+        constraints:
+          - "Must validate as valid Atom/RSS after fix"
+        forbidden: []
+        references:
+          - "src/pages/it/rss.xml.ts"
+        notes:
+          - "2026-03-10: Fixed — changed 'rss.xml' to 'it/rss.xml' in atom:link href."
+        subtasks: []
+
+      - id: bug-last-ten-missing-elements
+        title: "Add missing atom:link and XSL stylesheet to last-ten.xml"
+        description: >
+          The src/pages/last-ten.xml.ts feed is missing an atom:link
+          self-reference (required by Atom spec) and an XSL stylesheet
+          reference (present in other feeds for browser rendering). Add
+          both to match the structure of rss.xml.ts.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT15M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must validate as valid RSS/Atom after fix"
+          - "XSL stylesheet path must match the existing pattern used by rss.xml.ts"
+        forbidden: []
+        references:
+          - "src/pages/last-ten.xml.ts"
+          - "src/pages/rss.xml.ts"
+        notes:
+          - "2026-03-10: Fixed — added atom:link self-reference and XSL stylesheet to match rss.xml.ts structure."
+        subtasks: []
+
+      - id: bug-giscus-hardcoded-lang
+        title: "Fix Giscus hardcoded data-lang=en"
+        description: >
+          In src/components/GiscusComments.vue line 29, data-lang is hardcoded
+          to "en". This means Italian pages show English Giscus UI. Fix by
+          accepting a lang prop or detecting the current language from the URL
+          and passing it to the Giscus script configuration.
+        status: done
+        completion: 100
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: "PT30M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must map site language codes to Giscus-supported language codes"
+          - "Must update when language changes (if applicable via View Transitions)"
+        forbidden: []
+        references:
+          - "src/components/GiscusComments.vue:29"
+          - "https://giscus.app"
+        notes:
+          - "2026-03-10: Note: This overlaps with feature J (giscus-i18n). This subtask covers the minimal bug fix; feature J covers the full i18n integration."
+          - "2026-03-10: Fixed — added lang prop and detectLang() function that reads language from URL path."
+        subtasks: []
+
+      - id: bug-console-log-production
+        title: "Remove stray console.log in posts.ts"
+        description: >
+          In src/utils/posts.ts line 59, there is a console.log statement
+          that logs all returned post slugs. This runs in production and
+          clutters the build output. Remove it or guard it behind an
+          environment check.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT5M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must not break the getPosts function"
+        forbidden:
+          - "Do not add a logging framework just for this"
+        references:
+          - "src/utils/posts.ts:59"
+        notes:
+          - "2026-03-10: Fixed — removed 3 console.log statements (lines 42, 59, 71), not just 1 as originally described."
+        subtasks: []
+
+      - id: bug-ci-test-ordering
+        title: "Fix test ordering in deploy workflow"
+        description: >
+          In .github/workflows/deploy.yml, tests run after the build artifact
+          is uploaded. This means a failing test does not prevent deployment.
+          Reorder the steps so that tests run before the artifact upload step.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT15M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Tests must complete successfully before artifact upload"
+          - "Must not break the GitHub Actions workflow syntax"
+        forbidden: []
+        references:
+          - ".github/workflows/deploy.yml"
+        notes:
+          - "2026-03-10: Fixed — restructured workflow to run tests before build/upload step."
+        subtasks: []
+
+      - id: bug-trans-hardcoded-url
+        title: "Fix Trans.astro hardcoded URL with typo"
+        description: >
+          In src/components/Trans.astro line 17, getLangFromUrl() is called
+          with a hardcoded string "/it/blogss" (note the typo "blogss")
+          instead of using Astro.url. This means the component always
+          detects Italian language regardless of the actual page URL.
+          Fix to use the actual page URL from Astro.url.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT10M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/Trans.astro:17"
+        notes:
+          - "2026-03-10: Fixed — replaced hardcoded '/it/blogss' with Astro.url."
+        subtasks: []
+
+      - id: bug-trans-console-log
+        title: "Remove console.log from Trans.astro"
+        description: >
+          In src/components/Trans.astro line 20, there is a debug
+          console.log("Received key:", key) statement that runs in
+          production on every use of the Trans component.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT5M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/Trans.astro:20"
+        notes:
+          - "2026-03-10: Fixed — removed console.log('Received key:', key)."
+        subtasks: []
+
+      - id: bug-it-posts-console-log
+        title: "Remove console.log from Italian posts template"
+        description: >
+          In src/pages/it/posts/[...slug].astro lines 32-35, there is a
+          console.log that dumps all Italian post slugs during build.
+          This debug logging should be removed.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT5M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/it/posts/[...slug].astro:32-35"
+        notes:
+          - "2026-03-10: Fixed — removed console.log dumping post slugs."
+        subtasks: []
+
+      - id: bug-tags-semantic-html
+        title: "Fix tags page content wrapped inside <a> tag"
+        description: >
+          In src/pages/tags/[tag]/[...page].astro (both EN and IT), the
+          entire content section (h1, post list, paginator) is wrapped
+          inside an <a> tag that serves as the "Back" button link. This
+          is semantically invalid HTML — block-level content should not
+          be inside an anchor element. It likely causes accessibility
+          issues with screen readers. Restructure so the back link is
+          separate from the content.
+        status: done
+        completion: 100
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: "PT20M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must fix both EN and IT versions"
+          - "Must preserve the back navigation functionality"
+        forbidden: []
+        references:
+          - "src/pages/tags/[tag]/[...page].astro"
+          - "src/pages/it/tags/[tag]/[...page].astro"
+        notes:
+          - "2026-03-10: Fixed — extracted h1, section, Paginator out of <a> tag; back link is now a separate element."
+        subtasks: []
+
+      - id: bug-header-astro-noscript
+        title: "Fix Header.astro noscript fallback issues"
+        description: >
+          Header.astro (the noscript fallback header) has multiple issues:
+          (1) Line 15 uses :href (Vue bind syntax) instead of href — in
+          an Astro template this renders literally as a :href attribute,
+          not as a dynamic binding. (2) The <style> block at the bottom
+          (lines 49-75) appears truncated — .social-links ul rule has
+          'gap:' with no value and no closing brace.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT15M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must use standard href= attribute syntax in Astro templates"
+        forbidden: []
+        references:
+          - "src/components/Header.astro:15"
+          - "src/components/Header.astro:49-75"
+        notes:
+          - "2026-03-10: Fixed — corrected :href to href on line 15; fixed truncated CSS (.social-links ul now has gap: 0.5rem and closing brace)."
+        subtasks: []
+
+      - id: bug-postpreview-i18n
+        title: "Fix PostPreview.astro hardcoded English URLs"
+        description: >
+          In src/components/PostPreview.astro line 34, the post link href
+          is hardcoded as /posts/${post.slug}/ without language prefix.
+          Italian tag pages that use this component will link to /posts/...
+          instead of /it/posts/..., sending Italian users to the English
+          version of the post. Must use translatePath or a language-aware
+          href construction.
+        status: done
+        completion: 100
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: "PT20M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must work for all languages"
+          - "Must use the existing i18n utilities"
+        forbidden: []
+        references:
+          - "src/components/PostPreview.astro:34"
+          - "src/i18n/utils.ts"
+        notes:
+          - "2026-03-10: Fixed — added language detection from slug; builds href with lang prefix using getLangFromSlug and removeLangFromSlug."
+        subtasks: []
+
+      - id: bug-it-unlisted-noindex
+        title: "Fix Italian unlisted posts not set as noindex"
+        description: >
+          In src/pages/it/posts/[...slug].astro, the unlisted property
+          is never destructured from post.data and noindex is never
+          passed to BaseLayout for unlisted posts. The English version
+          correctly passes noindex={unlisted} to prevent search engine
+          indexing of unlisted posts. The Italian version must do the
+          same.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT10M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/it/posts/[...slug].astro"
+          - "src/pages/posts/[...slug].astro"
+        notes:
+          - "2026-03-10: Fixed — added unlisted to destructured props and noindex={unlisted} to BaseLayout."
+        subtasks: []
+
+      - id: bug-it-unlisted-comments
+        title: "Fix Italian unlisted/draft posts showing comments"
+        description: >
+          In src/pages/it/posts/[...slug].astro, Giscus comments are
+          shown even for unlisted and draft posts. The English version
+          conditionally hides comments when !draft && !unlisted. The
+          Italian version must apply the same conditional logic.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT10M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/it/posts/[...slug].astro"
+          - "src/pages/posts/[...slug].astro"
+        notes:
+          - "2026-03-10: Fixed — changed condition to {!draft && !unlisted && <GiscusComments>} and same for RelatedPosts."
+        subtasks: []
+
+      - id: bug-link-mailto-target
+        title: "Fix link.ts incorrectly targeting mailto/tel as _blank"
+        description: >
+          In src/utils/link.ts, isExternalLink() uses a regex that
+          matches any URL with a protocol prefix (including mailto:
+          and tel:). This causes getLinkTarget() to return _blank for
+          mailto and tel links, which is incorrect — these should open
+          in _self (the current window). Fix the regex to exclude
+          mailto: and tel: protocols.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT10M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must still correctly identify http:// and https:// as external"
+        forbidden: []
+        references:
+          - "src/utils/link.ts"
+        notes:
+          - "2026-03-10: Fixed — added isNonNavigableProtocol() function checking mailto:, tel:, sms:, geo:, data: before regex check. Note: existing regex /^[a-z0-9-]+:\\/\\//i already excludes mailto/tel since they lack ://, but guard added for robustness."
         subtasks: []
