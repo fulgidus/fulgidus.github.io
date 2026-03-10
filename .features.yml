@@ -68,7 +68,7 @@ version: "1.0"
 # Metadata about this tracking file
 meta:
   created_at: "2026-03-10T00:00:00+01:00"
-  updated_at: "2026-03-11T00:30:00+01:00"
+  updated_at: "2026-03-10T13:06:00+01:00"
   project: "fulgidus.github.io"
   generator: "Astro 4.x"
   maintainer: "fulgidus"
@@ -946,6 +946,156 @@ features:
           - "Must verify SEO metadata is preserved"
         forbidden: []
         references: []
+        notes: []
+        subtasks: []
+
+      - id: i18n-series-navigation
+        title: "Translate SeriesNavigation.astro strings"
+        description: >
+          SeriesNavigation.astro has all user-visible strings hardcoded
+          in English: "Series", "Part X of Y", "All parts in this series",
+          "Previous:", "Next:", and "(current)". These must be replaced
+          with translation keys from ui.ts and rendered via the i18n
+          utilities so they display correctly for Italian (and future
+          language) users.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on: []
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must add all new translation keys to ui.ts for en, it, and nl"
+        forbidden: []
+        references:
+          - "src/components/SeriesNavigation.astro"
+          - "src/i18n/ui.ts"
+        notes: []
+        subtasks: []
+
+      - id: i18n-it-page-meta
+        title: "Translate Italian page meta descriptions and titles"
+        description: >
+          Several Italian pages have English meta descriptions and titles
+          that were never translated: (1) tags index page — title "All Tags"
+          and description "A list of all the topics...", (2) tags by tag
+          page — English description and pagination text "Previous Tags"/
+          "Next Tags", (3) blog listing page — description "List of all
+          the blog posts." These must be replaced with Italian translations.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on: []
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/it/tags/index.astro"
+          - "src/pages/it/tags/[tag]/[...page].astro"
+          - "src/pages/it/blog/[...path].astro"
+        notes: []
+        subtasks: []
+
+      - id: i18n-it-projects-page
+        title: "Translate Italian projects page chrome"
+        description: >
+          The Italian projects page (src/pages/it/projects/index.astro)
+          has its title ("Projects") and description in English. The page
+          chrome is identical to the English version with no translation.
+          Must translate the page title, description, and any hardcoded
+          strings.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/it/projects/index.astro"
+        notes: []
+        subtasks: []
+
+      - id: i18n-date-locale
+        title: "Make date formatting language-aware"
+        description: >
+          The date locale in src/site-config.ts is hardcoded to "en-GB"
+          via siteConfig.date.locale. This means Italian pages render
+          dates in English format (e.g., "27 November 2024" instead of
+          "27 novembre 2024"). The getFormattedDate() utility in
+          src/utils/date.ts should accept a language parameter and use
+          the appropriate locale ("en-GB" for English, "it-IT" for
+          Italian).
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must update all callers to pass the page language"
+          - "Must maintain the existing date format style, just change locale"
+        forbidden: []
+        references:
+          - "src/site-config.ts"
+          - "src/utils/date.ts"
+        notes: []
+        subtasks: []
+
+      - id: i18n-related-posts
+        title: "Replace RelatedPosts.astro hardcoded language check"
+        description: >
+          In src/components/RelatedPosts.astro, the "Related Posts" heading
+          uses an if/else check on lang === 'it' instead of using the i18n
+          translation system. Replace with a proper useTranslate() call
+          and add translation keys to ui.ts.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: low
+        depends_on: []
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/RelatedPosts.astro"
+          - "src/i18n/ui.ts"
+        notes: []
+        subtasks: []
+
+      - id: i18n-scroll-to-top
+        title: "Translate ScrollToTop.vue aria-label"
+        description: >
+          ScrollToTop.vue has its aria-label hardcoded as "Scroll to top"
+          in English. This should use the i18n system to provide the
+          correct translation for the current page language. Add a
+          translation key to ui.ts and pass the translated string as
+          the aria-label.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: low
+        depends_on: []
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/ScrollToTop.vue"
+          - "src/i18n/ui.ts"
         notes: []
         subtasks: []
 
@@ -2281,6 +2431,225 @@ features:
         notes: []
         subtasks: []
 
+      - id: bug-trans-hardcoded-url
+        title: "Fix Trans.astro hardcoded URL with typo"
+        description: >
+          In src/components/Trans.astro line 17, getLangFromUrl() is called
+          with a hardcoded string "/it/blogss" (note the typo "blogss")
+          instead of using Astro.url. This means the component always
+          detects Italian language regardless of the actual page URL.
+          Fix to use the actual page URL from Astro.url.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT10M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/Trans.astro:17"
+        notes: []
+        subtasks: []
+
+      - id: bug-trans-console-log
+        title: "Remove console.log from Trans.astro"
+        description: >
+          In src/components/Trans.astro line 20, there is a debug
+          console.log("Received key:", key) statement that runs in
+          production on every use of the Trans component.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT5M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/Trans.astro:20"
+        notes: []
+        subtasks: []
+
+      - id: bug-it-posts-console-log
+        title: "Remove console.log from Italian posts template"
+        description: >
+          In src/pages/it/posts/[...slug].astro lines 32-35, there is a
+          console.log that dumps all Italian post slugs during build.
+          This debug logging should be removed.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT5M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/it/posts/[...slug].astro:32-35"
+        notes: []
+        subtasks: []
+
+      - id: bug-tags-semantic-html
+        title: "Fix tags page content wrapped inside <a> tag"
+        description: >
+          In src/pages/tags/[tag]/[...page].astro (both EN and IT), the
+          entire content section (h1, post list, paginator) is wrapped
+          inside an <a> tag that serves as the "Back" button link. This
+          is semantically invalid HTML — block-level content should not
+          be inside an anchor element. It likely causes accessibility
+          issues with screen readers. Restructure so the back link is
+          separate from the content.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: "PT20M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must fix both EN and IT versions"
+          - "Must preserve the back navigation functionality"
+        forbidden: []
+        references:
+          - "src/pages/tags/[tag]/[...page].astro"
+          - "src/pages/it/tags/[tag]/[...page].astro"
+        notes: []
+        subtasks: []
+
+      - id: bug-header-astro-noscript
+        title: "Fix Header.astro noscript fallback issues"
+        description: >
+          Header.astro (the noscript fallback header) has multiple issues:
+          (1) Line 15 uses :href (Vue bind syntax) instead of href — in
+          an Astro template this renders literally as a :href attribute,
+          not as a dynamic binding. (2) The <style> block at the bottom
+          (lines 49-75) appears truncated — .social-links ul rule has
+          'gap:' with no value and no closing brace.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must use standard href= attribute syntax in Astro templates"
+        forbidden: []
+        references:
+          - "src/components/Header.astro:15"
+          - "src/components/Header.astro:49-75"
+        notes: []
+        subtasks: []
+
+      - id: bug-postpreview-i18n
+        title: "Fix PostPreview.astro hardcoded English URLs"
+        description: >
+          In src/components/PostPreview.astro line 34, the post link href
+          is hardcoded as /posts/${post.slug}/ without language prefix.
+          Italian tag pages that use this component will link to /posts/...
+          instead of /it/posts/..., sending Italian users to the English
+          version of the post. Must use translatePath or a language-aware
+          href construction.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: "PT20M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must work for all languages"
+          - "Must use the existing i18n utilities"
+        forbidden: []
+        references:
+          - "src/components/PostPreview.astro:34"
+          - "src/i18n/utils.ts"
+        notes: []
+        subtasks: []
+
+      - id: bug-it-unlisted-noindex
+        title: "Fix Italian unlisted posts not set as noindex"
+        description: >
+          In src/pages/it/posts/[...slug].astro, the unlisted property
+          is never destructured from post.data and noindex is never
+          passed to BaseLayout for unlisted posts. The English version
+          correctly passes noindex={unlisted} to prevent search engine
+          indexing of unlisted posts. The Italian version must do the
+          same.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT10M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/it/posts/[...slug].astro"
+          - "src/pages/posts/[...slug].astro"
+        notes: []
+        subtasks: []
+
+      - id: bug-it-unlisted-comments
+        title: "Fix Italian unlisted/draft posts showing comments"
+        description: >
+          In src/pages/it/posts/[...slug].astro, Giscus comments are
+          shown even for unlisted and draft posts. The English version
+          conditionally hides comments when !draft && !unlisted. The
+          Italian version must apply the same conditional logic.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT10M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/it/posts/[...slug].astro"
+          - "src/pages/posts/[...slug].astro"
+        notes: []
+        subtasks: []
+
+      - id: bug-link-mailto-target
+        title: "Fix link.ts incorrectly targeting mailto/tel as _blank"
+        description: >
+          In src/utils/link.ts, isExternalLink() uses a regex that
+          matches any URL with a protocol prefix (including mailto:
+          and tel:). This causes getLinkTarget() to return _blank for
+          mailto and tel links, which is incorrect — these should open
+          in _self (the current window). Fix the regex to exclude
+          mailto: and tel: protocols.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT10M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must still correctly identify http:// and https:// as external"
+        forbidden: []
+        references:
+          - "src/utils/link.ts"
+        notes: []
+        subtasks: []
+
   # ---------------------------------------------------------------------------
   # FEATURE 13: Search improvements
   # ---------------------------------------------------------------------------
@@ -3322,4 +3691,1253 @@ features:
         references:
           - "https://github.com/dequelabs/axe-core"
         notes: []
+        subtasks: []
+
+
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 22: Web Share API integration
+  # ---------------------------------------------------------------------------
+  - id: web-share-api
+    title: "Web Share API integration for native sharing"
+    description: >
+      Integrate the Web Share API (navigator.share()) as the primary sharing
+      method on supported browsers — particularly mobile. When available, a
+      single "Share" button triggers the native OS share sheet, giving access
+      to all installed apps. On unsupported browsers, fall back gracefully to
+      the current SharePost.vue icon row. This also addresses the existing
+      gap where SharePost.vue has Mastodon JS handling code (case 'mastodon'
+      in the switch) but no corresponding button in the template.
+    status: backlog
+    completion: 0
+    difficulty: easy
+    priority: medium
+    depends_on: []
+    effort: "PT3H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must feature-detect navigator.share() and fall back gracefully"
+      - "Must pass share title, text (description), and URL"
+      - "Must preserve the existing icon row as fallback for desktop browsers"
+    forbidden:
+      - "Do not remove the existing SharePost icon row — it is the fallback"
+      - "Do not polyfill Web Share API — unsupported browsers get the icon row"
+    references:
+      - "https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share"
+      - "src/components/SharePost.vue"
+    notes:
+      - "2026-03-11: Feature added to backlog. SharePost.vue already has a dead Mastodon code path (case 'mastodon' in switch but no button in template). Web Share API replaces the need for individual platform buttons on mobile."
+    subtasks:
+
+      - id: web-share-detect
+        title: "Feature detection for navigator.share()"
+        description: >
+          Add a reactive boolean that checks navigator.share availability.
+          Use this to conditionally render either the native share button or
+          the existing icon row.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT20M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share"
+        notes: []
+        subtasks: []
+
+      - id: web-share-button
+        title: "Add native share button using Web Share API"
+        description: >
+          When navigator.share() is available, render a single "Share" button
+          that calls navigator.share({ title, text, url }). Handle the
+          AbortError (user cancelled) gracefully without error display.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on:
+          - "web-share-detect"
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must handle AbortError (user cancelled share) without showing errors"
+          - "Must pass meaningful title, text, and URL"
+        forbidden: []
+        references:
+          - "src/components/SharePost.vue"
+        notes: []
+        subtasks: []
+
+      - id: web-share-fallback
+        title: "Graceful fallback to existing icon row"
+        description: >
+          When navigator.share() is not available (desktop browsers), show
+          the existing SharePost icon row as before. Ensure the transition
+          between states is clean and no layout shift occurs.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on:
+          - "web-share-detect"
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: web-share-i18n
+        title: "Translate share dialog title and text"
+        description: >
+          Use the i18n system to provide translated share title and text
+          strings for the Web Share API call. Add keys to ui.ts for share
+          dialog content.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: low
+        depends_on: []
+        effort: "PT20M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/i18n/ui.ts"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 23: Table of Contents component
+  # ---------------------------------------------------------------------------
+  - id: table-of-contents
+    title: "Auto-generated Table of Contents with scrollspy"
+    description: >
+      Add a Table of Contents (ToC) component to blog posts that is
+      automatically generated from the heading hierarchy. rehype-slug already
+      adds IDs to all headings, so the infrastructure is in place. The ToC
+      should highlight the current section based on scroll position
+      (scrollspy), be collapsible, and work well on both desktop (sidebar or
+      inline) and mobile (collapsed by default). Especially valuable for
+      longer posts like the project management guide or testing psychology
+      article.
+    status: backlog
+    completion: 0
+    difficulty: medium
+    priority: medium
+    depends_on: []
+    effort: "P1D"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must work with existing rehype-slug heading IDs"
+      - "Must not break existing anchor link behavior"
+      - "Must be responsive — collapsed on mobile, visible on desktop"
+      - "Must support View Transitions without breaking scrollspy state"
+    forbidden:
+      - "Do not add a third-party ToC library — build it in Vue or Astro"
+    references:
+      - "src/pages/posts/[...slug].astro"
+      - "https://docs.astro.build/en/guides/markdown-content/#heading-ids"
+    notes:
+      - "2026-03-11: Feature added to backlog. rehype-slug and rehype-autolink-headings are already configured in astro.config.ts, providing heading IDs and anchor links. The ToC component needs to extract these at render time."
+    subtasks:
+
+      - id: toc-heading-extraction
+        title: "Extract heading hierarchy from rendered content"
+        description: >
+          Build a utility that parses the rendered post HTML to extract a
+          nested heading tree (h2 > h3 > h4) with text content and IDs.
+          This could be a remark/rehype plugin that injects the ToC data
+          into frontmatter, or a client-side DOM parser.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        depends_on: []
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must handle nested heading levels correctly (h2 containing h3, etc.)"
+          - "Must handle MDX component headings if they exist"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: toc-component
+        title: "Build the Table of Contents component"
+        description: >
+          Create a Vue or Astro component that renders the heading tree as
+          a nested list with links to heading anchors. Should support
+          collapsible sections for long posts.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        depends_on:
+          - "toc-heading-extraction"
+        effort: "PT3H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must render as a semantic <nav> with aria-label"
+          - "Must be keyboard-navigable"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: toc-scrollspy
+        title: "Scrollspy highlighting of current section"
+        description: >
+          Use IntersectionObserver to track which section heading is
+          currently in or near the viewport, and highlight the
+          corresponding ToC entry. Handle edge cases like the first
+          and last sections.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: medium
+        depends_on:
+          - "toc-component"
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must use IntersectionObserver (not scroll event listeners)"
+          - "Must handle fast scrolling without jank"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: toc-responsive
+        title: "Responsive layout for mobile and desktop"
+        description: >
+          On desktop, the ToC could be a sticky sidebar or an inline block
+          at the top of the post. On mobile, it should be collapsed by
+          default (e.g., inside a <details> element or a drawer). Ensure
+          no layout shift when toggling.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on:
+          - "toc-component"
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must not cause layout shift on toggle"
+          - "Must be collapsed by default on viewports under 768px"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: toc-integration
+        title: "Integrate ToC into blog post template"
+        description: >
+          Add the ToC component to the blog post layout. Only show it
+          for posts with 3+ headings (short posts don't need it).
+          Ensure it works with View Transitions.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on:
+          - "toc-component"
+          - "toc-responsive"
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Only show for posts with 3 or more headings"
+          - "Must survive Astro View Transitions without state loss"
+        forbidden: []
+        references:
+          - "src/pages/posts/[...slug].astro"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 24: Next/Previous post navigation
+  # ---------------------------------------------------------------------------
+  - id: post-nav-prev-next
+    title: "Next/Previous post navigation on blog posts"
+    description: >
+      Add chronological previous/next navigation links at the bottom of
+      each blog post (before comments). This is a standard blog UX pattern
+      that helps readers discover more content. Currently only related-by-tags
+      posts are shown. The prev/next links should be language-aware (Italian
+      posts navigate to other Italian posts, English to English).
+    status: backlog
+    completion: 0
+    difficulty: easy
+    priority: medium
+    depends_on: []
+    effort: "PT4H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must be language-aware — navigate within the same language"
+      - "Must exclude draft and unlisted posts from the chain"
+      - "Must show post title and optionally date for context"
+    forbidden:
+      - "Do not replace RelatedPosts — add prev/next as a separate component"
+    references:
+      - "src/utils/posts.ts"
+      - "src/pages/posts/[...slug].astro"
+      - "src/components/RelatedPosts.astro"
+    notes:
+      - "2026-03-11: Feature added to backlog. posts.ts has sortPostsByDate() but no getPreviousPost/getNextPost utility. RelatedPosts.astro shows tag-based related posts — this is complementary, not a replacement."
+    subtasks:
+
+      - id: post-nav-utility
+        title: "Add getPreviousPost/getNextPost to posts.ts"
+        description: >
+          Add utility functions to src/utils/posts.ts that, given a post
+          and language, return the chronologically previous and next posts.
+          Exclude drafts and unlisted. Handle edge cases (first/last post).
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must filter by language"
+          - "Must exclude drafts and unlisted posts"
+          - "Must return null for first/last post in the chain"
+        forbidden: []
+        references:
+          - "src/utils/posts.ts"
+        notes: []
+        subtasks: []
+
+      - id: post-nav-component
+        title: "Build prev/next navigation component"
+        description: >
+          Create an Astro component that renders previous and next post
+          links in a two-column layout. Show post title and date. Use
+          left/right arrow indicators. Style consistently with existing
+          navigation patterns.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        depends_on:
+          - "post-nav-utility"
+        effort: "PT1H30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must use data-astro-prefetch for fast navigation"
+          - "Must handle missing prev or next gracefully (first/last post)"
+        forbidden: []
+        references:
+          - "src/components/Paginator.astro"
+        notes: []
+        subtasks: []
+
+      - id: post-nav-i18n
+        title: "Translate prev/next labels"
+        description: >
+          Add translation keys for "Previous post", "Next post", and
+          any other labels used in the navigation component. Add keys
+          to ui.ts for en, it, and nl.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/i18n/ui.ts"
+        notes: []
+        subtasks: []
+
+      - id: post-nav-integration
+        title: "Add prev/next navigation to post template"
+        description: >
+          Integrate the prev/next component into the blog post layout
+          ([...slug].astro for both EN and IT). Place it after the post
+          content and before (or alongside) the related posts section.
+          Exclude from draft and unlisted posts.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on:
+          - "post-nav-component"
+          - "post-nav-i18n"
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must not show for draft or unlisted posts"
+        forbidden: []
+        references:
+          - "src/pages/posts/[...slug].astro"
+          - "src/pages/it/posts/[...slug].astro"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 25: OG image enhancements
+  # ---------------------------------------------------------------------------
+  - id: og-image-enhancements
+    title: "Enhance Open Graph image generation"
+    description: >
+      Improve the Satori-generated OG cards with richer visual content.
+      Currently the cards are text-only on a hardcoded purple gradient.
+      Enhancements: (1) add the site logo to the card, (2) incorporate
+      the post's hero/cover image if available, (3) display tags or
+      category, (4) improve description truncation to respect word
+      boundaries instead of cutting mid-word at 140 characters.
+    status: backlog
+    completion: 0
+    difficulty: medium
+    priority: low
+    depends_on: []
+    effort: "PT6H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must keep the card at 1200x630 (standard OG dimensions)"
+      - "Must maintain fast build times — image generation is already the slowest build step"
+      - "Satori does not support all CSS — must work within its subset"
+    forbidden:
+      - "Do not use external image CDN — all images must be generated at build time"
+    references:
+      - "src/utils/og.ts"
+      - "https://github.com/vercel/satori"
+    notes:
+      - "2026-03-11: Feature added to backlog. Current OG images use a fixed purple gradient with text only. Satori has limited CSS support (no background-image from URL, but supports base64-encoded images). Hero image integration may require converting the cover image to base64 at build time."
+    subtasks:
+
+      - id: og-add-logo
+        title: "Add site logo to OG cards"
+        description: >
+          Embed the site logo (public/img/logo.svg or a PNG version) into
+          the OG card template. Position it in the top-left or top-right
+          corner. Satori supports SVG rendering directly.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on: []
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Logo must be clearly visible but not dominate the card"
+        forbidden: []
+        references:
+          - "public/img/logo.svg"
+          - "src/utils/og.ts"
+        notes: []
+        subtasks: []
+
+      - id: og-hero-image
+        title: "Incorporate post hero image into OG card"
+        description: >
+          If a post has a cover/hero image, include it in the OG card
+          (e.g., as a background or a side panel). This requires reading
+          the image at build time and encoding it for Satori. Handle
+          posts without images gracefully (use the current text-only
+          design as fallback).
+        status: backlog
+        completion: 0
+        difficulty: hard
+        priority: low
+        depends_on: []
+        effort: "PT3H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must handle posts without images (fallback to current design)"
+          - "Image must be resized/cropped to fit the card without distortion"
+          - "Must not significantly increase build time"
+        forbidden: []
+        references:
+          - "src/utils/og.ts"
+        notes:
+          - "2026-03-11: Satori does not support CSS background-image from URLs. Images must be base64-encoded and passed as <img> src. Sharp can handle the resizing."
+        subtasks: []
+
+      - id: og-display-tags
+        title: "Show tags or category on OG card"
+        description: >
+          Display the first 2-3 tags as small badges on the OG card.
+          This helps with visual identification of post topics when
+          shared on social media.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: low
+        depends_on: []
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Limit to 3 tags maximum to avoid clutter"
+          - "Must be readable at small sizes (social media thumbnails)"
+        forbidden: []
+        references:
+          - "src/utils/og.ts"
+        notes: []
+        subtasks: []
+
+      - id: og-word-truncation
+        title: "Improve description truncation at word boundaries"
+        description: >
+          The current truncation cuts descriptions at exactly 140 characters,
+          potentially mid-word. Improve to truncate at the nearest word
+          boundary and add an ellipsis. Consider using a slightly higher
+          limit if the last word would bring it close to 140.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: low
+        depends_on: []
+        effort: "PT20M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/utils/og.ts"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 26: Footer enhancements
+  # ---------------------------------------------------------------------------
+  - id: footer-enhancements
+    title: "Enhanced site footer with social links and RSS"
+    description: >
+      Improve the site footer (FooterComponent.vue) by adding: (1) a row
+      of social media icons from siteConfig (GitHub, LinkedIn, etc.),
+      (2) a visible RSS feed link, (3) a copyright year range showing the
+      start year through the current year (e.g., "2024-2026" instead of
+      just "2026"). The footer currently only has nav text links and the
+      CC license notice.
+    status: backlog
+    completion: 0
+    difficulty: easy
+    priority: low
+    depends_on: []
+    effort: "PT3H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must use social links from siteConfig (single source of truth)"
+      - "Must be responsive and look good on mobile"
+      - "Must remain hidden in print mode (existing behavior)"
+    forbidden: []
+    references:
+      - "src/components/FooterComponent.vue"
+      - "src/site-config.ts"
+    notes:
+      - "2026-03-11: Feature added to backlog. FooterComponent.vue currently renders nav links from siteConfig.footer.navLinks, CC license, and copyright year. Social links exist in siteConfig.socialLinks but are only shown in the header."
+    subtasks:
+
+      - id: footer-social-links
+        title: "Add social media icon row to footer"
+        description: >
+          Render social media icons (from siteConfig.socialLinks) in the
+          footer. Use the same icon set as the header but with footer-
+          appropriate sizing and spacing.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on: []
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must use siteConfig.socialLinks as data source"
+          - "Must include aria-labels for accessibility"
+        forbidden: []
+        references:
+          - "src/site-config.ts"
+        notes: []
+        subtasks: []
+
+      - id: footer-rss-link
+        title: "Add RSS feed link to footer"
+        description: >
+          Add a visible RSS feed link (or icon) to the footer. Should
+          point to the language-appropriate RSS feed (/rss.xml for EN,
+          /it/rss.xml for IT).
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must be language-aware (link to correct language RSS feed)"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: footer-copyright-range
+        title: "Show copyright year range"
+        description: >
+          Change the copyright notice from showing only the current year
+          to showing a range (e.g., "2024-2026"). The start year should
+          be configurable in siteConfig or hardcoded to the site's launch
+          year.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: low
+        depends_on: []
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/FooterComponent.vue"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 27: Dead code cleanup
+  # ---------------------------------------------------------------------------
+  - id: dead-code-cleanup
+    title: "Remove unused components and stale assets"
+    description: >
+      Clean up dead code and stale assets discovered during codebase
+      analysis. Includes: (1) PokerPic.vue — never imported, has
+      defineProps bugs and undefined {{ span }} variable; (2)
+      PokerPicNoUno.vue — never imported, same defineProps bugs;
+      (3) public/img/logo copy.svg — duplicate of logo.svg with space
+      in filename; (4) public/img/lighthouse.jpg — appears unused by
+      any page or component.
+    status: backlog
+    completion: 0
+    difficulty: trivial
+    priority: medium
+    depends_on: []
+    effort: "PT1H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must verify each file is truly unused before deletion"
+      - "Must search all .astro, .vue, .ts, .tsx files for imports"
+    forbidden:
+      - "Do not remove PokerPic.astro — that IS the active version"
+    references:
+      - "src/components/PokerPic.vue"
+      - "src/components/PokerPicNoUno.vue"
+      - "public/img/logo copy.svg"
+      - "public/img/lighthouse.jpg"
+    notes:
+      - "2026-03-11: Feature added to backlog. Only PokerPic.astro (the Astro variant with <Image> optimization) is imported — by src/pages/index.astro and src/pages/it/index.astro. The Vue variants were likely earlier experiments."
+    subtasks:
+
+      - id: dead-code-pokerpic-vue
+        title: "Remove unused PokerPic.vue and PokerPicNoUno.vue"
+        description: >
+          Delete src/components/PokerPic.vue and
+          src/components/PokerPicNoUno.vue after confirming no imports
+          exist. Both have defineProps bugs (src: { src: String } instead
+          of type: String) and PokerPic.vue references undefined {{ span }},
+          confirming they are not in active use.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Grep all source files for 'PokerPic.vue' and 'PokerPicNoUno' imports first"
+        forbidden:
+          - "Do not remove PokerPic.astro"
+        references:
+          - "src/components/PokerPic.vue"
+          - "src/components/PokerPicNoUno.vue"
+        notes: []
+        subtasks: []
+
+      - id: dead-code-logo-copy
+        title: "Remove duplicate logo copy.svg"
+        description: >
+          Delete public/img/logo copy.svg — it is a duplicate of
+          public/img/logo.svg with a space in the filename. Verify
+          no references exist before deletion.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT10M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "public/img/logo copy.svg"
+          - "public/img/logo.svg"
+        notes: []
+        subtasks: []
+
+      - id: dead-code-lighthouse-img
+        title: "Verify and remove unused lighthouse.jpg"
+        description: >
+          Verify that public/img/lighthouse.jpg is not referenced by any
+          source file, blog post, or page. If unused, delete it. If used,
+          document where.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: low
+        depends_on: []
+        effort: "PT10M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must search blog post content (MDX/MD) in addition to source code"
+        forbidden: []
+        references:
+          - "public/img/lighthouse.jpg"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 28: Performance monitoring CI (Lighthouse)
+  # ---------------------------------------------------------------------------
+  - id: performance-ci-lighthouse
+    title: "Lighthouse CI performance monitoring in deploy workflow"
+    description: >
+      Add Lighthouse CI checks to the GitHub Actions deploy workflow to
+      automatically audit performance, accessibility, SEO, and best
+      practices on every deployment. Set budgets that must pass before
+      deployment proceeds. This catches regressions (slow pages, missing
+      alt text, broken meta tags) before they ship to production.
+    status: backlog
+    completion: 0
+    difficulty: medium
+    priority: medium
+    depends_on: []
+    effort: "PT4H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must run against the built static files (dist/), not the dev server"
+      - "Must not significantly increase deploy time (< 2 min added)"
+      - "Must test at least the homepage, a blog post, the search page, and the 404 page"
+    forbidden:
+      - "Do not block deployment on performance score alone — only on a11y and SEO regressions"
+    references:
+      - "https://github.com/GoogleChrome/lighthouse-ci"
+      - ".github/workflows/deploy.yml"
+    notes:
+      - "2026-03-11: Feature added to backlog. Soft dependency recommendation — implement after bug-ci-test-ordering is fixed so the CI pipeline ordering is correct before adding more steps."
+    subtasks:
+
+      - id: perf-ci-setup
+        title: "Add Lighthouse CI action to deploy workflow"
+        description: >
+          Add the Lighthouse CI GitHub Action to the deploy workflow.
+          Configure it to run against the built dist/ directory using
+          a local server (e.g., via the Lighthouse CI server or a
+          simple HTTP server step).
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        depends_on: []
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must serve dist/ locally for Lighthouse to audit"
+          - "Must run after the build step but before deployment"
+        forbidden: []
+        references:
+          - "https://github.com/GoogleChrome/lighthouse-ci"
+        notes: []
+        subtasks: []
+
+      - id: perf-ci-budgets
+        title: "Define Lighthouse performance budgets"
+        description: >
+          Create a lighthouserc.js or lighthouserc.yml configuration file
+          with budget thresholds. Set minimum scores for performance (70+),
+          accessibility (90+), SEO (90+), and best practices (80+). Define
+          resource budgets for JS, CSS, and image sizes.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Initial budgets should be achievable by the current site"
+          - "Must test at least 4 representative pages"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: perf-ci-reporting
+        title: "Configure Lighthouse CI report output"
+        description: >
+          Configure Lighthouse CI to output HTML reports as build artifacts
+          and optionally post score summaries as PR comments (if running
+          on pull requests). Upload reports to GitHub Actions artifacts
+          for debugging.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on:
+          - "perf-ci-setup"
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 29: Broken link checker CI
+  # ---------------------------------------------------------------------------
+  - id: broken-link-checker-ci
+    title: "Automated broken link checker in CI pipeline"
+    description: >
+      Add an automated link checker to the CI pipeline that runs after
+      build and validates all internal links and optionally external links.
+      Catches dead links, typos in URLs, broken cross-references between
+      posts, and missing images. Should run against the built dist/
+      directory.
+    status: backlog
+    completion: 0
+    difficulty: easy
+    priority: medium
+    depends_on: []
+    effort: "PT3H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must run against built HTML in dist/"
+      - "Must handle hash fragments (#section-id) in internal links"
+      - "Must be tolerant of transient external link failures"
+    forbidden:
+      - "Do not check tarpit pages (/well/) — they are intentionally self-referential"
+    references:
+      - "https://github.com/lycheeverse/lychee"
+      - "https://github.com/stevenvachon/broken-link-checker"
+    notes:
+      - "2026-03-11: Feature added to backlog. lychee-action is a popular Rust-based link checker with good GitHub Actions integration and fast performance."
+    subtasks:
+
+      - id: link-check-setup
+        title: "Add link checker action to CI workflow"
+        description: >
+          Add lychee-action (or similar) to the GitHub Actions workflow.
+          Configure it to scan all HTML files in dist/ for broken internal
+          and external links.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "https://github.com/lycheeverse/lychee-action"
+        notes: []
+        subtasks: []
+
+      - id: link-check-config
+        title: "Configure exclusions and tolerances"
+        description: >
+          Create a .lycheeignore or lychee.toml configuration file.
+          Exclude the tarpit (/well/) from checks, set rate limiting
+          for external domains, and configure acceptable status codes
+          (some external sites return 403 for bots but work fine for
+          browsers).
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must exclude /well/ tarpit pages"
+          - "Must handle rate limiting for external checks"
+          - "Must tolerate 403/429 from external sites (flag as warning, not error)"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: link-check-reporting
+        title: "Configure link checker reporting"
+        description: >
+          Set up the link checker to fail the CI build on broken internal
+          links but only warn on broken external links. Output a report
+          as a build artifact for debugging.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on:
+          - "link-check-setup"
+          - "link-check-config"
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Internal broken links must fail the build"
+          - "External broken links should warn but not fail"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 30: Content linting / frontmatter validation CI
+  # ---------------------------------------------------------------------------
+  - id: content-linting-ci
+    title: "Frontmatter validation and content linting in CI"
+    description: >
+      Add automated content linting to the CI pipeline that validates
+      blog post frontmatter completeness and consistency. Check that
+      required fields exist (title, pubDate, description), lang is set,
+      images have alt text, dates parse correctly, tags follow naming
+      conventions (kebab-case), and series posts have sequential
+      seriesOrder values. Catches content issues before they reach
+      production.
+    status: backlog
+    completion: 0
+    difficulty: medium
+    priority: low
+    depends_on: []
+    effort: "PT4H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must validate all posts in src/content/blog/"
+      - "Must catch missing required fields that Zod does not enforce (e.g., lang)"
+      - "Must be runnable locally and in CI"
+    forbidden:
+      - "Do not duplicate Zod schema validation — focus on what Zod does not check"
+    references:
+      - "src/content/config.ts"
+      - "src/content/blog/"
+    notes:
+      - "2026-03-11: Feature added to backlog. Zod validates the core schema, but many fields are optional. This linter checks for best practices: every post should have a description, a lang field, image alt text if an image is provided, etc."
+    subtasks:
+
+      - id: content-lint-rules
+        title: "Define frontmatter validation rules"
+        description: >
+          Document and implement the validation rules: (1) every post
+          must have a description, (2) every post must have a lang field,
+          (3) images must have imageAlt, (4) tags must be kebab-case,
+          (5) pubDate must be a valid date, (6) series posts must have
+          sequential seriesOrder, (7) Italian posts must have a matching
+          English post (or be explicitly marked as untranslated).
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        depends_on: []
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/content/config.ts"
+        notes: []
+        subtasks: []
+
+      - id: content-lint-script
+        title: "Write validation script"
+        description: >
+          Create a Node.js/TypeScript script that reads all MDX/MD files
+          in src/content/blog/, parses their frontmatter, and validates
+          against the rules. Output clear error messages with file paths
+          and line numbers. Exit with non-zero code on violations.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        depends_on:
+          - "content-lint-rules"
+        effort: "PT1H30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must be runnable with 'node' or 'tsx' without special setup"
+          - "Must parse YAML frontmatter correctly (handle multiline values)"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: content-lint-ci-integration
+        title: "Add content linting to CI pipeline"
+        description: >
+          Add the validation script as a step in the GitHub Actions
+          workflow, running before the build step. Violations should
+          fail the build.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on:
+          - "content-lint-script"
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - ".github/workflows/deploy.yml"
+        notes: []
+        subtasks: []
+
+      - id: content-lint-fix-existing
+        title: "Fix existing frontmatter issues"
+        description: >
+          Run the linter against current content and fix any violations
+          found. This may include adding missing descriptions, lang
+          fields, imageAlt values, or normalizing tag naming.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on:
+          - "content-lint-rules"
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 31: Tarpit analytics
+  # ---------------------------------------------------------------------------
+  - id: tarpit-analytics
+    title: "Track honeypot/tarpit effectiveness with analytics"
+    description: >
+      Add analytics tracking to the tarpit pages (/well/) to measure
+      how many bots fall into the honeypot. Currently there is no
+      visibility into whether the tarpit is working. Use Umami custom
+      events (already integrated on the site) to track tarpit page views,
+      crawler user agents, and navigation depth (how many tarpit pages
+      a bot visits before leaving).
+    status: backlog
+    completion: 0
+    difficulty: easy
+    priority: low
+    depends_on: []
+    effort: "PT2H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must not interfere with the noindex directive on tarpit pages"
+      - "Must not slow down tarpit page rendering"
+      - "Must distinguish bot traffic from human traffic (if possible)"
+    forbidden:
+      - "Do not add tracking that would alert sophisticated bots to the honeypot nature of the pages"
+    references:
+      - "src/lib/tarpit.ts"
+      - "src/pages/well/[...path].astro"
+      - "src/components/BaseHead.astro"
+    notes:
+      - "2026-03-11: Feature added to backlog. Umami analytics is already loaded on every page via BaseHead.astro. Tarpit pages inherit BaseLayout which includes BaseHead, so Umami should already be tracking these page views — but custom events would provide richer data."
+    subtasks:
+
+      - id: tarpit-umami-events
+        title: "Add Umami custom event tracking to tarpit pages"
+        description: >
+          Add Umami custom event calls to tarpit pages that track:
+          (1) tarpit entry (first page visit), (2) navigation depth
+          (how many tarpit pages visited in a session), and (3) user
+          agent classification (bot vs. human). Use Umami's
+          umami.track() API.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on: []
+        effort: "PT1H30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must use Umami's existing tracking script"
+          - "Must not add visible UI elements to tarpit pages"
+        forbidden: []
+        references:
+          - "https://umami.is/docs/track-events"
+        notes: []
+        subtasks: []
+
+      - id: tarpit-dashboard-docs
+        title: "Document how to view tarpit metrics in Umami"
+        description: >
+          Add a note to the project documentation (or a comment in the
+          tarpit source) explaining how to filter and view tarpit metrics
+          in the Umami dashboard. Include the custom event names and
+          expected data shapes.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: low
+        depends_on:
+          - "tarpit-umami-events"
+        effort: "PT20M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 32: llms.txt improvements
+  # ---------------------------------------------------------------------------
+  - id: llms-txt-improvements
+    title: "Improve llms.txt and llms-full.txt endpoints"
+    description: >
+      Enhance the LLM-readable content endpoints with additional content
+      and metadata. Currently llms.txt and llms-full.txt only include blog
+      posts. Improvements: (1) include the pages collection (uses.md,
+      md-style.md, posts-props.md), (2) add word count and estimated
+      token count metadata to llms-full.txt entries, (3) add Cache-Control
+      and ETag headers for efficient re-fetching by LLM crawlers.
+    status: backlog
+    completion: 0
+    difficulty: easy
+    priority: low
+    depends_on: []
+    effort: "PT2H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must maintain backward compatibility with the current output format"
+      - "Must serve valid plain text with UTF-8 encoding"
+    forbidden: []
+    references:
+      - "src/pages/llms.txt.ts"
+      - "src/pages/llms-full.txt.ts"
+      - "https://llmstxt.org/"
+    notes:
+      - "2026-03-11: Feature added to backlog. The llms.txt standard is still emerging. Current implementation covers blog posts only. Pages collection content (uses, markdown style guide) would be valuable for LLMs trying to understand the site."
+    subtasks:
+
+      - id: llms-include-pages
+        title: "Add pages collection content to llms.txt endpoints"
+        description: >
+          Query the pages collection (src/content/pages/) and include
+          those entries in both llms.txt (as index entries) and
+          llms-full.txt (with full content). Add a separate section
+          header to distinguish pages from blog posts.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on: []
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must maintain the existing blog post entries unchanged"
+          - "Pages should be in a separate section from blog posts"
+        forbidden: []
+        references:
+          - "src/pages/llms.txt.ts"
+          - "src/pages/llms-full.txt.ts"
+        notes: []
+        subtasks: []
+
+      - id: llms-token-counts
+        title: "Add word count and token estimate metadata"
+        description: >
+          For each entry in llms-full.txt, add a word count and an
+          estimated token count (word_count * 1.3 as a rough estimate).
+          This helps LLM consumers decide whether to fetch the full
+          content based on their context window.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: low
+        depends_on: []
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: llms-cache-headers
+        title: "Add Cache-Control and ETag headers"
+        description: >
+          Add appropriate Cache-Control headers (e.g., max-age=3600,
+          stale-while-revalidate=86400) and an ETag based on content
+          hash. This allows LLM crawlers to efficiently check for
+          updates without re-downloading unchanged content.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: low
+        depends_on: []
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "GitHub Pages may override some headers — verify behavior"
+        forbidden: []
+        references: []
+        notes:
+          - "2026-03-11: GitHub Pages serves static files with its own caching headers. Custom headers via _headers files are NOT supported. This may need to be implemented as a Cloudflare Workers or similar edge function if GitHub Pages cannot serve custom headers, or it may need to use HTML meta http-equiv as a workaround (which does not work for Cache-Control). Investigate feasibility."
         subtasks: []
