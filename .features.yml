@@ -62,7 +62,7 @@ version: "1.0"
 # Metadata about this tracking file
 meta:
   created_at: "2026-03-10T00:00:00+01:00"
-  updated_at: "2026-03-10T00:00:00+01:00"
+  updated_at: "2026-03-10T23:30:00+01:00"
   project: "fulgidus.github.io"
   generator: "Astro 4.x"
   maintainer: "fulgidus"
@@ -124,7 +124,7 @@ features:
           - "Use the TypeScript package (splathash-ts) from npm"
         forbidden: []
         references:
-          - "https://www.npmjs.com/package/splathash-ts"
+          - "src/i18n/ui.ts"
         notes: []
         subtasks: []
 
@@ -1030,5 +1030,2114 @@ features:
           - "Must be opt-in, not default"
         forbidden: []
         references: []
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 7: Marp presentation support
+  # ---------------------------------------------------------------------------
+  - id: marp-presentations
+    title: "Marp presentation support with download buttons"
+    description: >
+      Add support for Marp (https://marp.app) slide deck presentations in
+      two modes: (1) as standalone post pages where the entire post IS a
+      presentation (full-screen slide viewer), and (2) as embedded slide
+      decks within regular blog articles (inline iframe or component).
+      Both modes must offer download buttons for the presentation in
+      multiple formats: Markdown source (.md), PDF (.pdf), and PowerPoint
+      (.pptx). Marp uses CommonMark with --- as slide separator and
+      supports directives, image syntax, math typesetting, and CSS theming.
+      The build pipeline must convert Marp Markdown to HTML slides at build
+      time using @marp-team/marp-cli or @marp-team/marp-core. Export to
+      PDF and PPTX must also happen at build time (requires Chromium).
+    status: backlog
+    completion: 0
+    difficulty: very_hard
+    priority: high
+    effort: "P4D"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must integrate with Astro's build pipeline"
+      - "Must support both dark and light themes for slides"
+      - "Slide HTML output must be self-contained (no external dependencies at runtime)"
+      - "PDF/PPTX generation requires Chromium — must work in GitHub Actions CI"
+      - "Must coexist with regular Markdown/MDX posts without interference"
+      - "Download files (.md, .pdf, .pptx) must be generated at build time and served statically"
+      - "Embedded presentations must be responsive and not break page layout"
+      - "Must support Marp directives (theme, paginate, class, etc.)"
+    forbidden:
+      - "Do not use client-side Marp rendering — all conversion must be build-time"
+      - "Do not require users to install Marp CLI globally — use npm dependency"
+      - "Do not modify the Marp source files during build — treat them as read-only input"
+    references:
+      - "https://marp.app"
+      - "https://github.com/marp-team/marp-cli"
+      - "https://github.com/marp-team/marp-core"
+      - "https://marpit.marp.app/markdown"
+      - "https://marpit.marp.app/directives"
+    notes:
+      - "2026-03-10: Feature added to backlog. Marp converts Markdown to HTML/PDF/PPTX slide decks. The site already has a 'Talks' nav item commented out in site-config.ts — this feature could revive it. Build-time PDF/PPTX export requires Chromium (available in GitHub Actions ubuntu runners)."
+    subtasks:
+
+      - id: marp-content-type
+        title: "Define Marp content type and frontmatter schema"
+        description: >
+          Add a 'presentation' or 'talk' content type (or extend the existing
+          blog collection with a 'marp: true' frontmatter flag). Define the
+          schema to include: marp theme, slide aspect ratio, export formats
+          to generate, and whether the post is a pure presentation or an
+          article with embedded slides. Consider reviving the commented-out
+          'Talks' nav category.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT3H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must be backward-compatible with existing blog posts"
+          - "Must work with the content collection system in src/content/config.ts"
+        forbidden: []
+        references:
+          - "src/content/config.ts"
+          - "src/site-config.ts"
+        notes: []
+        subtasks: []
+
+      - id: marp-build-pipeline
+        title: "Build-time Marp compilation pipeline"
+        description: >
+          Create a build step (Astro integration or npm script) that finds
+          all Marp content files, compiles them to self-contained HTML using
+          @marp-team/marp-core, and generates PDF and PPTX exports using
+          @marp-team/marp-cli (which uses Puppeteer/Chromium). Output files
+          must be placed in the static output directory. Must be incremental
+          (skip unchanged presentations).
+        status: backlog
+        completion: 0
+        difficulty: hard
+        priority: high
+        effort: "P1D"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must install Chromium in CI (GitHub Actions has it pre-installed)"
+          - "Must handle Chromium sandbox issues in CI environments"
+          - "Must cache results to avoid re-rendering unchanged slides"
+        forbidden:
+          - "Do not shell out to marp-cli binary — use the Node.js API"
+        references:
+          - "https://github.com/marp-team/marp-cli"
+        notes: []
+        subtasks: []
+
+      - id: marp-standalone-viewer
+        title: "Standalone presentation viewer page"
+        description: >
+          Create a page template for pure presentation posts. The page shows
+          the Marp HTML slides in a full-viewport viewer with navigation
+          controls (arrow keys, click, swipe). Include a toolbar with
+          download buttons for .md, .pdf, and .pptx formats. Include a
+          fullscreen toggle. Must support keyboard navigation and touch
+          gestures.
+        status: backlog
+        completion: 0
+        difficulty: hard
+        priority: high
+        effort: "PT6H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must work on mobile (touch swipe for slide navigation)"
+          - "Must support keyboard shortcuts (left/right arrows, Escape for fullscreen)"
+          - "Download buttons must show file sizes"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: marp-embedded-component
+        title: "Embeddable slide deck component for articles"
+        description: >
+          Create a Vue or Astro component that embeds a Marp slide deck
+          within a regular blog post. The component renders the slides in
+          a contained area (not full-page) with navigation controls and
+          download buttons. Should support a configurable aspect ratio
+          (16:9, 4:3) and height. Authors use it in MDX like:
+          <MarpSlides src="./my-deck.md" />
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: medium
+        effort: "PT4H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must not break the surrounding article layout"
+          - "Must be lazy-loaded (don't load slide HTML until visible)"
+          - "Must respect the site's dark/light theme for the container chrome"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: marp-download-buttons
+        title: "Download buttons component (md/pdf/pptx)"
+        description: >
+          Create a reusable download button group component that provides
+          download links for .md (source), .pdf, and .pptx versions of a
+          presentation. Must show file format icons and file sizes. Must
+          be i18n-aware (button labels translated).
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "File sizes must be calculated at build time and embedded in the component"
+          - "Must handle missing formats gracefully (e.g. if PPTX generation failed)"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: marp-theme-integration
+        title: "Marp theme matching site dark/light mode"
+        description: >
+          Create or customize a Marp CSS theme that visually matches the
+          site's design system (colors, fonts, spacing). The theme should
+          have light and dark variants that respect the site's theme toggle.
+          For standalone presentations, the slides themselves should switch
+          themes. For embedded presentations, at minimum the container
+          chrome should match.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: low
+        effort: "PT4H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must use the same font stack as the site (or a complementary one)"
+          - "Slide content must be readable in both themes"
+        forbidden: []
+        references:
+          - "https://marpit.marp.app/theme-css"
+          - "uno.config.ts"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 8: TorinoJS organizer in projects section
+  # ---------------------------------------------------------------------------
+  - id: torinojs-projects
+    title: "Add TorinoJS organizer role to projects section"
+    description: >
+      Add a new project group in the projects section (src/pages/projects/data.ts)
+      to highlight the role as an organizer at TorinoJS — a community that hosts
+      async events about JavaScript, Node.js, IoT, and open source web
+      technologies in Torino. The entry should link to https://torino.js.org
+      and describe the community and the organizer role. Should also be
+      reflected in the Italian projects data (src/pages/it/projects/data.ts).
+    status: backlog
+    completion: 0
+    difficulty: trivial
+    priority: high
+    effort: "PT30M"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must appear in both EN and IT project data files"
+      - "Must use an appropriate icon from the Remix Icon set (i-ri-*)"
+      - "Description must accurately represent the organizer role"
+    forbidden:
+      - "Do not claim ownership of TorinoJS — describe as organizer/contributor"
+    references:
+      - "https://torino.js.org"
+      - "https://github.com/TorinoJS"
+      - "src/pages/projects/data.ts"
+      - "src/pages/it/projects/data.ts"
+    notes:
+      - "2026-03-10: Feature added to backlog. TorinoJS is a community hosting events about JS, Node.js, IoT, and open source web tech in Torino. Currently in 'reboot' status per their website. The projects data.ts files already have group categories (Maintained FOSS, Rust experiments, Code challenges, Crypto experiments)."
+    subtasks:
+
+      - id: torinojs-data-en
+        title: "Add TorinoJS entry to EN project data"
+        description: >
+          Add a new group (e.g. 'Community') or entry in src/pages/projects/data.ts
+          with TorinoJS details, link, and icon.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/projects/data.ts"
+        notes: []
+        subtasks: []
+
+      - id: torinojs-data-it
+        title: "Add TorinoJS entry to IT project data"
+        description: >
+          Mirror the TorinoJS entry in src/pages/it/projects/data.ts with
+          Italian description text.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/it/projects/data.ts"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 9: In-browser PGP encryption in EmailObfuscator
+  # ---------------------------------------------------------------------------
+  - id: pgp-email-encryption
+    title: "In-browser PGP encryption before sending email"
+    description: >
+      Extend the EmailObfuscator.vue component to offer an optional
+      "Send encrypted message" mode. When activated, the user can compose
+      a message directly in the browser, which is encrypted client-side
+      using the site owner's PGP public key before being sent via mailto:.
+      The PGP public key (fingerprint: 0A2C0C7981CFA6F32B66BEBC0524FF30B446FFD1,
+      identity: Alessio Giulio Corsi <alessio.corsi@gmail.com>) must be
+      downloaded from keys.openpgp.org at build time and stored as a .asc
+      file in the public/ directory. Client-side encryption uses OpenPGP.js
+      (https://openpgpjs.org/). The encrypted message is placed in the
+      mailto: body so the user's email client opens with the ciphertext
+      ready to send.
+    status: backlog
+    completion: 0
+    difficulty: hard
+    priority: medium
+    effort: "P1DT4H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "PGP public key .asc file MUST reside in public/ directory (served statically)"
+      - "All encryption MUST happen client-side — no server involvement"
+      - "Must use OpenPGP.js (https://openpgpjs.org/) for encryption"
+      - "The encrypted output must be valid PGP ASCII armor that the recipient can decrypt with their private key"
+      - "Must handle large messages gracefully (mailto: URL length limits vary by OS/browser)"
+      - "Must work without any backend — pure static site"
+      - "Must be i18n-aware (all UI labels translated)"
+    forbidden:
+      - "Do NOT include or reference any private key material anywhere"
+      - "Do NOT store the composed message on any server or third-party service"
+      - "Do NOT use Web Crypto API directly — use OpenPGP.js which wraps it properly"
+      - "Do NOT fetch the key from keys.openpgp.org at runtime — serve from public/"
+    references:
+      - "https://keys.openpgp.org/vks/v1/by-fingerprint/0A2C0C7981CFA6F32B66BEBC0524FF30B446FFD1"
+      - "https://openpgpjs.org/"
+      - "https://github.com/nicolo-ribaudo/tc39-proposal-public-key-crypto"
+      - "src/components/EmailObfuscator.vue"
+    notes:
+      - "2026-03-10: Feature added to backlog. Current EmailObfuscator.vue is minimal — decodes HTML-entity-obfuscated email on mount and renders a mailto: link. The PGP extension adds a compose form with client-side encryption. Key fingerprint: 0A2C0C7981CFA6F32B66BEBC0524FF30B446FFD1. OpenPGP.js is ~160KB gzipped — must be lazy-loaded."
+    subtasks:
+
+      - id: pgp-download-pubkey
+        title: "Download and store PGP public key as .asc file"
+        description: >
+          Download the PGP public key from
+          https://keys.openpgp.org/vks/v1/by-fingerprint/0A2C0C7981CFA6F32B66BEBC0524FF30B446FFD1
+          and save it as public/keys/pgp-pubkey.asc (or similar). This file
+          will be served statically and fetched client-side for encryption.
+          Add a build-time validation step to verify the key fingerprint
+          matches expectations.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "File must be in public/ so it's served as a static asset"
+          - "Key fingerprint must be verified at build time"
+        forbidden: []
+        references:
+          - "https://keys.openpgp.org/vks/v1/by-fingerprint/0A2C0C7981CFA6F32B66BEBC0524FF30B446FFD1"
+        notes: []
+        subtasks: []
+
+      - id: pgp-compose-form
+        title: "Add message compose form to EmailObfuscator"
+        description: >
+          Extend EmailObfuscator.vue (or create a child component) with a
+          collapsible compose form: subject field, message textarea, and
+          "Encrypt & Send" button. The form should be hidden by default and
+          toggled by a "Send encrypted message" link/button next to the
+          existing mailto: link. Include a brief explanation of what PGP
+          encryption is and why it matters.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT3H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must be collapsible — don't clutter the UI when not in use"
+          - "Must validate that message is not empty before encrypting"
+          - "Must show a loading state during encryption (OpenPGP.js may take a moment)"
+        forbidden: []
+        references:
+          - "src/components/EmailObfuscator.vue"
+        notes: []
+        subtasks: []
+
+      - id: pgp-openpgpjs-integration
+        title: "Integrate OpenPGP.js for client-side encryption"
+        description: >
+          Add openpgp as a dependency. Lazy-load it (dynamic import) only
+          when the user clicks "Send encrypted message" to avoid impacting
+          initial page load. Fetch the .asc public key from /keys/pgp-pubkey.asc,
+          read it with openpgp.readKey(), then encrypt the message with
+          openpgp.encrypt(). Output the ASCII-armored ciphertext.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT4H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "OpenPGP.js (~160KB gzipped) MUST be lazy-loaded via dynamic import()"
+          - "Must handle encryption errors gracefully (show user-friendly message)"
+          - "Must work in all modern browsers (Chrome, Firefox, Safari, Edge)"
+        forbidden:
+          - "Do not bundle OpenPGP.js in the main JS bundle — lazy-load only"
+        references:
+          - "https://openpgpjs.org/"
+        notes: []
+        subtasks: []
+
+      - id: pgp-mailto-integration
+        title: "Compose mailto: URL with encrypted body"
+        description: >
+          After encryption, construct a mailto: URL with the subject line
+          and the PGP-encrypted ciphertext as the body. Open it via
+          window.location.href or a dynamically created link. Handle the
+          mailto: URL length limit (~2000 chars in some browsers) — if the
+          encrypted message exceeds this, fall back to copying the ciphertext
+          to clipboard with instructions to paste it into their email client.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must handle mailto: URL length limits (fall back to clipboard copy)"
+          - "Must show clear instructions if fallback is triggered"
+          - "Subject line should indicate this is a PGP-encrypted message"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: pgp-i18n
+        title: "Add i18n keys for PGP encryption UI"
+        description: >
+          Add translation keys for all PGP-related UI text: button labels,
+          form placeholders, explanation text, error messages, success
+          messages, clipboard fallback instructions. Add to en, it (and nl
+          if enabled).
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/i18n/ui.ts"
+        notes: []
+        subtasks: []
+
+      - id: pgp-key-info-display
+        title: "Display PGP key info and download link"
+        description: >
+          Show the PGP key fingerprint and a download link for the .asc file
+          near the email contact section. This allows technically inclined
+          visitors to import the key into their own PGP setup rather than
+          using the in-browser encryption. Display the fingerprint in the
+          standard grouped format (0A2C 0C79 81CF A6F3 ...).
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: low
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Fingerprint must be displayed in standard 4-char grouped format"
+          - "Download link must point to the .asc file in public/"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 10: TorinoJS event promotion system
+  # ---------------------------------------------------------------------------
+  - id: torinojs-event-promotion
+    title: "TorinoJS event promotion banner and /events page"
+    description: >
+      Create a site-wide promotional banner system for upcoming TorinoJS
+      events, plus a dedicated /events page and a calendar icon in the
+      header navigation. The banner appears on every page as a dismissable
+      card, with three levels of dismissal stored in localStorage:
+      (1) Dismiss with X — hides for 24 hours then reappears,
+      (2) Acknowledge button — permanently hides THIS specific event but
+      allows future event banners,
+      (3) "Never show again" checkbox — permanently disables the banner
+      feature entirely. The /events page lists upcoming and past TorinoJS
+      events with details (date, time, location, topic, speakers, RSVP
+      link). A calendar icon in the header links to /events.
+    status: backlog
+    completion: 0
+    difficulty: hard
+    priority: medium
+    effort: "P2DT4H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "All dismissal state MUST be stored in localStorage (persist across refreshes)"
+      - "Banner must not block content — must be non-intrusive and accessible"
+      - "Banner must be i18n-aware (all text translated)"
+      - "Must work with View Transitions (banner state must persist across navigation)"
+      - "Event data must be easy to update (simple data file or content collection)"
+      - "/events page must exist in all enabled languages"
+      - "Calendar icon in header must be consistent with existing nav icon style"
+    forbidden:
+      - "Do not use cookies — localStorage only"
+      - "Do not use third-party banner/notification libraries"
+      - "Do not auto-play sounds or animations that can't be disabled"
+      - "Do not block page interaction (no modal overlay)"
+    references:
+      - "https://torino.js.org"
+      - "https://github.com/TorinoJS"
+      - "src/components/Header.vue"
+      - "src/site-config.ts"
+    notes:
+      - "2026-03-10: Feature added to backlog. Three-tier dismissal system: (1) X = 24h hide, (2) Acknowledge = hide this event forever, (3) 'Never show again' = permanent opt-out. All in localStorage. Includes /events page and header calendar icon."
+    subtasks:
+
+      - id: torinojs-event-data-model
+        title: "Define event data model and storage"
+        description: >
+          Define a data structure for TorinoJS events: id, title, date/time,
+          location (physical + online link), description, speakers, RSVP URL,
+          status (upcoming/past/cancelled). Store as a TypeScript data file
+          (similar to projects/data.ts) or as a content collection. Must
+          support i18n (translated descriptions).
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must be easy to update by adding a new entry"
+          - "Must support both physical and online events"
+          - "Date must be ISO 8601"
+        forbidden: []
+        references:
+          - "src/pages/projects/data.ts"
+        notes: []
+        subtasks: []
+
+      - id: torinojs-banner-component
+        title: "Create EventBanner.vue component"
+        description: >
+          Build a Vue component that renders the event promotion banner.
+          Features: (1) Shows next upcoming event with title, date, and
+          RSVP link, (2) X button to dismiss for 24h (stores timestamp in
+          localStorage), (3) "Got it" / acknowledge button to permanently
+          hide this specific event (stores event ID in localStorage),
+          (4) "Never show me this again" checkbox/button that sets a
+          permanent opt-out flag in localStorage. The component checks
+          localStorage on mount and decides whether to show. Must animate
+          in/out smoothly.
+        status: backlog
+        completion: 0
+        difficulty: hard
+        priority: high
+        effort: "PT6H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must check localStorage before rendering (no flash of banner then hide)"
+          - "Must handle edge cases: no upcoming events, multiple upcoming events (show nearest), past event cleanup"
+          - "Must be accessible (keyboard dismissible, screen reader announcements)"
+          - "Animation must respect prefers-reduced-motion"
+        forbidden:
+          - "Do not use position:fixed overlay that blocks content"
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: torinojs-localstorage-logic
+        title: "Implement localStorage dismissal logic"
+        description: >
+          Create a utility module for the three-tier localStorage dismissal:
+          (1) 'torinojs-banner-dismissed-until': ISO timestamp for 24h
+          temporary dismissal, (2) 'torinojs-banner-acked-events': JSON
+          array of event IDs permanently acknowledged,
+          (3) 'torinojs-banner-disabled': boolean flag for permanent opt-out.
+          Include helper functions: shouldShowBanner(eventId),
+          dismissTemporarily(), acknowledgeEvent(eventId), disablePermanently().
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must handle corrupted/missing localStorage values gracefully"
+          - "Must not throw if localStorage is unavailable (e.g. private browsing in some browsers)"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: torinojs-events-page
+        title: "Create /events page"
+        description: >
+          Create a dedicated /events page (and /it/events for Italian) that
+          lists TorinoJS events. Upcoming events at the top with full
+          details and RSVP buttons, past events below in a condensed list.
+          Include event descriptions, dates, locations, and speaker info.
+          Optionally add ICS calendar export for individual events.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: medium
+        effort: "PT4H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must exist in all enabled languages"
+          - "Must use the site's existing layout and styling"
+          - "Past events should be visually distinct from upcoming ones"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: torinojs-header-icon
+        title: "Add calendar icon to header navigation"
+        description: >
+          Add a calendar icon (i-ri-calendar-event-line or similar) to the
+          site header that links to /events (or /it/events for Italian).
+          Must be consistent with existing header nav icon style. Consider
+          adding a small badge/dot indicator when there's an upcoming event.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Icon must match existing header icon style (Remix Icons via UnoCSS)"
+          - "Link must be language-aware"
+        forbidden: []
+        references:
+          - "src/components/Header.vue"
+          - "src/site-config.ts"
+        notes: []
+        subtasks: []
+
+      - id: torinojs-banner-i18n
+        title: "Add i18n keys for event banner and /events page"
+        description: >
+          Add translation keys for: banner title, banner body template,
+          dismiss button tooltip, acknowledge button text, "never show again"
+          text, /events page headings, upcoming/past labels, RSVP button text.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/i18n/ui.ts"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 11: Accessibility pass (WCAG 2.1 AA)
+  # ---------------------------------------------------------------------------
+  - id: accessibility-pass
+    title: "Comprehensive accessibility pass (WCAG 2.1 AA)"
+    description: >
+      Perform a full accessibility audit and remediation across the entire site
+      targeting WCAG 2.1 AA compliance. Known issues include: no skip-to-content
+      link, a malformed tag in Header.astro (line 34: <i> closed with </span>),
+      no aria-expanded on toggle buttons (mobile nav, theme toggle, language
+      dropdown), no aria-current="page" on active nav links, no keyboard Escape
+      key handler to dismiss drawers/dropdowns, no focus trap on the mobile
+      navigation drawer, no :focus-visible audit across components, and
+      unverified color contrast ratios (especially the purple #380541 used in
+      accents). This feature covers structural HTML semantics, ARIA attributes,
+      keyboard navigation, focus management, and color contrast.
+    status: backlog
+    completion: 0
+    difficulty: hard
+    priority: critical
+    effort: "P2D"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must achieve WCAG 2.1 AA compliance as verified by axe-core or Lighthouse accessibility audit"
+      - "Must not break existing visual design"
+      - "Must work with View Transitions (focus management after navigation)"
+      - "All interactive elements must be keyboard-operable"
+      - "Color contrast must meet 4.5:1 for normal text, 3:1 for large text (WCAG AA)"
+      - "Must test with at least one screen reader (NVDA, VoiceOver, or ORCA)"
+    forbidden:
+      - "Do not add ARIA attributes where native HTML semantics suffice (use <button> not <div role=button>)"
+      - "Do not use tabindex values greater than 0"
+      - "Do not disable outline/focus styles without providing a visible alternative"
+    references:
+      - "https://www.w3.org/WAI/WCAG21/quickref/?levels=aaa"
+      - "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA"
+      - "src/components/Header.astro"
+      - "src/components/Header.vue"
+      - "src/components/ThemeToggle.vue"
+      - "src/components/LanguageDropdown.vue"
+      - "src/layouts/BaseLayout.astro"
+    notes:
+      - "2026-03-10: Feature added to backlog at critical priority. Accessibility gaps identified during codebase audit: missing skip-to-content, malformed HTML in Header.astro:34, missing ARIA attributes on toggles, no focus trap on mobile nav, no keyboard dismiss, color contrast unverified."
+    subtasks:
+
+      - id: a11y-skip-to-content
+        title: "Add skip-to-content link"
+        description: >
+          Add a visually hidden skip link as the first focusable element in
+          BaseLayout.astro that becomes visible on focus and jumps to the
+          main content area (#main-content). Ensure the main content landmark
+          has the appropriate id. Must work with View Transitions.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: critical
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must be the first focusable element on every page"
+          - "Must be visible when focused (not permanently hidden)"
+          - "Must use sr-only class pattern that reveals on :focus"
+        forbidden: []
+        references:
+          - "src/layouts/BaseLayout.astro"
+          - "https://webaim.org/techniques/skipnav/"
+        notes: []
+        subtasks: []
+
+      - id: a11y-fix-malformed-html
+        title: "Fix malformed tag in Header.astro"
+        description: >
+          Fix Header.astro line 34 where an icon element is incorrectly closed
+          with the wrong tag. The opening <i> must be closed with </i> not
+          </span>. This is a direct HTML validity bug that may confuse
+          assistive technologies.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: critical
+        effort: "PT10M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must not change the visual appearance"
+        forbidden: []
+        references:
+          - "src/components/Header.astro:34"
+        notes: []
+        subtasks: []
+
+      - id: a11y-aria-expanded-toggles
+        title: "Add aria-expanded to all toggle buttons"
+        description: >
+          Add aria-expanded attributes to: (1) mobile navigation hamburger
+          button in Header.vue, (2) theme toggle button in ThemeToggle.vue,
+          (3) language dropdown trigger in LanguageDropdown.vue. The attribute
+          must reactively update when the toggle state changes. Also add
+          aria-controls pointing to the controlled element id.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: critical
+        effort: "PT1H30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "aria-expanded must be true when open, false when closed"
+          - "Controlled elements must have matching id attributes"
+          - "Must be reactive (update on state change, not just initial render)"
+        forbidden: []
+        references:
+          - "src/components/Header.vue"
+          - "src/components/ThemeToggle.vue"
+          - "src/components/LanguageDropdown.vue"
+        notes: []
+        subtasks: []
+
+      - id: a11y-aria-current-page
+        title: "Add aria-current=page to active nav links"
+        description: >
+          Add aria-current="page" to the currently active navigation link
+          in the header. The site already has visual indicators for active
+          links. The aria-current attribute provides the semantic equivalent
+          for screen readers.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must compare current URL path against each nav link href"
+          - "Must work with View Transitions (update after client-side navigation)"
+        forbidden: []
+        references:
+          - "src/components/Header.vue"
+        notes: []
+        subtasks: []
+
+      - id: a11y-keyboard-dismiss
+        title: "Add keyboard Escape to dismiss drawers and dropdowns"
+        description: >
+          Add Escape key handlers to all overlay/dropdown elements: mobile
+          navigation drawer (Header.vue), language dropdown (LanguageDropdown.vue),
+          and any other popover-style components. Pressing Escape should close
+          the element and return focus to the trigger button.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Focus must return to the trigger element after dismissal"
+          - "Must not interfere with browser default Escape behavior"
+        forbidden: []
+        references:
+          - "src/components/Header.vue"
+          - "src/components/LanguageDropdown.vue"
+        notes: []
+        subtasks: []
+
+      - id: a11y-focus-trap-mobile-nav
+        title: "Add focus trap to mobile navigation drawer"
+        description: >
+          When the mobile navigation drawer is open, keyboard focus must be
+          trapped within it (Tab/Shift+Tab cycle through drawer items only).
+          This prevents users from tabbing into obscured page content behind
+          the drawer. Release the trap when the drawer closes.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must trap Tab and Shift+Tab within the drawer"
+          - "Must handle dynamic content (focusable elements may change)"
+          - "Must release trap and restore focus on close"
+        forbidden:
+          - "Do not use a heavy focus-trap library if a lightweight solution is feasible"
+        references:
+          - "src/components/Header.vue"
+        notes: []
+        subtasks: []
+
+      - id: a11y-focus-visible-audit
+        title: "Audit and fix :focus-visible styles across all components"
+        description: >
+          Ensure all interactive elements (links, buttons, inputs, toggles)
+          have visible focus indicators when navigated via keyboard. Check
+          UnoCSS shortcuts and global styles for any outline:none or similar
+          focus-suppressing rules. Add consistent focus ring styles.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Focus indicators must be visible in both light and dark themes"
+          - "Must use :focus-visible (not :focus) to avoid showing on mouse click"
+          - "Focus ring must have sufficient contrast against background"
+        forbidden:
+          - "Do not remove existing focus styles without replacement"
+        references:
+          - "src/styles/global.css"
+          - "uno.config.ts"
+        notes: []
+        subtasks: []
+
+      - id: a11y-color-contrast-audit
+        title: "Audit and fix color contrast ratios"
+        description: >
+          Check all text/background color combinations across the site for
+          WCAG AA compliance (4.5:1 for normal text, 3:1 for large text,
+          3:1 for UI components). Known concern: the purple accent #380541.
+          Use axe-core DevTools or Lighthouse to identify failures. Test in
+          both light and dark themes.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT3H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must meet WCAG AA minimum contrast ratios"
+          - "Must maintain the site visual identity (purple accents etc.)"
+          - "Must test both light and dark themes"
+        forbidden:
+          - "Do not change the brand color palette drastically, adjust shades/tints as needed"
+        references:
+          - "uno.config.ts"
+          - "src/styles/global.css"
+          - "https://webaim.org/resources/contrastchecker/"
+        notes: []
+        subtasks: []
+
+      - id: a11y-landmark-semantics
+        title: "Verify HTML landmark semantics"
+        description: >
+          Ensure the site uses proper HTML5 landmarks: header, nav, main,
+          footer, aside. Verify that each page has exactly one main element.
+          Add aria-label to distinguish multiple nav elements. Check that
+          heading hierarchy (h1-h6) is logical and not skipped.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        effort: "PT1H30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Each page must have exactly one main element"
+          - "Multiple nav elements must have distinct aria-label values"
+          - "Heading levels must not skip (e.g. h1 then h3 without h2)"
+        forbidden: []
+        references:
+          - "src/layouts/BaseLayout.astro"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 12: Bug fixes batch
+  # ---------------------------------------------------------------------------
+  - id: bug-fixes-batch
+    title: "Fix known bugs discovered during codebase audit"
+    description: >
+      Fix all 7 concrete bugs discovered during the comprehensive codebase
+      audit. These range from string immutability errors in utility code to
+      HTML tag mismatches, incorrect RSS self-references, missing RSS elements,
+      hardcoded language values, stray console.log statements in production,
+      and CI/CD pipeline ordering issues.
+    status: backlog
+    completion: 0
+    difficulty: easy
+    priority: critical
+    effort: "PT4H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Each fix must be verified by running the build successfully"
+      - "Fixes must not introduce regressions in other functionality"
+      - "All RSS/Atom feeds must validate after fixes"
+    forbidden:
+      - "Do not refactor beyond the minimal fix needed for each bug"
+      - "Do not introduce new dependencies to fix these bugs"
+    references:
+      - "src/utils/posts.ts"
+      - "src/components/Header.astro"
+      - "src/pages/it/rss.xml.ts"
+      - "src/pages/last-ten.xml.ts"
+      - "src/components/GiscusComments.vue"
+      - ".github/workflows/deploy.yml"
+    notes:
+      - "2026-03-10: Feature added to backlog at critical priority. 7 bugs identified during comprehensive codebase audit. All are concrete, reproducible issues with clear fixes."
+    subtasks:
+
+      - id: bug-string-immutability
+        title: "Fix string immutability bug in posts.ts"
+        description: >
+          In src/utils/posts.ts line 55, path.replace() result is never
+          reassigned. JavaScript strings are immutable, so .replace() returns
+          a new string but the original variable is unchanged. Fix by
+          reassigning: path = path.replace(...).
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: critical
+        effort: "PT10M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/utils/posts.ts:55"
+        notes: []
+        subtasks: []
+
+      - id: bug-header-tag-mismatch
+        title: "Fix <i> closed with </span> in Header.astro"
+        description: >
+          In src/components/Header.astro line 34, an <i> element used for
+          social link icons is incorrectly closed with </span>. Change
+          </span> to </i> to fix the HTML validity error.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: critical
+        effort: "PT5M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/Header.astro:34"
+        notes: []
+        subtasks: []
+
+      - id: bug-it-rss-self-ref
+        title: "Fix Italian RSS atom:link self-reference"
+        description: >
+          In src/pages/it/rss.xml.ts, the atom:link self-reference points to
+          /rss.xml instead of /it/rss.xml. This means the Italian RSS feed
+          claims to live at the English feed URL. Fix the href to point to
+          the correct /it/rss.xml path.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        effort: "PT10M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must validate as valid Atom/RSS after fix"
+        forbidden: []
+        references:
+          - "src/pages/it/rss.xml.ts"
+        notes: []
+        subtasks: []
+
+      - id: bug-last-ten-missing-elements
+        title: "Add missing atom:link and XSL stylesheet to last-ten.xml"
+        description: >
+          The src/pages/last-ten.xml.ts feed is missing an atom:link
+          self-reference (required by Atom spec) and an XSL stylesheet
+          reference (present in other feeds for browser rendering). Add
+          both to match the structure of rss.xml.ts.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must validate as valid RSS/Atom after fix"
+          - "XSL stylesheet path must match the existing pattern used by rss.xml.ts"
+        forbidden: []
+        references:
+          - "src/pages/last-ten.xml.ts"
+          - "src/pages/rss.xml.ts"
+        notes: []
+        subtasks: []
+
+      - id: bug-giscus-hardcoded-lang
+        title: "Fix Giscus hardcoded data-lang=en"
+        description: >
+          In src/components/GiscusComments.vue line 29, data-lang is hardcoded
+          to "en". This means Italian pages show English Giscus UI. Fix by
+          accepting a lang prop or detecting the current language from the URL
+          and passing it to the Giscus script configuration.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must map site language codes to Giscus-supported language codes"
+          - "Must update when language changes (if applicable via View Transitions)"
+        forbidden: []
+        references:
+          - "src/components/GiscusComments.vue:29"
+          - "https://giscus.app"
+        notes:
+          - "2026-03-10: Note: This overlaps with feature J (giscus-i18n). This subtask covers the minimal bug fix; feature J covers the full i18n integration."
+        subtasks: []
+
+      - id: bug-console-log-production
+        title: "Remove stray console.log in posts.ts"
+        description: >
+          In src/utils/posts.ts line 59, there is a console.log statement
+          that logs all returned post slugs. This runs in production and
+          clutters the build output. Remove it or guard it behind an
+          environment check.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        effort: "PT5M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must not break the getPosts function"
+        forbidden:
+          - "Do not add a logging framework just for this"
+        references:
+          - "src/utils/posts.ts:59"
+        notes: []
+        subtasks: []
+
+      - id: bug-ci-test-ordering
+        title: "Fix test ordering in deploy workflow"
+        description: >
+          In .github/workflows/deploy.yml, tests run after the build artifact
+          is uploaded. This means a failing test does not prevent deployment.
+          Reorder the steps so that tests run before the artifact upload step.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Tests must complete successfully before artifact upload"
+          - "Must not break the GitHub Actions workflow syntax"
+        forbidden: []
+        references:
+          - ".github/workflows/deploy.yml"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 13: Search improvements
+  # ---------------------------------------------------------------------------
+  - id: search-improvements
+    title: "Search UX improvements with URL query parameter"
+    description: >
+      Improve the Pagefind search experience by adding URL query parameter
+      support so search queries can be shared via URL. The format must be
+      ${url}?s=${keyword} (using "s" parameter, not "q"). When a user
+      navigates to a search URL with ?s=keyword, the search input should be
+      pre-populated and results shown automatically. Also improve search
+      result presentation, add keyboard navigation, and ensure the search
+      works correctly across language versions.
+    status: backlog
+    completion: 0
+    difficulty: medium
+    priority: high
+    effort: "PT6H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "URL parameter must be ?s= (not ?q= or other)"
+      - "Must update URL in real-time as user types (pushState, not page reload)"
+      - "Must work with View Transitions"
+      - "Must work on both /search and /it/search pages"
+      - "Must handle URL-encoded special characters in search terms"
+    forbidden:
+      - "Do not use ?q= parameter — must be ?s="
+      - "Do not add server-side search — keep it Pagefind client-side"
+    references:
+      - "src/pages/search.astro"
+      - "src/pages/it/search.astro"
+      - "https://pagefind.app"
+    notes:
+      - "2026-03-10: Feature added to backlog. User specifically requested ?s= URL parameter format. Current search pages are duplicated (EN/IT) with Pagefind client-side indexing."
+    subtasks:
+
+      - id: search-url-param-read
+        title: "Read search query from URL parameter on page load"
+        description: >
+          On search page load, check for ?s= URL parameter. If present,
+          populate the search input and trigger a Pagefind search automatically.
+          This enables shareable search links.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must URL-decode the parameter value"
+          - "Must handle empty or missing parameter gracefully"
+        forbidden: []
+        references:
+          - "src/pages/search.astro"
+        notes: []
+        subtasks: []
+
+      - id: search-url-param-write
+        title: "Update URL parameter as user types"
+        description: >
+          As the user types in the search input, update the browser URL using
+          history.replaceState to reflect the current query (e.g.
+          /search?s=astro). Clear the parameter when the input is empty.
+          Use debouncing to avoid excessive history entries.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must use history.replaceState (not pushState) to avoid polluting back button history"
+          - "Must debounce URL updates (300ms or similar)"
+          - "Must URL-encode special characters"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: search-keyboard-navigation
+        title: "Add keyboard navigation to search results"
+        description: >
+          Enable arrow key navigation through search results. Up/Down arrows
+          move focus through result items. Enter on a focused result navigates
+          to that page. Escape clears the search or returns focus to input.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: medium
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must maintain visible focus indicator on active result"
+          - "Must work with screen readers (aria-activedescendant or roving tabindex)"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: search-result-improvements
+        title: "Improve search result presentation"
+        description: >
+          Enhance the display of Pagefind search results with: highlighted
+          search terms in result excerpts, result category/type indicators
+          (blog post, page, project), publication date for blog posts, and
+          estimated reading time where available.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: medium
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must work with Pagefind result format"
+          - "Must be visually consistent with the rest of the site"
+        forbidden: []
+        references:
+          - "https://pagefind.app/docs/ui/"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 14: Security headers
+  # ---------------------------------------------------------------------------
+  - id: security-headers
+    title: "Add security headers for GitHub Pages"
+    description: >
+      Add security headers to harden the site against common web attacks.
+      GitHub Pages supports custom headers via a _headers file (Netlify-style)
+      or through <meta http-equiv> tags in HTML. Since GitHub Pages does NOT
+      support _headers files, all security headers must be implemented as
+      <meta> tags in BaseHead.astro. Headers to add: Content-Security-Policy
+      (CSP), X-Content-Type-Options, Referrer-Policy, Permissions-Policy.
+      The CSP must whitelist all legitimate external resources (Giscus,
+      Umami analytics, Pagefind, Google Fonts if used, etc.) while blocking
+      everything else.
+    status: backlog
+    completion: 0
+    difficulty: medium
+    priority: medium
+    effort: "PT4H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "GitHub Pages does NOT support _headers files — must use <meta> tags"
+      - "CSP must whitelist: giscus.app, umami analytics domain, Pagefind JS, any CDN fonts"
+      - "Must not break any existing functionality (Giscus comments, analytics, search, View Transitions)"
+      - "Must test thoroughly — overly strict CSP can break the entire site"
+    forbidden:
+      - "Do not use _headers file (not supported by GitHub Pages)"
+      - "Do not block inline scripts that are required for theme toggle or View Transitions"
+    references:
+      - "src/components/BaseHead.astro"
+      - "https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP"
+      - "https://securityheaders.com/"
+    notes:
+      - "2026-03-10: Feature added to backlog. GitHub Pages only supports <meta> tags for security headers, not _headers files. CSP via <meta> has limitations (no frame-ancestors, no report-uri) but covers the critical directives."
+    subtasks:
+
+      - id: security-csp-audit
+        title: "Audit all external resources for CSP whitelist"
+        description: >
+          Identify every external resource loaded by the site: scripts, styles,
+          fonts, iframes, images, connections. Build a complete whitelist for
+          the CSP. Known externals: giscus.app (iframe + script), Umami
+          analytics, Pagefind (self-hosted), any CDN fonts, share button
+          targets.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/BaseHead.astro"
+          - "src/components/GiscusComments.vue"
+        notes: []
+        subtasks: []
+
+      - id: security-meta-tags
+        title: "Implement security meta tags in BaseHead.astro"
+        description: >
+          Add the following <meta> tags to BaseHead.astro:
+          (1) Content-Security-Policy with directives for default-src, script-src,
+          style-src, img-src, font-src, frame-src, connect-src.
+          (2) <meta http-equiv="X-Content-Type-Options" content="nosniff">.
+          (3) <meta name="referrer" content="strict-origin-when-cross-origin">.
+          (4) Permissions-Policy via <meta> (limited support but worth adding).
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must not break Giscus, analytics, Pagefind, or View Transitions"
+          - "Must use nonce or hash for inline scripts if possible"
+        forbidden:
+          - "Do not use unsafe-inline for script-src without nonce/hash fallback"
+        references:
+          - "src/components/BaseHead.astro"
+        notes: []
+        subtasks: []
+
+      - id: security-testing
+        title: "Test security headers with securityheaders.com"
+        description: >
+          After deploying, test the site with securityheaders.com and Mozilla
+          Observatory. Document the results and fix any remaining issues.
+          Target a grade of A or higher.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "https://securityheaders.com/"
+          - "https://observatory.mozilla.org/"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 15: PWA / Offline support
+  # ---------------------------------------------------------------------------
+  - id: pwa-offline-support
+    title: "Progressive Web App with offline support"
+    description: >
+      Add Progressive Web App (PWA) capabilities to the site: a web app
+      manifest, a service worker for offline support, and installability.
+      The service worker should cache critical assets (HTML shell, CSS, JS,
+      fonts) using a stale-while-revalidate strategy for pages and a
+      cache-first strategy for static assets. Previously visited pages
+      should be available offline. An offline fallback page should be
+      shown for uncached pages when the user is offline.
+    status: backlog
+    completion: 0
+    difficulty: hard
+    priority: medium
+    effort: "P1DT4H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must not interfere with the Astro build process"
+      - "Must not cache API responses or analytics requests"
+      - "Must handle cache versioning (invalidate old caches on deploy)"
+      - "Service worker must be registered only in production"
+      - "Must pass Lighthouse PWA audit"
+      - "Must work with View Transitions"
+    forbidden:
+      - "Do not use Workbox if a simpler solution suffices for a static site"
+      - "Do not cache third-party iframes (Giscus)"
+      - "Do not prompt for installation on first visit — only after engagement"
+    references:
+      - "https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps"
+      - "https://web.dev/learn/pwa/"
+      - "src/components/BaseHead.astro"
+    notes:
+      - "2026-03-10: Feature added to backlog. As a static site on GitHub Pages, PWA is straightforward. Main challenge is cache invalidation strategy and ensuring View Transitions work with service worker."
+    subtasks:
+
+      - id: pwa-manifest
+        title: "Create web app manifest"
+        description: >
+          Create a manifest.webmanifest file with: name, short_name, icons
+          (multiple sizes), start_url, display (standalone), theme_color,
+          background_color, and appropriate categories. Generate icon sizes
+          from the site favicon. Link the manifest in BaseHead.astro.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must include icons at 192x192 and 512x512 minimum"
+          - "theme_color must match the site accent color"
+          - "Must be linked in <head> via <link rel=manifest>"
+        forbidden: []
+        references:
+          - "https://developer.mozilla.org/en-US/docs/Web/Manifest"
+        notes: []
+        subtasks: []
+
+      - id: pwa-service-worker
+        title: "Implement service worker with caching strategy"
+        description: >
+          Create a service worker that implements: cache-first for static
+          assets (JS, CSS, fonts, images), stale-while-revalidate for HTML
+          pages, network-only for analytics and third-party requests. Include
+          cache versioning and cleanup of old caches on activation.
+        status: backlog
+        completion: 0
+        difficulty: hard
+        priority: high
+        effort: "PT6H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must version caches and clean up old versions"
+          - "Must skip caching for analytics, Giscus, and other third-party requests"
+          - "Must handle fetch failures gracefully (offline fallback)"
+        forbidden:
+          - "Do not cache opaque responses from third-party origins"
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: pwa-offline-fallback
+        title: "Create offline fallback page"
+        description: >
+          Create a dedicated offline.html page that is pre-cached by the
+          service worker and shown when the user navigates to an uncached
+          page while offline. The page should match the site design and
+          explain that the user is offline, with a list of cached pages
+          they can still access.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must be fully self-contained (inline CSS, no external dependencies)"
+          - "Must be i18n-aware (detect language from cached preference or URL)"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: pwa-registration
+        title: "Register service worker in production only"
+        description: >
+          Add service worker registration logic to the site that only activates
+          in production (not during dev server). Use feature detection and
+          register after page load to avoid blocking initial render.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must not register during development"
+          - "Must register after DOMContentLoaded or window.onload"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 16: SEO enhancements
+  # ---------------------------------------------------------------------------
+  - id: seo-enhancements
+    title: "SEO metadata and structured data improvements"
+    description: >
+      Enhance the site SEO beyond current meta tags. Add JSON-LD structured
+      data (Schema.org) for blog posts (Article), the person/profile page
+      (Person), projects (SoftwareApplication/CreativeWork), and breadcrumbs.
+      Improve Open Graph and Twitter Card metadata with image dimensions and
+      alt text. Add a proper sitemap.xml with hreflang alternates, lastmod
+      dates, and priority hints. Verify all pages have unique, descriptive
+      title and description meta tags.
+    status: backlog
+    completion: 0
+    difficulty: medium
+    priority: medium
+    effort: "PT6H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "JSON-LD must be valid per Schema.org vocabulary"
+      - "Must not duplicate information already in HTML (use JSON-LD as supplement)"
+      - "Must validate with Google Rich Results Test"
+      - "Sitemap must include all public pages in all languages"
+    forbidden:
+      - "Do not add SEO meta tags that contain false or exaggerated claims"
+      - "Do not add hidden text or keyword stuffing"
+    references:
+      - "src/components/BaseHead.astro"
+      - "https://schema.org/"
+      - "https://search.google.com/test/rich-results"
+    notes:
+      - "2026-03-10: Feature added to backlog. Current site has basic OG/Twitter meta via BaseHead.astro but no JSON-LD structured data. Sitemap is auto-generated by Astro but may lack hreflang alternates."
+    subtasks:
+
+      - id: seo-jsonld-blog-posts
+        title: "Add JSON-LD Article structured data to blog posts"
+        description: >
+          Add a JSON-LD script block to blog post pages with Schema.org Article
+          type including: headline, datePublished, dateModified, author (Person),
+          image, description, publisher, mainEntityOfPage.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must be generated from frontmatter data at build time"
+          - "Must validate with Google Rich Results Test"
+        forbidden: []
+        references:
+          - "https://schema.org/Article"
+        notes: []
+        subtasks: []
+
+      - id: seo-jsonld-person
+        title: "Add JSON-LD Person structured data to profile page"
+        description: >
+          Add Schema.org Person structured data to the about/profile page
+          with: name, url, sameAs (social links), jobTitle, knowsAbout.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "https://schema.org/Person"
+        notes: []
+        subtasks: []
+
+      - id: seo-jsonld-breadcrumbs
+        title: "Add JSON-LD BreadcrumbList to all pages"
+        description: >
+          Add breadcrumb structured data to all pages reflecting the site
+          hierarchy (Home > Blog > Post Title, or Home > Projects, etc.).
+          Generate from the current URL path.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        effort: "PT1H30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must reflect actual site hierarchy"
+          - "Must include language-appropriate labels"
+        forbidden: []
+        references:
+          - "https://schema.org/BreadcrumbList"
+        notes: []
+        subtasks: []
+
+      - id: seo-sitemap-hreflang
+        title: "Improve sitemap with hreflang alternates"
+        description: >
+          Ensure the sitemap.xml includes xhtml:link hreflang alternates for
+          pages that exist in multiple languages. Verify lastmod dates are
+          accurate. Add priority hints based on page type (homepage=1.0,
+          blog posts=0.8, archive pages=0.5).
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: medium
+        effort: "PT1H30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must only link to translations that actually exist"
+          - "Must validate as valid sitemap XML"
+        forbidden: []
+        references:
+          - "https://developers.google.com/search/docs/specialty/international/localized-versions"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 17: ReadingProgress theme compliance
+  # ---------------------------------------------------------------------------
+  - id: reading-progress-theme
+    title: "Make ReadingProgress bar respect site theme"
+    description: >
+      The ReadingProgress.vue component uses a hardcoded purple gradient
+      (linear-gradient(90deg, #7c3aed, #a855f7)) that does not change
+      between light and dark themes. The gradient should use theme-aware
+      colors — either CSS custom properties from the UnoCSS design system
+      or explicit light/dark variants. In dark mode the bar should use
+      lighter purple shades for visibility against dark backgrounds, and
+      in light mode it should use the current or slightly adjusted shades.
+    status: backlog
+    completion: 0
+    difficulty: trivial
+    priority: medium
+    effort: "PT1H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must use the UnoCSS dark: variant system or CSS custom properties"
+      - "Bar must be visible and aesthetically pleasing in both themes"
+      - "Must not break the fixed positioning or z-index stacking"
+    forbidden:
+      - "Do not use JavaScript to toggle bar colors — use CSS only"
+    references:
+      - "src/components/ReadingProgress.vue"
+      - "uno.config.ts"
+    notes:
+      - "2026-03-10: Feature added to backlog. ReadingProgress.vue line 59 has hardcoded gradient: linear-gradient(90deg, #7c3aed, #a855f7). Should respond to dark/light theme."
+    subtasks:
+
+      - id: reading-progress-css-vars
+        title: "Replace hardcoded colors with theme-aware values"
+        description: >
+          Replace the hardcoded linear-gradient in ReadingProgress.vue with
+          CSS custom properties or UnoCSS dark: variants. Add a :global(.dark)
+          override or use CSS variables defined in global styles.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/ReadingProgress.vue:59"
+        notes: []
+        subtasks: []
+
+      - id: reading-progress-contrast-check
+        title: "Verify bar visibility in both themes"
+        description: >
+          After changing colors, verify the reading progress bar is clearly
+          visible against both the light and dark header/page backgrounds.
+          The bar sits at z-index 9999 over the top of the page.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 18: CV page styling unification
+  # ---------------------------------------------------------------------------
+  - id: cv-page-styling
+    title: "Unify CV page styling (remove CDN Tailwind)"
+    description: >
+      The CV page (src/pages/cv/index.astro) loads Tailwind CSS from a CDN
+      (<script src="https://cdn.tailwindcss.com">) while the rest of the site
+      uses UnoCSS. This creates inconsistency, an extra network request, and
+      potential style conflicts. Migrate the CV page to use UnoCSS classes
+      (which are Tailwind-compatible) and remove the CDN dependency. This
+      also improves security (no external script execution) and performance
+      (no CDN fetch).
+    status: backlog
+    completion: 0
+    difficulty: easy
+    priority: medium
+    effort: "PT3H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must maintain the exact same visual appearance of the CV"
+      - "Must remove the CDN Tailwind script tag"
+      - "All Tailwind classes used must be supported by UnoCSS (most are)"
+      - "Must preserve the Easter egg functionality"
+      - "CV must remain printable (print styles preserved)"
+    forbidden:
+      - "Do not add Tailwind as an npm dependency — UnoCSS covers the needed utilities"
+      - "Do not change the CV content or layout, only the styling source"
+    references:
+      - "src/pages/cv/index.astro"
+      - "uno.config.ts"
+    notes:
+      - "2026-03-10: Feature added to backlog. The CV page is the only page loading external Tailwind CSS. UnoCSS already supports Tailwind utility classes, so migration should be mostly removing the CDN script and ensuring UnoCSS generates the needed classes."
+    subtasks:
+
+      - id: cv-audit-tailwind-classes
+        title: "Audit Tailwind classes used in CV page"
+        description: >
+          Extract all CSS classes used in the CV page template. Cross-reference
+          with UnoCSS to verify they are all supported. Document any classes
+          that need UnoCSS-specific alternatives or safelist entries.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/cv/index.astro"
+        notes: []
+        subtasks: []
+
+      - id: cv-remove-cdn
+        title: "Remove CDN Tailwind and verify rendering"
+        description: >
+          Remove the CDN Tailwind script tag. Add any needed classes to the
+          UnoCSS safelist if they are not automatically detected. Build and
+          visually compare the CV page before and after to ensure pixel-level
+          consistency.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT1H30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must screenshot-compare before and after"
+        forbidden: []
+        references:
+          - "uno.config.ts"
+        notes: []
+        subtasks: []
+
+      - id: cv-print-styles
+        title: "Verify print styles still work"
+        description: >
+          After removing CDN Tailwind, verify that the CV prints correctly
+          (Ctrl+P). Check that print-specific styles (margins, page breaks,
+          hidden elements) are preserved.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 19: Giscus full i18n integration
+  # ---------------------------------------------------------------------------
+  - id: giscus-i18n
+    title: "Full Giscus i18n integration"
+    description: >
+      Make the Giscus comments component fully language-aware. Currently
+      data-lang is hardcoded to "en" in GiscusComments.vue. Beyond the
+      minimal bug fix (covered in bug-fixes-batch), this feature adds:
+      (1) automatic language detection from the page URL, (2) language
+      update when navigating between language versions via View Transitions,
+      (3) proper Giscus locale mapping (site uses "en"/"it" but Giscus may
+      use different locale codes), and (4) consideration of whether comments
+      should be shared across language versions or isolated per language.
+    status: backlog
+    completion: 0
+    difficulty: easy
+    priority: medium
+    effort: "PT2H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must detect language from page URL (not navigator.language)"
+      - "Must map site language codes to Giscus-supported codes"
+      - "Must decide on comment isolation strategy (shared vs. per-language)"
+      - "Must update Giscus iframe when theme or language changes"
+    forbidden:
+      - "Do not hardcode language values"
+    references:
+      - "src/components/GiscusComments.vue"
+      - "https://giscus.app"
+      - "src/i18n/utils.ts"
+    notes:
+      - "2026-03-10: Feature added to backlog. Extends the minimal bug fix (bug-giscus-hardcoded-lang) with full i18n integration including language switching and comment isolation strategy."
+    subtasks:
+
+      - id: giscus-lang-detection
+        title: "Detect page language and pass to Giscus"
+        description: >
+          Add a lang prop to GiscusComments.vue (passed from the parent
+          layout) or detect the language from window.location.pathname.
+          Map it to a Giscus-supported locale code and use it for data-lang.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must handle unmapped languages by falling back to English"
+        forbidden: []
+        references:
+          - "src/components/GiscusComments.vue"
+          - "src/i18n/utils.ts"
+        notes: []
+        subtasks: []
+
+      - id: giscus-comment-isolation
+        title: "Decide and implement comment isolation strategy"
+        description: >
+          Determine whether comments should be shared between language versions
+          of the same post (using a canonical slug) or isolated per language
+          (using the full localized path). Document the decision and implement
+          by configuring the Giscus data-mapping or data-term appropriately.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must document the rationale for the chosen strategy"
+        forbidden: []
+        references:
+          - "https://giscus.app"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 20: JSON Feed support
+  # ---------------------------------------------------------------------------
+  - id: json-feed
+    title: "Add JSON Feed (application/feed+json) alongside RSS"
+    description: >
+      Add JSON Feed (https://www.jsonfeed.org/) as an alternative feed format
+      alongside the existing RSS/Atom XML feeds. JSON Feed is simpler to parse
+      and generate, provides a good developer experience, and is supported by
+      many feed readers. Create feeds for both languages (en, it) mirroring
+      the existing RSS feed structure.
+    status: backlog
+    completion: 0
+    difficulty: easy
+    priority: medium
+    effort: "PT3H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must conform to JSON Feed Version 1.1 specification"
+      - "Must include all fields present in the RSS feed (title, description, author, items with content)"
+      - "Must be discoverable via <link> tag in <head>"
+      - "Must exist for each enabled language"
+    forbidden:
+      - "Do not use a JSON Feed library — the format is simple enough to generate directly"
+      - "Do not replace RSS — add JSON Feed alongside it"
+    references:
+      - "https://www.jsonfeed.org/version/1.1/"
+      - "src/pages/rss.xml.ts"
+      - "src/pages/it/rss.xml.ts"
+    notes:
+      - "2026-03-10: Feature added to backlog. JSON Feed is a modern alternative to RSS/Atom. Simple JSON structure, no XML parsing needed. Spec is straightforward."
+    subtasks:
+
+      - id: json-feed-endpoint
+        title: "Create JSON Feed endpoint for English"
+        description: >
+          Create src/pages/feed.json.ts that generates a JSON Feed 1.1
+          document with all published English blog posts. Include: version,
+          title, home_page_url, feed_url, description, author, items
+          (with id, url, title, content_html, date_published, tags).
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT1H30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must use Astro endpoint API (export async function GET)"
+          - "Items must match what is in the RSS feed"
+        forbidden: []
+        references:
+          - "https://www.jsonfeed.org/version/1.1/"
+          - "src/pages/rss.xml.ts"
+        notes: []
+        subtasks: []
+
+      - id: json-feed-endpoint-it
+        title: "Create JSON Feed endpoint for Italian"
+        description: >
+          Create src/pages/it/feed.json.ts mirroring the English version
+          but with Italian posts and metadata.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/it/rss.xml.ts"
+        notes: []
+        subtasks: []
+
+      - id: json-feed-discovery
+        title: "Add JSON Feed discovery link in head"
+        description: >
+          Add <link rel="alternate" type="application/feed+json" href="/feed.json">
+          to BaseHead.astro, alongside the existing RSS discovery link.
+          Must use the correct language-specific URL.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must use correct MIME type: application/feed+json"
+          - "Must be language-aware (point to /it/feed.json for Italian pages)"
+        forbidden: []
+        references:
+          - "src/components/BaseHead.astro"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 21: Test coverage expansion
+  # ---------------------------------------------------------------------------
+  - id: test-coverage-expansion
+    title: "Expand test coverage for critical paths"
+    description: >
+      The site currently has minimal test coverage. Expand tests to cover
+      critical functionality: i18n utility functions, post fetching and
+      filtering, RSS feed generation and validation, build output validation
+      (all pages render, no broken links), component rendering (Vue components
+      mount correctly), and accessibility assertions. Use Vitest (already
+      configured) for unit tests and consider Playwright for integration tests.
+    status: backlog
+    completion: 0
+    difficulty: medium
+    priority: medium
+    effort: "P2D"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must use Vitest for unit tests (already configured in the project)"
+      - "Tests must run in CI (GitHub Actions)"
+      - "Tests must not require a running dev server for unit tests"
+      - "Must not significantly increase CI build time (target <2 min for test suite)"
+    forbidden:
+      - "Do not use Jest — project uses Vitest"
+      - "Do not write tests that are tightly coupled to implementation details"
+      - "Do not mock everything — prefer testing real behavior where feasible"
+    references:
+      - "vitest.config.ts"
+      - "src/utils/posts.ts"
+      - "src/i18n/utils.ts"
+      - ".github/workflows/deploy.yml"
+    notes:
+      - "2026-03-10: Feature added to backlog. Current test coverage is minimal. Priority areas: i18n utils (most complex logic), post utilities (have known bugs), RSS feeds (should validate), and build output (no broken pages)."
+    subtasks:
+
+      - id: test-i18n-utils
+        title: "Unit tests for i18n utility functions"
+        description: >
+          Write comprehensive unit tests for all functions in src/i18n/utils.ts:
+          getLangFromUrl, translatePath, useTranslate, getLangFromSlug, and
+          any other exported functions. Test edge cases: root path, paths
+          with/without trailing slashes, unknown language prefixes, default
+          language fallback.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT3H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must cover all exported functions"
+          - "Must test edge cases and error conditions"
+        forbidden: []
+        references:
+          - "src/i18n/utils.ts"
+        notes: []
+        subtasks: []
+
+      - id: test-post-utils
+        title: "Unit tests for post utility functions"
+        description: >
+          Write tests for src/utils/posts.ts: getPosts filtering by language,
+          draft status, unlisted status, and path matching. Include regression
+          tests for the string immutability bug (bug-string-immutability).
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT3H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must mock Astro content collections"
+          - "Must include regression test for the replace() bug"
+        forbidden: []
+        references:
+          - "src/utils/posts.ts"
+        notes: []
+        subtasks: []
+
+      - id: test-rss-validation
+        title: "RSS/Atom feed validation tests"
+        description: >
+          Write tests that build the RSS and last-ten feeds and validate
+          them against the RSS 2.0 and Atom specs. Verify required elements
+          are present: channel title, link, description, atom:link self-ref,
+          item titles, publication dates.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: medium
+        effort: "PT3H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must validate XML structure"
+          - "Must check for required RSS elements"
+        forbidden: []
+        references:
+          - "src/pages/rss.xml.ts"
+          - "src/pages/last-ten.xml.ts"
+        notes: []
+        subtasks: []
+
+      - id: test-build-output
+        title: "Build output smoke tests"
+        description: >
+          Create a test that runs the Astro build and validates the output:
+          all expected pages are generated, no empty HTML files, all internal
+          links resolve to existing files, images referenced in HTML exist.
+          This catches broken pages before deployment.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: medium
+        effort: "PT4H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must run a full astro build"
+          - "Must check for broken internal links"
+          - "Must be fast enough for CI (<30 seconds for validation)"
+        forbidden: []
+        references:
+          - ".github/workflows/deploy.yml"
+        notes: []
+        subtasks: []
+
+      - id: test-a11y-automated
+        title: "Automated accessibility testing"
+        description: >
+          Add axe-core based automated accessibility tests that run against
+          built HTML pages. Test key pages: homepage, a blog post, the 404
+          page, search page, projects page. These complement the manual
+          accessibility audit (feature accessibility-pass).
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: medium
+        effort: "PT3H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must use axe-core or a similar engine"
+          - "Must test against built HTML (not dev server)"
+          - "Must cover at least 5 key page types"
+        forbidden: []
+        references:
+          - "https://github.com/dequelabs/axe-core"
         notes: []
         subtasks: []
