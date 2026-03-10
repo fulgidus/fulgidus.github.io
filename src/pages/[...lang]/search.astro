@@ -1,17 +1,40 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { defaultLang, type Languages } from "@/i18n/ui";
+import { getActiveLanguages, useTranslate } from "@/i18n/utils";
+
+export function getStaticPaths() {
+  const languages = getActiveLanguages();
+  return languages.map((lang) => ({
+    params: { lang: lang === defaultLang ? undefined : lang },
+    props: { lang },
+  }));
+}
+
+const { lang } = Astro.props as { lang: Languages };
+const t = useTranslate(lang);
 ---
 
-<BaseLayout title="Cerca" description="Cerca negli articoli del blog">
+<BaseLayout title={t('search.title')} description={t('search.description')}>
   <div class="max-w-4xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4">Cerca</h1>
-    <div id="search" class="search-container">
+    <h1 class="text-2xl font-bold mb-4">{t('search.heading')}</h1>
+    <div
+      id="search"
+      class="search-container"
+      data-index-error={t('search.indexError')}
+      data-no-results={t('search.noResults')}
+      data-untitled={t('search.untitled')}
+      data-type-blog={t('search.typeBlog')}
+      data-type-project={t('search.typeProject')}
+      data-type-tag={t('search.typeTag')}
+      data-type-page={t('search.typePage')}
+    >
       <input
         type="text"
         id="search-input"
-        placeholder="Cerca articoli..."
+        placeholder={t('search.placeholder')}
         class="search-input"
-        aria-label="Cerca articoli"
+        aria-label={t('search.ariaLabel')}
         role="combobox"
         aria-expanded="false"
         aria-controls="search-results"
@@ -27,7 +50,19 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
   document.addEventListener('astro:page-load', async function() {
     var input = document.getElementById('search-input');
     var results = document.getElementById('search-results');
-    if (!input || !results) return;
+    var container = document.getElementById('search');
+    if (!input || !results || !container) return;
+
+    // Read translations from data attributes
+    var i18n = {
+      indexError: container.getAttribute('data-index-error') || 'Search index not available.',
+      noResults: container.getAttribute('data-no-results') || 'No results found.',
+      untitled: container.getAttribute('data-untitled') || 'Untitled',
+      typeBlog: container.getAttribute('data-type-blog') || 'Blog',
+      typeProject: container.getAttribute('data-type-project') || 'Project',
+      typeTag: container.getAttribute('data-type-tag') || 'Tag',
+      typePage: container.getAttribute('data-type-page') || 'Page',
+    };
 
     // Abort any previous event listeners from prior navigations
     if (window.__pagefindAbort) {
@@ -46,7 +81,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
       await window.__pagefind.options({ ranking: { pageLength: 0.5 } });
       await window.__pagefind.init();
     } catch (e) {
-      results.innerHTML = '<p class="search-no-results">Indice di ricerca non disponibile. Riprova più tardi.</p>';
+      results.innerHTML = '<p class="search-no-results">' + i18n.indexError + '</p>';
       return;
     }
 
@@ -55,10 +90,10 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     var activeIndex = -1;
 
     function getResultType(url) {
-      if (/\/(it\/)?posts\//.test(url)) return 'Blog';
-      if (/\/(it\/)?projects\//.test(url)) return 'Progetto';
-      if (/\/(it\/)?tags\//.test(url)) return 'Tag';
-      return 'Pagina';
+      if (/\/(it\/)?posts\//.test(url)) return i18n.typeBlog;
+      if (/\/(it\/)?projects\//.test(url)) return i18n.typeProject;
+      if (/\/(it\/)?tags\//.test(url)) return i18n.typeTag;
+      return i18n.typePage;
     }
 
     function getResultTypeClass(url) {
@@ -79,7 +114,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
       var search = await pagefind.search(query);
 
       if (search.results.length === 0) {
-        results.innerHTML = '<p class="search-no-results">Nessun risultato trovato.</p>';
+        results.innerHTML = '<p class="search-no-results">' + i18n.noResults + '</p>';
         input.setAttribute('aria-expanded', 'false');
         activeIndex = -1;
         return;
@@ -102,7 +137,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
         item.id = 'search-result-' + i;
         item.style.animationDelay = (i * 30) + 'ms';
 
-        var title = data.meta && data.meta.title ? data.meta.title : 'Senza titolo';
+        var title = data.meta && data.meta.title ? data.meta.title : i18n.untitled;
         var excerpt = data.excerpt || '';
         var type = getResultType(data.url);
         var typeClass = getResultTypeClass(data.url);

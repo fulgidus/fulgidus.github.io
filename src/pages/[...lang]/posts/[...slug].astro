@@ -7,35 +7,45 @@ import RelatedPosts from "@/components/RelatedPosts.astro";
 import SeriesNavigation from "@/components/SeriesNavigation.astro";
 import SharePost from "@/components/SharePost.vue";
 import TagsList from "@/components/TagsList.vue";
-import { Languages } from "@/i18n/ui";
-import { getLangFromSlug, getLangFromUrl, useTranslate } from "@/i18n/utils";
+import { defaultLang, type Languages } from "@/i18n/ui";
+import { getLangFromSlug, getActiveLanguages, useTranslate } from "@/i18n/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { composeImageSizeClasses } from "@/pages/posts/[...slug].astro";
 import { type CollectionPost } from "@/types";
 import { getPosts, removeLangFromSlug } from "@/utils/posts";
 import { getOgImagePath } from "@/utils/og";
 import { getFormattedDate } from "@/utils/date";
+import { composeImageSizeClasses } from "@/utils/image";
 import SplatImage from "@/components/SplatImage.astro";
 
 export async function getStaticPaths() {
-  const posts = await getPosts({
-    lang: "it",
-    withUnlisted: true,
-    withDrafts: true,
-  }); // This need to be with unlisted, otherwise they won't ever exist in SSG
+  const languages = getActiveLanguages();
+  const paths: any[] = [];
 
-  const returnedPosts = posts.map((post: CollectionPost) => ({
-    params: { slug: removeLangFromSlug(post.slug) },
-    props: {
-      post,
-    },
-  }));
-  return returnedPosts;
+  for (const lang of languages) {
+    const posts = await getPosts({
+      lang,
+      withUnlisted: true,
+      withDrafts: true,
+    });
+
+    for (const post of posts) {
+      const slugParam = lang === defaultLang ? post.slug : removeLangFromSlug(post.slug);
+      paths.push({
+        params: {
+          lang: lang === defaultLang ? undefined : lang,
+          slug: slugParam,
+        },
+        props: { post, lang },
+      });
+    }
+  }
+
+  return paths;
 }
 
-type Props = { post: CollectionPost };
+type Props = { post: CollectionPost; lang: Languages };
 
-const { post }: Props = Astro.props;
+const { post, lang }: Props = Astro.props;
 const {
   title,
   image,
@@ -56,8 +66,8 @@ const { Content, remarkPluginFrontmatter } = await post.render();
 // Use remark-computed reading time, with manual duration as fallback/override
 const readingTime = duration || remarkPluginFrontmatter?.duration;
 
-// Fetch all IT posts for related posts component
-const allItPosts = await getPosts({ lang: "it" }) as CollectionPost[];
+// Fetch all posts in current language for related posts component
+const allLangPosts = await getPosts({ lang }) as CollectionPost[];
 
 function getDate(date: Date | string) {
   return new Date(date).toISOString();
@@ -74,12 +84,7 @@ const ogImage = await getOgImagePath(slug, {
   pubDate,
 });
 
-const currentLang = getLangFromUrl(Astro.url.pathname);
-// Dynamically construct languages array based on available translations
-// const availableLanguages = Object.keys(ui) as (Languages)[];
-// const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
-const t = useTranslate(currentLang as Languages);
-// const tp = useTranslatedPath(currentLang as Languages);
+const t = useTranslate(lang);
 ---
 
 <!-- ACTUAL POST RENDERER -->
@@ -97,30 +102,11 @@ const t = useTranslate(currentLang as Languages);
   readingTime={readingTime}
 >
   <ReadingProgress client:only="vue" />
-  <!-- <a
-    title="Back"
-    href="javascript:history.back()"
-    style="button"
-    float-end
-    m-s-10
-    m-t-1
-  >
-    <i aria-label="Go back" i-ri-arrow-go-back-line></i>
-  </a> -->
   <article class="prose" data-pagefind-body>
     <div class="max-w-4xl mx-auto relative">
       <h1 transition:name={`post-title-${slug.replace(/\//g, '-')}`}>
         {title}
       </h1>
-      <!-- {
-        unlisted && (
-          <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
-            <span class="important-m-0 important-p-0 underline text-red">
-              {t("slug.unlisted")}
-            </span>
-          </div>
-        )
-      } -->
       {
         draft && (
           <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
@@ -133,7 +119,7 @@ const t = useTranslate(currentLang as Languages);
       <p h-initial class="flex flex-wrap flex-gap-1" data-pagefind-ignore>
         {
           pubDate && (
-            <time datetime={getDate(pubDate)}>{getFormattedDate(pubDate, 'it')}</time>
+            <time datetime={getDate(pubDate)}>{getFormattedDate(pubDate, lang)}</time>
           )
         }
         {readingTime && <span>· {readingTime}</span>}
@@ -154,7 +140,7 @@ const t = useTranslate(currentLang as Languages);
       )
     }
     <Content />
-    {series && <SeriesNavigation currentSlug={slug} series={series} lang="it" />}
+    {series && <SeriesNavigation currentSlug={slug} series={series} lang={lang} />}
     <div class="!mt-10 !mb--10" data-pagefind-ignore>
       <SharePost shareTitle={title} client:only="vue" />
       {
@@ -165,14 +151,13 @@ const t = useTranslate(currentLang as Languages);
         )
       }
     </div>
-    <ul>
-      <GoBackToBlog client:only="vue" />
-    </ul>
   </article>
 
   {!draft && !unlisted && (
-    <RelatedPosts currentPost={post} allPosts={allItPosts} lang="it" />
+    <RelatedPosts currentPost={post} allPosts={allLangPosts} lang={lang} />
   )}
 
   {!draft && !unlisted && <GiscusComments client:only="vue" />}
+
+  <GoBackToBlog client:only="vue" />
 </BaseLayout>

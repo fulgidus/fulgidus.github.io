@@ -1,11 +1,20 @@
 ---
 import PageLayout from "@/layouts/BaseLayout.astro";
 import { getPosts, getUniqueTagsWithCount } from "@/utils/posts";
-import { useTranslate } from "@/i18n/utils";
+import { useTranslate, getActiveLanguages, useSpecificPath } from "@/i18n/utils";
+import { defaultLang, type Languages } from "@/i18n/ui";
 
-const allPosts = await getPosts();
+export function getStaticPaths() {
+  return getActiveLanguages().map(lang => ({
+    params: { lang: lang === defaultLang ? undefined : lang },
+    props: { lang },
+  }))
+}
+
+const { lang } = Astro.props as { lang: Languages };
+const allPosts = await getPosts({ lang });
 const allTags = getUniqueTagsWithCount(allPosts);
-const t = useTranslate('en');
+const t = useTranslate(lang);
 
 const meta = {
   description: t('tags.allDescription'),
@@ -29,7 +38,7 @@ const meta = {
             <li class="flex items-center gap-x-1">
               <a
                 data-astro-prefetch
-                href={`/tags/${tag}/`}
+                href={useSpecificPath(lang, `/tags/${tag}/`)}
                 title={t('tags.viewPosts').replace('{tag}', tag)}
                 class="text-base b-rd prose-link bg-hex-38054110 dark:bg-hex-e8b5f105 dark:hover:bg-hex-e8b5f130 border-0 p-x-3 p-b-2"
               >

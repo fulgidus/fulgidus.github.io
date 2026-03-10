@@ -1,13 +1,28 @@
 import type { CollectionPost } from '@/types'
 import { getPosts, removeLangFromSlug } from '@/utils/posts'
 import type { APIContext, GetStaticPaths } from 'astro'
+import { getActiveLanguages } from '@/i18n/utils'
+import { defaultLang } from '@/i18n/ui'
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    const posts = await getPosts({ lang: 'it', withDrafts: false, withUnlisted: false })
-    return posts.map((post: CollectionPost) => ({
-        params: { slug: removeLangFromSlug(post.slug), file: 'index.html.md' },
-        props: { post },
-    }))
+    const languages = getActiveLanguages()
+    const paths: any[] = []
+
+    for (const lang of languages) {
+        const posts = await getPosts({ lang, withDrafts: false, withUnlisted: false })
+        for (const post of posts) {
+            paths.push({
+                params: {
+                    lang: lang === defaultLang ? undefined : lang,
+                    slug: removeLangFromSlug(post.slug),
+                    file: 'index.html.md',
+                },
+                props: { post },
+            })
+        }
+    }
+
+    return paths
 }
 
 export async function GET(_context: APIContext) {
