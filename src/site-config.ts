@@ -67,6 +67,10 @@ export const siteConfig = {
                 text: 'nav.projects',
                 href: '/projects',
             },
+            {
+                text: 'nav.search',
+                href: '/search',
+            },
         ],
     },
     page: {
