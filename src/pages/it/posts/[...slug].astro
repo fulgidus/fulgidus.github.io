@@ -14,6 +14,7 @@ import { composeImageSizeClasses } from "@/pages/posts/[...slug].astro";
 import { type CollectionPost } from "@/types";
 import { getPosts, removeLangFromSlug } from "@/utils/posts";
 import { getOgImagePath } from "@/utils/og";
+import { getFormattedDate } from "@/utils/date";
 import SplatImage from "@/components/SplatImage.astro";
 
 export async function getStaticPaths() {
@@ -58,7 +59,7 @@ const readingTime = duration || remarkPluginFrontmatter?.duration;
 // Fetch all IT posts for related posts component
 const allItPosts = await getPosts({ lang: "it" }) as CollectionPost[];
 
-function getDate(date: string) {
+function getDate(date: Date | string) {
   return new Date(date).toISOString();
 }
 
@@ -132,7 +133,7 @@ const t = useTranslate(currentLang as Languages);
       <p h-initial class="flex flex-wrap flex-gap-1" data-pagefind-ignore>
         {
           pubDate && (
-            <time datetime={getDate(pubDate)}>{pubDate.split(",")}</time>
+            <time datetime={getDate(pubDate)}>{getFormattedDate(pubDate, 'it')}</time>
           )
         }
         {readingTime && <span>· {readingTime}</span>}

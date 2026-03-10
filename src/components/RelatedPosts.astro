@@ -3,6 +3,7 @@ import type { CollectionPost } from '@/types'
 import { getRelatedPosts, getHref, getDate } from '@/utils/posts'
 import { translatePath } from '@/i18n/utils'
 import { type Languages } from '@/i18n/ui'
+import { getFormattedDate } from '@/utils/date'
 import TagsList from '@/components/TagsList.vue'
 
 interface Props {
@@ -33,7 +34,7 @@ const relatedPosts = getRelatedPosts(currentPost, allPosts, maxResults)
             <span class="opacity-50 text-sm flex flex-gap-1 flex-wrap">
               {post.data.pubDate && (
                 <time datetime={getDate(post.data.pubDate)}>
-                  {`${post.data.pubDate}`.split(',')[0]}
+                  {getFormattedDate(post.data.pubDate, lang)}
                 </time>
               )}
               <TagsList tags={post.data.tags} link={false} verbose={false} noDot={false} />

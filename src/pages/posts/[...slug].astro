@@ -14,6 +14,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import { type CollectionPost } from "@/types";
 import { getPosts } from "@/utils/posts";
 import { getOgImagePath } from "@/utils/og";
+import { getFormattedDate } from "@/utils/date";
 import SplatImage from "@/components/SplatImage.astro";
 
 export async function getStaticPaths() {
@@ -58,7 +59,7 @@ const readingTime = duration || remarkPluginFrontmatter?.duration;
 // Fetch all EN posts for related posts component
 const allEnPosts = await getPosts({ lang: "en" }) as CollectionPost[];
 
-function getDate(date: string) {
+function getDate(date: Date | string) {
   return new Date(date).toISOString();
 }
 
@@ -152,7 +153,7 @@ const t = useTranslate(currentLang as Languages);
       <p h-initial class="flex flex-wrap flex-gap-1" data-pagefind-ignore>
         {
           pubDate && (
-            <time datetime={getDate(pubDate)}>{pubDate.split(",")}</time>
+            <time datetime={getDate(pubDate)}>{getFormattedDate(pubDate, 'en')}</time>
           )
         }
         {readingTime && <span>· {readingTime}</span>}
