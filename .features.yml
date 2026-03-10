@@ -1476,81 +1476,6 @@ features:
         subtasks: []
 
   # ---------------------------------------------------------------------------
-  # FEATURE 8: TorinoJS organizer in projects section
-  # ---------------------------------------------------------------------------
-  - id: torinojs-projects
-    title: "Add TorinoJS organizer role to projects section"
-    description: >
-      Add a new project group in the projects section (src/pages/projects/data.ts)
-      to highlight the role as an organizer at TorinoJS — a community that hosts
-      async events about JavaScript, Node.js, IoT, and open source web
-      technologies in Torino. The entry should link to https://torino.js.org
-      and describe the community and the organizer role. Should also be
-      reflected in the Italian projects data (src/pages/it/projects/data.ts).
-    status: done
-    completion: 100
-    difficulty: trivial
-    priority: high
-    depends_on: []
-    effort: "PT30M"
-    started_at: "2026-03-10"
-    ended_at: "2026-03-10"
-    constraints:
-      - "Must appear in both EN and IT project data files"
-      - "Must use an appropriate icon from the Remix Icon set (i-ri-*)"
-      - "Description must accurately represent the organizer role"
-    forbidden:
-      - "Do not claim ownership of TorinoJS — describe as organizer/contributor"
-    references:
-      - "https://torino.js.org"
-      - "https://github.com/TorinoJS"
-      - "src/pages/projects/data.ts"
-      - "src/pages/it/projects/data.ts"
-    notes:
-      - "2026-03-10: Feature added to backlog. TorinoJS is a community hosting events about JS, Node.js, IoT, and open source web tech in Torino. Currently in 'reboot' status per their website. The projects data.ts files already have group categories (Maintained FOSS, Rust experiments, Code challenges, Crypto experiments)."
-    subtasks:
-
-      - id: torinojs-data-en
-        title: "Add TorinoJS entry to EN project data"
-        description: >
-          Add a new group (e.g. 'Community') or entry in src/pages/projects/data.ts
-          with TorinoJS details, link, and icon.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT15M"
-        started_at: "2026-03-10"
-        ended_at: "2026-03-10"
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/projects/data.ts"
-        notes: []
-        subtasks: []
-
-      - id: torinojs-data-it
-        title: "Add TorinoJS entry to IT project data"
-        description: >
-          Mirror the TorinoJS entry in src/pages/it/projects/data.ts with
-          Italian description text.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT15M"
-        started_at: "2026-03-10"
-        ended_at: "2026-03-10"
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/it/projects/data.ts"
-        notes: []
-        subtasks: []
-
-  # ---------------------------------------------------------------------------
   # FEATURE 9: In-browser PGP encryption in EmailObfuscator
   # ---------------------------------------------------------------------------
   - id: pgp-email-encryption
@@ -4254,6 +4179,34 @@ features:
 # Archive - completed or cancelled features (end of life-cycle)
 # =============================================================================
 archive:
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 8: TorinoJS organizer in projects section (DONE 2026-03-10)
+  # ---------------------------------------------------------------------------
+  - id: torinojs-projects
+    title: "Add TorinoJS organizer role to projects section"
+    description: >
+      Add a new project group in the projects section to highlight the role
+      as co-organizer at TorinoJS. Entry added to both EN and IT project data.
+    status: done
+    completion: 100
+    difficulty: trivial
+    priority: high
+    depends_on: []
+    effort: "PT30M"
+    started_at: "2026-03-10"
+    ended_at: "2026-03-10"
+    notes:
+      - "2026-03-10: Added 'Community' group with TorinoJS entry to both EN and IT project data files. Merged into develop via git flow feature finish. Moved to archive."
+    subtasks:
+      - id: torinojs-data-en
+        title: "Add TorinoJS entry to EN project data"
+        status: done
+        completion: 100
+      - id: torinojs-data-it
+        title: "Add TorinoJS entry to IT project data"
+        status: done
+        completion: 100
 
   # ---------------------------------------------------------------------------
   # FEATURE 11: Accessibility pass (DONE 2026-03-10)
