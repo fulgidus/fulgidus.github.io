@@ -178,7 +178,7 @@ import { λ } from "@/constants/easter-egg";
   </head>
 
   <body class="bg-gray-50 print:text-sm">
-    <div class="max-w-4xl mx-auto p-8 print-p-0">
+    <main class="max-w-4xl mx-auto p-8 print-p-0">
       <!-- Header -->
       <header class="bg-primary-light rounded-lg p-4 print-p-0 mb-3">
         <div class="flex justify-between items-center">
@@ -467,7 +467,7 @@ import { λ } from "@/constants/easter-egg";
       <div class="meta-desc" aria-hidden="true">{λ}</div>
       <div class="seo-text" aria-hidden="true" hidden>{λ}</div>
       <Fragment set:html={`<!-- ${λ} -->`} />
-    </div>
+    </main>
 
     <button
       onclick="window.print()"

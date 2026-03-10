@@ -1,11 +1,13 @@
 <template>
     <div class="language-dropdown">
-        <button @click="toggleDropdown" class="dropdown-toggle flex items-center justify-between gap-1"
-            :aria-label="translate('changeLanguage')">
+        <button ref="dropdownTrigger" @click="toggleDropdown" class="dropdown-toggle flex items-center justify-between gap-1"
+            :aria-label="translate('changeLanguage')"
+            :aria-expanded="isDropdownOpen.toString()"
+            aria-controls="language-dropdown-menu">
             {{ ui[currentLang]?.flag }}<i i-ri-arrow-down-s-line />
         </button>
         <transition name="slide-fade">
-            <ul v-if="isDropdownOpen" class="dropdown-menu bg-main">
+                <ul v-if="isDropdownOpen" id="language-dropdown-menu" role="listbox" class="dropdown-menu bg-main">
                 <li v-for="([lang, label]) in languages" :key="lang" class="dropdown-item">
                     <a v-if="ui[lang]?.disabled !== 'true'" :href="translatePath(url !== undefined ? stripLangFromPath(url.pathname) : '/', lang as Languages)" nav-link p-2 flex
                         items-center justify-between gap-2 @click="(e) => {
@@ -22,13 +24,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { getLangFromUrl, stripLangFromPath, translatePath, useTranslate } from '../i18n/utils';
 import { defaultLang, Languages, ui } from '@/i18n/ui';
 
 
 const isDropdownOpen = ref(false);
 const currentLang = ref(defaultLang);
+const dropdownTrigger = ref<HTMLButtonElement | null>(null);
 let url: URL | undefined
 const translate = computed(() => useTranslate(currentLang.value as Languages))
 
@@ -97,6 +100,32 @@ const languages = computed(() => {
 const toggleDropdown = () => {
     isDropdownOpen.value = !isDropdownOpen.value;
 };
+
+// Close dropdown on Escape and return focus to trigger
+function handleDropdownEscape(event: KeyboardEvent) {
+    if (event.key === 'Escape' && isDropdownOpen.value) {
+        isDropdownOpen.value = false;
+        dropdownTrigger.value?.focus();
+    }
+}
+
+// Close dropdown on click outside
+function handleClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (isDropdownOpen.value && !target.closest('.language-dropdown')) {
+        isDropdownOpen.value = false;
+    }
+}
+
+watch(isDropdownOpen, (isOpen) => {
+    if (isOpen) {
+        document.addEventListener('keydown', handleDropdownEscape);
+        document.addEventListener('click', handleClickOutside, true);
+    } else {
+        document.removeEventListener('keydown', handleDropdownEscape);
+        document.removeEventListener('click', handleClickOutside, true);
+    }
+});
 
 </script>
 

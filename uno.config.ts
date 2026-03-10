@@ -20,7 +20,7 @@ export default defineConfig({
         {
             'text-title': 'text-link text-4xl font-800',
             'nav-link': 'text-link opacity-100 hover:bg-hex-00000010 dark:hover:bg-hex-ffffff10 transition-all duration-200 cursor-pointer',
-            'prose-link': 'color-hex-380541 dark:color-hex-785581 text-nowrap cursor-pointer border-b-2 border-hex-380541 dark:border-hex-785581 !border-opacity-70 hover:!border-opacity-100 transition-border-color duration-200 decoration-none hover:bg-hex-88559190 hover:font-800',
+            'prose-link': 'color-hex-380541 dark:color-hex-9b7ba3 text-nowrap cursor-pointer border-b-2 border-hex-380541 dark:border-hex-9b7ba3 !border-opacity-70 hover:!border-opacity-100 transition-border-color duration-200 decoration-none hover:bg-hex-88559190 hover:font-800',
             'container-link': 'p-2 opacity-100 hover:opacity-50 cursor-pointer hover:bg-truegray-500 !bg-opacity-10 transition-colors transition-opacity duration-200',
         },
         {

@@ -14,7 +14,7 @@ const postsToShow = recentPosts.slice(0, 5);
   title={t('404.title')}
   description={t('404.description')}
 >
-  <div class="terminal-wrapper">
+  <div class="terminal-wrapper" role="region" aria-label="404 Error">
     <div class="terminal-titlebar">
       <div class="terminal-controls">
         <span class="terminal-dot dot-close"></span>
@@ -25,6 +25,7 @@ const postsToShow = recentPosts.slice(0, 5);
       <div class="terminal-controls-spacer"></div>
     </div>
     <div class="terminal-body">
+      <h1 class="sr-only">{t('404.title')}</h1>
       <div class="terminal-line">
         <span class="terminal-prompt">
           <span class="prompt-user">visitor</span><span class="prompt-at">@</span><span class="prompt-host">fulgidus.github.io</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-dollar">$</span>

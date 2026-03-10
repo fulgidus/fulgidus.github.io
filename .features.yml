@@ -1974,14 +1974,14 @@ features:
       unverified color contrast ratios (especially the purple #380541 used in
       accents). This feature covers structural HTML semantics, ARIA attributes,
       keyboard navigation, focus management, and color contrast.
-    status: backlog
-    completion: 0
+    status: done
+    completion: 100
     difficulty: hard
     priority: critical
     depends_on: []
     effort: "P2D"
-    started_at: null
-    ended_at: null
+    started_at: "2026-03-10"
+    ended_at: "2026-03-10"
     constraints:
       - "Must achieve WCAG 2.1 AA compliance as verified by axe-core or Lighthouse accessibility audit"
       - "Must not break existing visual design"
@@ -2012,14 +2012,14 @@ features:
           BaseLayout.astro that becomes visible on focus and jumps to the
           main content area (#main-content). Ensure the main content landmark
           has the appropriate id. Must work with View Transitions.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: trivial
         priority: critical
         depends_on: []
         effort: "PT30M"
-        started_at: null
-        ended_at: null
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
         constraints:
           - "Must be the first focusable element on every page"
           - "Must be visible when focused (not permanently hidden)"
@@ -2038,14 +2038,14 @@ features:
           with the wrong tag. The opening <i> must be closed with </i> not
           </span>. This is a direct HTML validity bug that may confuse
           assistive technologies.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: trivial
         priority: critical
         depends_on: []
         effort: "PT10M"
-        started_at: null
-        ended_at: null
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
         constraints:
           - "Must not change the visual appearance"
         forbidden: []
@@ -2063,14 +2063,14 @@ features:
           (3) language dropdown trigger in LanguageDropdown.vue. The attribute
           must reactively update when the toggle state changes. Also add
           aria-controls pointing to the controlled element id.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: easy
         priority: critical
         depends_on: []
         effort: "PT1H30M"
-        started_at: null
-        ended_at: null
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
         constraints:
           - "aria-expanded must be true when open, false when closed"
           - "Controlled elements must have matching id attributes"
@@ -2090,14 +2090,14 @@ features:
           in the header. The site already has visual indicators for active
           links. The aria-current attribute provides the semantic equivalent
           for screen readers.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: easy
         priority: high
         depends_on: []
         effort: "PT1H"
-        started_at: null
-        ended_at: null
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
         constraints:
           - "Must compare current URL path against each nav link href"
           - "Must work with View Transitions (update after client-side navigation)"
@@ -2114,14 +2114,14 @@ features:
           navigation drawer (Header.vue), language dropdown (LanguageDropdown.vue),
           and any other popover-style components. Pressing Escape should close
           the element and return focus to the trigger button.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: easy
         priority: high
         depends_on: []
         effort: "PT1H"
-        started_at: null
-        ended_at: null
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
         constraints:
           - "Focus must return to the trigger element after dismissal"
           - "Must not interfere with browser default Escape behavior"
@@ -2139,15 +2139,15 @@ features:
           trapped within it (Tab/Shift+Tab cycle through drawer items only).
           This prevents users from tabbing into obscured page content behind
           the drawer. Release the trap when the drawer closes.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: medium
         priority: high
         depends_on:
           - "a11y-keyboard-dismiss"
         effort: "PT2H"
-        started_at: null
-        ended_at: null
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
         constraints:
           - "Must trap Tab and Shift+Tab within the drawer"
           - "Must handle dynamic content (focusable elements may change)"
@@ -2166,14 +2166,14 @@ features:
           have visible focus indicators when navigated via keyboard. Check
           UnoCSS shortcuts and global styles for any outline:none or similar
           focus-suppressing rules. Add consistent focus ring styles.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: easy
         priority: high
         depends_on: []
         effort: "PT2H"
-        started_at: null
-        ended_at: null
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
         constraints:
           - "Focus indicators must be visible in both light and dark themes"
           - "Must use :focus-visible (not :focus) to avoid showing on mouse click"
@@ -2194,14 +2194,14 @@ features:
           3:1 for UI components). Known concern: the purple accent #380541.
           Use axe-core DevTools or Lighthouse to identify failures. Test in
           both light and dark themes.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: medium
         priority: high
         depends_on: []
         effort: "PT3H"
-        started_at: null
-        ended_at: null
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
         constraints:
           - "Must meet WCAG AA minimum contrast ratios"
           - "Must maintain the site visual identity (purple accents etc.)"
@@ -2222,14 +2222,14 @@ features:
           footer, aside. Verify that each page has exactly one main element.
           Add aria-label to distinguish multiple nav elements. Check that
           heading hierarchy (h1-h6) is logical and not skipped.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: easy
         priority: medium
         depends_on: []
         effort: "PT1H30M"
-        started_at: null
-        ended_at: null
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
         constraints:
           - "Each page must have exactly one main element"
           - "Multiple nav elements must have distinct aria-label values"

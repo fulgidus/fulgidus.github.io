@@ -18,7 +18,7 @@ const languages = availableLanguages.map(lang => [lang, ui[lang].language])
         </a>
 
         <!-- Navigazione -->
-        <nav class="nav flex flex-wrap items-center content-center gap-4 mrauto">
+        <nav class="nav flex flex-wrap items-center content-center gap-4 mrauto" aria-label="Main navigation">
             {siteConfig.header.navLinks.map((link) => (
             <a class="nav-link" aria-label={translate(link.text as TranslationKeys)} href={translatePath(link.href, currentLang)}>
                         { translate(link.text as TranslationKeys) }
@@ -52,7 +52,7 @@ const languages = availableLanguages.map(lang => [lang, ui[lang].language])
     font-size: 1.5rem;
     font-weight: bold;
     text-decoration: none;
-    color: #333;
+    color: inherit;
   }
   .nav ul {
     display: flex;
@@ -63,7 +63,7 @@ const languages = availableLanguages.map(lang => [lang, ui[lang].language])
   }
   .nav a {
     text-decoration: none;
-    color: #333;
+    color: inherit;
   }
   .language-dropdown select {
     padding: 0.5rem;

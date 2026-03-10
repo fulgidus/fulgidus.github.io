@@ -111,8 +111,10 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     font-family: inherit;
   }
 
-  .search-input:focus {
+  .search-input:focus-visible {
     border-color: rgba(128, 128, 128, 0.5);
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
   }
 
   .search-input::placeholder {
