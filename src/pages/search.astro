@@ -5,75 +5,85 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 <BaseLayout title="Search" description="Search blog posts">
   <div class="prose max-w-4xl mx-auto">
     <h1>Search</h1>
-    <div id="search" class="search-container"></div>
+    <div id="search" class="search-container">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Search posts..."
+        class="search-input"
+        aria-label="Search posts"
+      />
+      <div id="search-results" class="search-results"></div>
+    </div>
   </div>
 </BaseLayout>
 
 <script is:inline>
-  async function initPagefind() {
-    var containerEl = document.getElementById('search');
-    if (!containerEl) return;
+  (function() {
+    var initialized = false;
 
-    var pagefind = await import('/pagefind/pagefind.js');
-    
-    // Create search input
-    var input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'Search posts...';
-    input.className = 'search-input';
-    input.setAttribute('aria-label', 'Search posts');
+    async function initPagefind() {
+      if (initialized) return;
+      var input = document.getElementById('search-input');
+      var results = document.getElementById('search-results');
+      if (!input || !results) return;
+      initialized = true;
 
-    // Create results container
-    var results = document.createElement('div');
-    results.className = 'search-results';
+      var pagefind = null;
+      try {
+        pagefind = await import('/pagefind/pagefind.js');
+      } catch (e) {
+        results.innerHTML = '<p class="search-no-results">Search index not available. Please try again later.</p>';
+        return;
+      }
 
-    containerEl.appendChild(input);
-    containerEl.appendChild(results);
+      var debounceTimer;
 
-    var debounceTimer;
+      input.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(async function() {
+          var query = input.value.trim();
+          results.innerHTML = '';
 
-    input.addEventListener('input', function() {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(async function() {
-        var query = input.value.trim();
-        results.innerHTML = '';
+          if (!query) return;
 
-        if (!query) return;
+          var search = await pagefind.search(query);
 
-        var search = await pagefind.search(query);
-        
-        if (search.results.length === 0) {
-          results.innerHTML = '<p class="search-no-results">No results found.</p>';
-          return;
-        }
+          if (search.results.length === 0) {
+            results.innerHTML = '<p class="search-no-results">No results found.</p>';
+            return;
+          }
 
-        for (var i = 0; i < Math.min(search.results.length, 10); i++) {
-          var data = await search.results[i].data();
-          var item = document.createElement('a');
-          item.href = data.url;
-          item.className = 'search-result-item';
-          item.innerHTML =
-            '<span class="search-result-title">' + (data.meta && data.meta.title ? data.meta.title : 'Untitled') + '</span>' +
-            '<span class="search-result-excerpt">' + data.excerpt + '</span>';
-          results.appendChild(item);
-        }
-      }, 200);
+          for (var i = 0; i < Math.min(search.results.length, 10); i++) {
+            var data = await search.results[i].data();
+            var item = document.createElement('a');
+            item.href = data.url;
+            item.className = 'search-result-item';
+            item.innerHTML =
+              '<span class="search-result-title">' + (data.meta && data.meta.title ? data.meta.title : 'Untitled') + '</span>' +
+              '<span class="search-result-excerpt">' + data.excerpt + '</span>';
+            results.appendChild(item);
+          }
+        }, 200);
+      });
+
+      input.focus();
+    }
+
+    document.addEventListener('astro:page-load', function() {
+      initialized = false;
+      initPagefind();
     });
 
-    // Focus the input on page load
-    input.focus();
-  }
-
-  document.addEventListener('astro:page-load', initPagefind);
-  // Fallback for non-ViewTransitions navigation
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initPagefind);
-  } else {
-    initPagefind();
-  }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initPagefind);
+    } else {
+      initPagefind();
+    }
+  })();
 </script>
 
-<style>
+<style is:global>
   .search-container {
     margin-top: 1rem;
   }
