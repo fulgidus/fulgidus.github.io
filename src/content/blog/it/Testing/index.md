@@ -1,7 +1,7 @@
 ---
 title: "La Psicologia del Testing: Andare Oltre il 'Dovere' verso il 'Volere'"
 description: "Un'esplorazione approfondita del perché gli sviluppatori resistono al testing, come rendere il testing il percorso di minor resistenza e approcci pratici per costruire una cultura del testing sostenibile nei team di sviluppo"
-image: testing.png
+image: ../../Testing/testing.png
 imageAlt: "A laptop with code editor windows open, a magnifying glass symbolizing scrutiny, and icons representing unit tests and TDD cycles (e.g., green checkmarks and red Xs)"
 imageSize: md
 pubDate: 2024-11-21T21:20:46

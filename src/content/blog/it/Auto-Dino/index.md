@@ -1,7 +1,7 @@
 ---
 title: "Insegnare a un Dinosauro a Saltare: Rust, WebAssembly ed Evoluzione Neurale"
 description: "Quello che è iniziato come un leggero esperimento di programmazione si è rapidamente trasformato in un'esplorazione tecnica profondamente coinvolgente nei regni della neuroevoluzione, della fisica di gioco e della simulazione basata su browser. Il mio obiettivo originale era modesto: replicare il gioco \"Chrome Dino\" utilizzando uno stack web moderno e performante. Tuttavia, il progetto si è evoluto ben oltre le aspettative. Il colpo di scena? Volevo che il dinosauro imparasse a saltare da solo."
-image: ./cover.png
+image: "../../Auto-Dino/cover.png"
 imageAlt: Una stilizzazione di un Dino che salta un ostacolo
 imageSize: md
 pubDate: 2025-04-12T08:50:33
@@ -134,7 +134,7 @@ Ho implementato tutti i calcoli di forward-pass manualmente in Rust: moltiplicaz
 
 Il visualizzatore della rete è stato aggiornato per riflettere questo cambiamento architettonico. Ora, le attivazioni si propagavano dai neuroni di input a quelli nascosti fino all'output, e le modifiche nei pesi potevano essere osservate nel tempo. Questo ha reso possibile vedere non solo il comportamento, ma anche la struttura di ragionamento sottostante che ha portato a quel comportamento.
 
-![Rete neurale](3-9-1.png)
+![Rete neurale](../../Auto-Dino/3-9-1.png)
 
 Come previsto, la rete ha iniziato a mostrare una migliore adattabilità. Poteva ora apprendere distinzioni più sottili, come quando ritardare un salto o come rispondere a ostacoli più veloci.
 

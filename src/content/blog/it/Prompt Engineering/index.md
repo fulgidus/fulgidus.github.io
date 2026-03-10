@@ -1,7 +1,7 @@
 ---
 title: "Padroneggiare i Prompt: Sbloccare il Pieno Potenziale degli Strumenti di IA Generativa"
 description: Impara a creare prompt efficaci che sbloccano il pieno potenziale degli strumenti di IA generativa, portando a output più accurati e pertinenti.
-image: ./cover.jpg
+image: "../../Prompt Engineering/cover.jpg"
 imageAlt: Un'illustrazione stilizzata di una persona che digita su una tastiera con una lampadina che si accende sopra la sua testa, circondata da frammenti di codice ed elementi relativi all'IA
 imageSize: md
 pubDate: 2024-12-17T22:50:33

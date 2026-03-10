@@ -1,7 +1,7 @@
 ---
 title: "ZigNet: Come ho creato un server MCP per il linguaggio Zig in 1.5 giorni"
 description: "Belle le AI, ma non stanno dietro allo sviluppo così rapido di Zig. Mi sono chiesto: cosa costerebbe farmene una mia? La risposta mi ha sorpreso: con un sistema ibrido deterministico/stocastico, una RTX 3090 e 4.5 ore di training, ho creato un LLM specializzato che gira su un laptop normale."
-image: ./zignet-cover.png
+image: ../../ZigNet/zignet-cover.png
 imageAlt: "Architettura ibrida di ZigNet che combina compilatore Zig e LLM"
 imageSize: md
 pubDate: 2025-11-01T10:30:00

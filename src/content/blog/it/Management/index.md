@@ -2,7 +2,7 @@
 title: "Il Management nella Consulenza Tech: La Prospettiva di uno Sviluppatore Veterano"
 description: "La prospettiva di uno sviluppatore esperto sulla gestione nelle società di consulenza tecnologica, basata su anni di esperienza in diverse aziende. L'articolo esplora come gli approcci tradizionali di gestione spesso ostacolino piuttosto che aiutare i team di sviluppo, e propone un nuovo modello in cui i manager fungono da facilitatori dell'autonomia piuttosto che da controllori. Attraverso esempi ed osservazioni dal mondo reale, illustra il vero valore di una gestione efficace e il costo delle sovrastrutture burocratiche nello sviluppo software moderno"
 pubDate: 2024-11-30T22:26:47
-image: ./mdm.jpeg
+image: ../../Management/mdm.jpeg
 tags:
   - made-with-obsidian
   - best-practices
