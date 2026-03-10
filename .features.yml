@@ -249,138 +249,6 @@ features:
         subtasks: []
 
   # ---------------------------------------------------------------------------
-  # FEATURE 2: Official Mastodon share button
-  # ---------------------------------------------------------------------------
-  - id: mastodon-share-button
-    title: "Official Mastodon share icon among sharing options"
-    description: >
-      Add the official Mastodon share button to the existing SharePost.vue
-      component, using the new share.joinmastodon.org tool announced in March
-      2026. This replaces any ad-hoc Mastodon sharing solution with the
-      official one that handles server discovery (user picks their own
-      instance). The share tool works entirely in the browser with no tracking.
-    status: done
-    completion: 100
-    difficulty: easy
-    priority: high
-    depends_on: []
-    effort: "PT3H"
-    started_at: "2026-03-10"
-    ended_at: "2026-03-10"
-    constraints:
-      - "Must use the official share.joinmastodon.org endpoint"
-      - "Icon must match the visual style of existing share buttons (Remix Icon set via UnoCSS)"
-      - "Must be i18n-aware (share button label translated)"
-    forbidden:
-      - "Do not use a third-party Mastodon share solution"
-      - "Do not self-host the share tool unless joinmastodon.org goes down"
-      - "Do not add tracking or analytics to the share action"
-    references:
-      - "https://blog.joinmastodon.org/2026/03/a-new-share-button/"
-      - "https://share.joinmastodon.org"
-      - "https://github.com/mastodon/share"
-    notes:
-      - "2026-03-10: Feature added to backlog. Official share tool announced 2026-03-02 by Eugen Rochko. Works entirely in-browser, no tracking, supports multiple accounts."
-      - "2026-03-10: All subtasks completed. Used i-ri-mastodon-line from Remix Icons (no safelist needed). Share URL uses share.joinmastodon.org/?text= with encodeURIComponent. Button placed after Bluesky, before Twitter/X. i18n labels added for en, it, nl."
-    subtasks:
-
-      - id: mastodon-icon-sourcing
-        title: "Source or create Mastodon icon"
-        description: >
-          Check if Remix Icons (used via UnoCSS presetIcons) includes an
-          official Mastodon icon. If not, source the official Mastodon logo
-          SVG and integrate it as a custom icon in the UnoCSS safelist or as
-          an inline SVG in the component.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT30M"
-        started_at: "2026-03-10"
-        ended_at: "2026-03-10"
-        constraints:
-          - "Icon must be consistent in size and style with i-ri-* icons"
-        forbidden:
-          - "Do not use a raster image for the icon"
-        references:
-          - "https://joinmastodon.org/branding"
-        notes:
-          - "2026-03-10: Used i-ri-mastodon-line from Remix Icons via UnoCSS presetIcons. No safelist change needed."
-        subtasks: []
-
-      - id: mastodon-share-url
-        title: "Implement share URL logic"
-        description: >
-          Add Mastodon to the SharePost.vue component. The share URL format is:
-          https://share.joinmastodon.org/#text={encoded_url}
-          where {encoded_url} is the URL-encoded page URL (optionally with
-          title text prepended).
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT1H"
-        started_at: "2026-03-10"
-        ended_at: "2026-03-10"
-        constraints:
-          - "URL must be properly encoded"
-          - "Must open in a new tab like other share buttons"
-        forbidden: []
-        references:
-          - "src/components/SharePost.vue"
-          - "https://share.joinmastodon.org"
-        notes:
-          - "2026-03-10: Used share.joinmastodon.org/?text= with encodeURIComponent(title + newline + URL)."
-        subtasks: []
-
-      - id: mastodon-i18n-labels
-        title: "Add i18n labels for Mastodon share"
-        description: >
-          Add translation keys for the Mastodon share button tooltip/label
-          in src/i18n/ui.ts for all supported languages (en, it).
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: "PT15M"
-        started_at: "2026-03-10"
-        ended_at: "2026-03-10"
-        constraints: []
-        forbidden: []
-        references:
-          - "src/i18n/ui.ts"
-        notes:
-          - "2026-03-10: Added sharePost.mastodon key to en, it, and nl locales."
-        subtasks: []
-
-      - id: mastodon-button-placement
-        title: "Decide button placement order"
-        description: >
-          Determine where in the sharing icons row the Mastodon button should
-          appear. Consider placing it prominently (first or second position)
-          given it aligns with the site's open-source ethos.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: low
-        depends_on:
-          - "mastodon-icon-sourcing"
-          - "mastodon-share-url"
-        effort: "PT15M"
-        started_at: "2026-03-10"
-        ended_at: "2026-03-10"
-        constraints:
-          - "Must not disrupt existing button order without owner approval"
-        forbidden: []
-        references: []
-        notes:
-          - "2026-03-10: Placed after Bluesky, before Twitter/X in both collapsed and expanded template rows."
-        subtasks: []
-
-  # ---------------------------------------------------------------------------
   # FEATURE 3: Localized 404 page
   # ---------------------------------------------------------------------------
   - id: 404-localized
@@ -4184,6 +4052,41 @@ features:
 # Archive - completed or cancelled features (end of life-cycle)
 # =============================================================================
 archive:
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 2: Mastodon share button (DONE 2026-03-10)
+  # ---------------------------------------------------------------------------
+  - id: mastodon-share-button
+    title: "Official Mastodon share icon among sharing options"
+    description: >
+      Added official Mastodon share button to SharePost.vue using
+      share.joinmastodon.org endpoint. Uses i-ri-mastodon-line icon,
+      placed after Bluesky before Twitter/X. i18n labels for en/it/nl.
+    status: done
+    completion: 100
+    difficulty: easy
+    priority: high
+    started_at: "2026-03-10"
+    ended_at: "2026-03-10"
+    notes:
+      - "2026-03-10: All 4 subtasks completed. Official share tool, no tracking, browser-only."
+    subtasks:
+      - id: mastodon-icon-sourcing
+        title: "Source or create Mastodon icon"
+        status: done
+        completion: 100
+      - id: mastodon-share-url
+        title: "Implement share URL logic"
+        status: done
+        completion: 100
+      - id: mastodon-i18n-labels
+        title: "Add i18n labels for Mastodon share"
+        status: done
+        completion: 100
+      - id: mastodon-button-placement
+        title: "Decide button placement order"
+        status: done
+        completion: 100
 
   # ---------------------------------------------------------------------------
   # FEATURE 8: TorinoJS organizer in projects section (DONE 2026-03-10)
