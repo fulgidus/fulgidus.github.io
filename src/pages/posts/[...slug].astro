@@ -149,7 +149,7 @@ const t = useTranslate(currentLang as Languages);
           </div>
         )
       }
-      <p h-initial class="flex flex-wrap flex-gap-1">
+      <p h-initial class="flex flex-wrap flex-gap-1" data-pagefind-ignore>
         {
           pubDate && (
             <time datetime={getDate(pubDate)}>{pubDate.split(",")}</time>
@@ -174,7 +174,7 @@ const t = useTranslate(currentLang as Languages);
     }
     <Content />
     {series && <SeriesNavigation currentSlug={slug} series={series} lang="en" />}
-    <div class="!mt-10 !mb--10">
+    <div class="!mt-10 !mb--10" data-pagefind-ignore>
       <SharePost shareTitle={title} client:only="vue" />
       {
         tags && tags.length > 0 && (
