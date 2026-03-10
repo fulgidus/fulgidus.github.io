@@ -24,6 +24,8 @@ interface DownloadItem {
     type: string
     /** Theme variant for PDFs: 'light' or 'dark'. Omit for non-variant items. */
     variant?: 'light' | 'dark'
+    /** Human-readable file size (e.g. "103 KB"). Computed at build time. */
+    size?: string
 }
 
 interface Props {
@@ -116,6 +118,10 @@ onUnmounted(() => {
                 <span class="marp-downloads__badge" :data-type="dl.type">
                     {{ dl.label }}
                 </span>
+                <!-- File size -->
+                <span v-if="dl.size" class="marp-downloads__size">
+                    {{ dl.size }}
+                </span>
                 <!-- Download icon -->
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="marp-downloads__icon">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -201,6 +207,12 @@ onUnmounted(() => {
 .marp-downloads__icon {
     opacity: 0.5;
     flex-shrink: 0;
+}
+
+.marp-downloads__size {
+    font-size: 0.6875rem;
+    color: var(--c-text-muted, #6b7280);
+    opacity: 0.8;
 }
 
 /* Dark mode */
