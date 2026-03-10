@@ -39,7 +39,6 @@ type GetPostsReturnType =
 
 export async function getPosts(params: GetPostsParams = {}): Promise<GetPostsReturnType> {
     const { path, lang = defaultLang, collection = POST_KEY, withUnlisted = false, withDrafts = true } = params;
-    console.log(`getPosts called with path: ${path}, lang: ${lang}, collection: ${collection}, withUnlisted: ${withUnlisted}, withDrafts: ${withDrafts}`);
     if (!isPostKey(collection) && !isPages(collection)) {
         return [] as GetPostsReturnType; // Explicitly handle invalid cases with fallback.
     }
@@ -56,7 +55,6 @@ export async function getPosts(params: GetPostsParams = {}): Promise<GetPostsRet
                 return true
             })
         }) as GetPostsReturnType
-        console.log(`getPosts returned posts: {${returned.map(p => p.slug).join(', ')}}`)
         return returned
     }
     if (isPages(collection)) {
@@ -68,7 +66,6 @@ export async function getPosts(params: GetPostsParams = {}): Promise<GetPostsRet
             return true
         })
         const returned = sortPostsByDate({ elements: pages }) as GetPostsReturnType
-        console.log(`getPosts returned pages: {${returned.map(p => p.slug).join(', ')}}`)
         return returned
     }
     return []

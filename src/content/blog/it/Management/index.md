@@ -2,7 +2,7 @@
 title: "Il Management nella Consulenza Tech: La Prospettiva di uno Sviluppatore Veterano"
 description: "La prospettiva di uno sviluppatore esperto sulla gestione nelle società di consulenza tecnologica, basata su anni di esperienza in diverse aziende. L'articolo esplora come gli approcci tradizionali di gestione spesso ostacolino piuttosto che aiutare i team di sviluppo, e propone un nuovo modello in cui i manager fungono da facilitatori dell'autonomia piuttosto che da controllori. Attraverso esempi ed osservazioni dal mondo reale, illustra il vero valore di una gestione efficace e il costo delle sovrastrutture burocratiche nello sviluppo software moderno"
 pubDate: 2024-11-30T22:26:47
-image: ./mdm.jpeg
+image: ../../Management/mdm.jpeg
 tags:
   - made-with-obsidian
   - best-practices
@@ -18,6 +18,8 @@ tags:
   - workplace
 imageAlt: Un middle manager che ti fissa
 imageSize: md
+lang: it
+translationOf: "Management"
 ---
 Dopo dieci anni trascorsi attraversando il panorama delle società di consulenza tecnologica, ho osservato lo stesso schema ripetersi in diverse aziende, paesi e culture. I nomi cambiano, ma il problema fondamentale rimane: il middle management spesso si erge come barriera piuttosto che ponte verso uno sviluppo software efficace.
 

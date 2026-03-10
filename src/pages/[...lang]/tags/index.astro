@@ -1,0 +1,58 @@
+---
+import PageLayout from "@/layouts/BaseLayout.astro";
+import { getPosts, getUniqueTagsWithCount } from "@/utils/posts";
+import { useTranslate, getActiveLanguages, useSpecificPath } from "@/i18n/utils";
+import { defaultLang, type Languages } from "@/i18n/ui";
+
+export function getStaticPaths() {
+  return getActiveLanguages().map(lang => ({
+    params: { lang: lang === defaultLang ? undefined : lang },
+    props: { lang },
+  }))
+}
+
+const { lang } = Astro.props as { lang: Languages };
+const allPosts = await getPosts({ lang });
+const allTags = getUniqueTagsWithCount(allPosts);
+const t = useTranslate(lang);
+
+const meta = {
+  description: t('tags.allDescription'),
+  title: t('tags.allTitle'),
+};
+---
+
+<PageLayout {...meta}>
+  <div class="w-full">
+    <a title="Back" href={"javascript:history.back()"} style="button">
+      <i i-ri-arrow-go-back-line></i>
+    </a>
+
+    <h1 class="mb-6 mt-5 text-2xl font-bold">Tags</h1>
+    {allTags.length === 0 && <p>{t('tags.noPosts')}</p>}
+
+    {
+      allTags.length > 0 && (
+        <ul class="flex flex-wrap gap-2">
+          {allTags.map(([tag, val]) => (
+            <li class="flex items-center gap-x-1">
+              <a
+                data-astro-prefetch
+                href={useSpecificPath(lang, `/tags/${tag}/`)}
+                title={t('tags.viewPosts').replace('{tag}', tag)}
+                class="text-base b-rd prose-link bg-hex-38054110 dark:bg-hex-e8b5f105 dark:hover:bg-hex-e8b5f130 border-0 p-x-3 p-b-2"
+              >
+                <div class="flex flex-row items-start justify-start">
+                  <span class="align-top">&#35;{tag}</span>
+                  <span class="inline-block self-end text-xs justify-self-end m-s-1 m-b--1">
+                    {val} post{val > 1 && "s"}
+                  </span>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</PageLayout>

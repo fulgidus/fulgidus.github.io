@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script lang="ts" setup>
 import { useEventListener, useWindowScroll } from '@vueuse/core'
-import { computed, onMounted, onUnmounted, ref, watchEffect, onBeforeMount } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch, watchEffect, onBeforeMount } from 'vue'
 import ThemeToggle from './ThemeToggle.vue'
 import { getLinkTarget } from '@/utils/link'
 import siteConfig from '@/site-config'
@@ -36,6 +36,7 @@ const navDrawerOpen = ref(false); // Reactive state for drawer visibility
 const isHeaderHidden = ref(false); // Reactive state for header visibility
 const previousScrollPosition = ref(0); // Store previous scroll position
 const amAtTopScrollPosition = ref(true);
+const hamburgerBtn = ref<HTMLButtonElement | null>(null);
 
 const { y: scroll } = useWindowScroll();
 
@@ -88,6 +89,62 @@ onUnmounted(() => {
 function toggleNavDrawer() {
     navDrawerOpen.value = !navDrawerOpen.value;
 }
+
+// Close nav drawer on Escape and return focus to trigger
+function handleNavDrawerEscape(event: KeyboardEvent) {
+    if (event.key === 'Escape' && navDrawerOpen.value) {
+        navDrawerOpen.value = false;
+        hamburgerBtn.value?.focus();
+    }
+}
+
+// Focus trap for mobile nav drawer
+const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function handleFocusTrap(event: KeyboardEvent) {
+    if (event.key !== 'Tab') return;
+    const drawer = document.getElementById('mobile-nav-drawer');
+    if (!drawer) return;
+    const focusable = Array.from(drawer.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey) {
+        if (document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        }
+    } else {
+        if (document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    }
+}
+
+watch(navDrawerOpen, (isOpen) => {
+    if (isOpen) {
+        document.addEventListener('keydown', handleNavDrawerEscape);
+        document.addEventListener('keydown', handleFocusTrap);
+        // Move focus into the drawer on next tick
+        requestAnimationFrame(() => {
+            const drawer = document.getElementById('mobile-nav-drawer');
+            const firstFocusable = drawer?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+            firstFocusable?.focus();
+        });
+    } else {
+        document.removeEventListener('keydown', handleNavDrawerEscape);
+        document.removeEventListener('keydown', handleFocusTrap);
+    }
+});
+
+function isCurrentPage(linkHref: string): boolean {
+    if (!currentUrl) return false;
+    const resolved = translatePath(linkHref, currentLang.value as Languages);
+    const currentPath = currentUrl.pathname.replace(/\/$/, '') || '/';
+    const linkPath = resolved.replace(/\/$/, '') || '/';
+    return currentPath === linkPath;
+}
 </script>
 
 <template>
@@ -107,16 +164,21 @@ function toggleNavDrawer() {
                 <!-- Always visible on larger screens -->
                 <nav aria-label="Menu navigation" class="sm:flex hidden flex-wrap gap-x-6 position-initial flex-row">
                     <a v-for="link in navLinks" :key="link.text" :aria-label="translate(link.text)"
-                        :href="translatePath(link.href, currentLang as Languages)">
+                        :href="translatePath(link.href, currentLang as Languages)"
+                        :aria-current="isCurrentPage(link.href) ? 'page' : undefined">
                         {{ translate(link.text) }}
                     </a>
                 </nav>
                 <!-- End of navigation menu buttons -->
 
                 <!-- Hamburger menu button on smaller screens -->
-                <div class="sm:hidden h-full flex items-center" @click="toggleNavDrawer">
+                <button ref="hamburgerBtn" class="sm:hidden h-full flex items-center bg-transparent border-none cursor-pointer p-0"
+                    :aria-expanded="navDrawerOpen.toString()"
+                    aria-controls="mobile-nav-drawer"
+                    :aria-label="navDrawerOpen ? 'Close menu' : 'Open menu'"
+                    @click="toggleNavDrawer">
                     <i i-ri-menu-2-line />
-                </div>
+                </button>
                 <!-- End of hamburger menu button on smaller screens -->
             </div>
             <div class="flex gap-x-3 flex-wrap items-center justify-end">
@@ -132,10 +194,16 @@ function toggleNavDrawer() {
         </header>
     </Transition>
     <Transition name="nav-drawer"> <!-- Add a transition -->
-        <nav v-if="navDrawerOpen" class="nav-drawer bg-main gap-6 p-6 items-center justify-start w-auto" aria-label="menu navigation">
-            <i i-ri-menu-2-fill @click="toggleNavDrawer" class="self-start"/>
+        <nav v-if="navDrawerOpen" id="mobile-nav-drawer" role="dialog" aria-modal="true" aria-label="Mobile navigation" class="nav-drawer bg-main gap-6 p-6 items-center justify-start w-auto">
+            <button class="self-start bg-transparent border-none cursor-pointer p-0 text-main"
+                aria-label="Close menu"
+                @click="toggleNavDrawer">
+                <i i-ri-menu-2-fill />
+            </button>
             <a v-for="link in navLinks" :key="link.text" :aria-label="translate(link.text)"
-                :href="translatePath(link.href, currentLang as Languages)" @click="toggleNavDrawer">
+                :href="translatePath(link.href, currentLang as Languages)"
+                :aria-current="isCurrentPage(link.href) ? 'page' : undefined"
+                @click="toggleNavDrawer">
                 {{ translate(link.text) }}
             </a>
         </nav>

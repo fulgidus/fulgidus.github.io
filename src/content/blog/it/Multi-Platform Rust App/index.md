@@ -1,7 +1,7 @@
 ---
 title: Costruire un'Applicazione Multi-Piattaforma in Rust con lo Schema di Shamir
 description: Un viaggio attraverso lo sviluppo di una singola applicazione Rust che funziona su piattaforme web, desktop e CLI, utilizzando framework e best practice moderne.
-image: "1.png"
+image: "../../Multi-Platform Rust App/1.png"
 imageAlt: "Un'illustrazione vettoriale pulita e minimalista che rappresenta lo sviluppo software multi-piattaforma utilizzando Rust"
 imageSize: "md"
 pubDate: 2024-03-29
@@ -14,6 +14,7 @@ tags:
   - shamir-secret-sharing
 draft: false
 lang: it
+translationOf: "Multi-Platform Rust App"
 redirect: ""
 video: false
 ---

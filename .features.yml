@@ -44,6 +44,17 @@
 #                                  the same schema recursively (all fields
 #                                  apply, including nested subtasks).
 #
+# TOP-LEVEL STRUCTURE:
+#   features : list[feature]  - Active features in the pipeline (backlog through
+#                                in_review). This is where work is planned and
+#                                tracked.
+#   archive  : list[feature]  - Completed or cancelled features that have
+#                                reached the end of their life-cycle (status is
+#                                done or cancelled). Move features here once
+#                                finished to keep the active list focused.
+#                                Same schema as features — full history is
+#                                preserved for reference.
+#
 # STATUS UPDATE CONVENTION:
 #   When updating progress, prepend a new entry to the `notes` list with the
 #   current ISO 8601 date and a short description of what changed. Example:
@@ -68,301 +79,12 @@ version: "1.0"
 # Metadata about this tracking file
 meta:
   created_at: "2026-03-10T00:00:00+01:00"
-  updated_at: "2026-03-10T13:06:00+01:00"
+  updated_at: "2026-03-11T00:00:00+01:00"
   project: "fulgidus.github.io"
   generator: "Astro 4.x"
   maintainer: "fulgidus"
 
 features:
-
-  # ---------------------------------------------------------------------------
-  # FEATURE 1: SplatHash integration for ultrafast TTFF
-  # ---------------------------------------------------------------------------
-  - id: splathash-integration
-    title: "SplatHash integration for ultrafast TTFF"
-    description: >
-      Integrate SplatHash (https://github.com/junevm/splathash) to generate
-      16-byte image hashes that decode in ~0.067ms into 32x32 blurry previews.
-      This replaces or supplements any existing image placeholder strategy to
-      achieve ultrafast Time To First Frame (TTFF) on all images across the
-      site. SplatHash encodes any image into exactly 16 bytes (a 22-char
-      base64url string), supports alpha channels, uses perceptual Oklab color
-      space, and has bit-exact cross-language parity (Go, TypeScript, Python).
-    status: backlog
-    completion: 0
-    difficulty: hard
-    priority: high
-    depends_on: []
-    effort: "P2DT4H"
-    started_at: null
-    ended_at: null
-    constraints:
-      - "Must not increase bundle size by more than 5KB gzipped for the decoder"
-      - "Must work with both light and dark themes"
-      - "Hash generation must happen at build time, not runtime"
-      - "Must not degrade Lighthouse performance score"
-      - "Must handle images with and without alpha channels"
-    forbidden:
-      - "Do not use BlurHash (inferior decode performance)"
-      - "Do not run hash encoding client-side"
-      - "Do not store hashes in separate database - embed in markup or frontmatter"
-    references:
-      - "https://raw.githubusercontent.com/junevm/splathash/refs/heads/main/README.md"
-      - "https://github.com/junevm/splathash"
-      - "https://junevm.github.io/splathash/"
-    notes:
-      - "2026-03-10: Feature added to backlog. SplatHash decodes in 0.067ms vs ThumbHash 0.50ms vs BlurHash 6.55ms. Fixed 16-byte output storable as 128-bit integer."
-    subtasks:
-
-      - id: splathash-research
-        title: "Research and prototype"
-        description: >
-          Evaluate splathash-ts npm package. Build a standalone prototype that
-          encodes a sample image and decodes it in the browser. Measure actual
-          decode time and visual quality.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT3H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Use the TypeScript package (splathash-ts) from npm"
-        forbidden: []
-        references:
-          - "src/i18n/ui.ts"
-        notes: []
-        subtasks: []
-
-      - id: splathash-build-pipeline
-        title: "Build-time hash generation pipeline"
-        description: >
-          Create an Astro integration or build script that scans all images
-          used in blog posts and pages, generates SplatHash hashes, and stores
-          them in a lookup map (JSON or injected into frontmatter). Must run
-          during `astro build` and cache results to avoid re-encoding unchanged
-          images.
-        status: backlog
-        completion: 0
-        difficulty: hard
-        priority: high
-        depends_on:
-          - "splathash-research"
-        effort: "P1D"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must be incremental - skip unchanged images"
-          - "Must integrate with Astro's build lifecycle"
-          - "Cache hash results between builds"
-        forbidden:
-          - "Do not modify original image files"
-          - "Do not use Go or Python encoders - stick to TypeScript for build consistency"
-        references: []
-        notes: []
-        subtasks: []
-
-      - id: splathash-client-decoder
-        title: "Client-side decoder component"
-        description: >
-          Create a Vue or Astro component that reads the SplatHash hash from
-          markup, decodes it to a 32x32 canvas on page load, and displays it
-          as a placeholder until the full image loads. Must handle the
-          crossfade transition from placeholder to full image.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on:
-          - "splathash-research"
-        effort: "PT6H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Placeholder must render before full image request completes"
-          - "Must support both <img> and CSS background images"
-          - "Transition from placeholder to image must be smooth (CSS fade)"
-          - "Must be SSR-compatible - no hydration flash"
-        forbidden:
-          - "Do not use canvas for the final display - use CSS or inline data URI"
-          - "Do not block the main thread during decode"
-        references: []
-        notes: []
-        subtasks: []
-
-      - id: splathash-post-images
-        title: "Apply to blog post cover images"
-        description: >
-          Integrate the SplatHash placeholder into the blog post template
-          ([...slug].astro) for post cover/hero images.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: medium
-        depends_on:
-          - "splathash-build-pipeline"
-          - "splathash-client-decoder"
-        effort: "PT2H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must work for posts that have cover images and gracefully skip those that don't"
-        forbidden: []
-        references:
-          - "src/pages/posts/[...slug].astro"
-        notes: []
-        subtasks: []
-
-      - id: splathash-all-images
-        title: "Apply to all site images"
-        description: >
-          Extend SplatHash placeholders to all images across the site - post
-          listing thumbnails, project images, profile pictures, page content
-          images.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: low
-        depends_on:
-          - "splathash-post-images"
-        effort: "PT4H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must not apply to SVGs or tiny icons"
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-
-  # ---------------------------------------------------------------------------
-  # FEATURE 2: Official Mastodon share button
-  # ---------------------------------------------------------------------------
-  - id: mastodon-share-button
-    title: "Official Mastodon share icon among sharing options"
-    description: >
-      Add the official Mastodon share button to the existing SharePost.vue
-      component, using the new share.joinmastodon.org tool announced in March
-      2026. This replaces any ad-hoc Mastodon sharing solution with the
-      official one that handles server discovery (user picks their own
-      instance). The share tool works entirely in the browser with no tracking.
-    status: backlog
-    completion: 0
-    difficulty: easy
-    priority: high
-    depends_on: []
-    effort: "PT3H"
-    started_at: null
-    ended_at: null
-    constraints:
-      - "Must use the official share.joinmastodon.org endpoint"
-      - "Icon must match the visual style of existing share buttons (Remix Icon set via UnoCSS)"
-      - "Must be i18n-aware (share button label translated)"
-    forbidden:
-      - "Do not use a third-party Mastodon share solution"
-      - "Do not self-host the share tool unless joinmastodon.org goes down"
-      - "Do not add tracking or analytics to the share action"
-    references:
-      - "https://blog.joinmastodon.org/2026/03/a-new-share-button/"
-      - "https://share.joinmastodon.org"
-      - "https://github.com/mastodon/share"
-    notes:
-      - "2026-03-10: Feature added to backlog. Official share tool announced 2026-03-02 by Eugen Rochko. Works entirely in-browser, no tracking, supports multiple accounts."
-    subtasks:
-
-      - id: mastodon-icon-sourcing
-        title: "Source or create Mastodon icon"
-        description: >
-          Check if Remix Icons (used via UnoCSS presetIcons) includes an
-          official Mastodon icon. If not, source the official Mastodon logo
-          SVG and integrate it as a custom icon in the UnoCSS safelist or as
-          an inline SVG in the component.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT30M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Icon must be consistent in size and style with i-ri-* icons"
-        forbidden:
-          - "Do not use a raster image for the icon"
-        references:
-          - "https://joinmastodon.org/branding"
-        notes: []
-        subtasks: []
-
-      - id: mastodon-share-url
-        title: "Implement share URL logic"
-        description: >
-          Add Mastodon to the SharePost.vue component. The share URL format is:
-          https://share.joinmastodon.org/#text={encoded_url}
-          where {encoded_url} is the URL-encoded page URL (optionally with
-          title text prepended).
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT1H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "URL must be properly encoded"
-          - "Must open in a new tab like other share buttons"
-        forbidden: []
-        references:
-          - "src/components/SharePost.vue"
-          - "https://share.joinmastodon.org"
-        notes: []
-        subtasks: []
-
-      - id: mastodon-i18n-labels
-        title: "Add i18n labels for Mastodon share"
-        description: >
-          Add translation keys for the Mastodon share button tooltip/label
-          in src/i18n/ui.ts for all supported languages (en, it).
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/i18n/ui.ts"
-        notes: []
-        subtasks: []
-
-      - id: mastodon-button-placement
-        title: "Decide button placement order"
-        description: >
-          Determine where in the sharing icons row the Mastodon button should
-          appear. Consider placing it prominently (first or second position)
-          given it aligns with the site's open-source ethos.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: low
-        depends_on:
-          - "mastodon-icon-sourcing"
-          - "mastodon-share-url"
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must not disrupt existing button order without owner approval"
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
 
   # ---------------------------------------------------------------------------
   # FEATURE 3: Localized 404 page
@@ -661,441 +383,6 @@ features:
         forbidden: []
         references:
           - "src/pages/404.astro"
-        notes: []
-        subtasks: []
-
-  # ---------------------------------------------------------------------------
-  # FEATURE 5: i18n architecture overhaul
-  # ---------------------------------------------------------------------------
-  - id: i18n-overhaul
-    title: "Redo i18n for easier language management"
-    description: >
-      Redesign the internationalization system to solve three pain points:
-      (1) Easier jumping between language versions of the same page/post,
-      (2) Ability to share static resources (cover images, assets) across
-      language versions of a post without duplication, and (3) Eliminate the
-      /it/ folder duplication pattern in src/pages/ and src/content/ that
-      mirrors the entire English structure. The current system is a hand-rolled
-      solution because Astro's built-in i18n "breaks the site for some reason"
-      (noted in astro.config.ts). The new system should be cleaner while
-      remaining compatible with Astro's static output for GitHub Pages.
-    status: backlog
-    completion: 0
-    difficulty: very_hard
-    priority: high
-    depends_on: []
-    effort: "P5D"
-    started_at: null
-    ended_at: null
-    constraints:
-      - "Must remain fully static (GitHub Pages deployment)"
-      - "Must not break existing URLs - implement redirects if paths change"
-      - "Must support at least en and it; should be extensible to nl and others"
-      - "Must preserve RSS feeds per language"
-      - "Must preserve sitemap with hreflang alternates"
-      - "Must preserve or improve SEO (hreflang tags, canonical URLs)"
-      - "Must work with Astro Content Collections v2/v3"
-    forbidden:
-      - "Do not use Astro's built-in i18n routing if it remains broken - investigate first, but don't force it"
-      - "Do not use heavy i18n libraries (i18next, etc.) client-side - keep translations in build-time data"
-      - "Do not require a CMS or external translation service"
-    references:
-      - "src/i18n/ui.ts"
-      - "src/i18n/utils.ts"
-      - "astro.config.ts"
-      - "src/pages/it/"
-      - "src/content/blog/it/"
-    notes:
-      - "2026-03-10: Feature added to backlog. This is the largest feature - impacts nearly every page and component. Current system works but has significant DRY violations and makes language switching fragile."
-    subtasks:
-
-      - id: i18n-audit-current
-        title: "Audit current i18n implementation"
-        description: >
-          Thoroughly document the current i18n system: all files involved,
-          how routing works, how translations are loaded, how content is
-          associated across languages, and all known pain points.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT3H"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-
-      - id: i18n-investigate-astro-builtin
-        title: "Investigate Astro built-in i18n (again)"
-        description: >
-          Re-test Astro's native i18n routing to understand exactly why it
-          "breaks the site." Document the specific failures. Determine if
-          recent Astro updates have fixed the issues. This may be the
-          simplest path forward if it works now.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on: []
-        effort: "PT4H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Test on a branch - do not break main"
-        forbidden: []
-        references:
-          - "https://docs.astro.build/en/guides/internationalization/"
-          - "astro.config.ts"
-        notes: []
-        subtasks: []
-
-      - id: i18n-design-new-architecture
-        title: "Design new i18n architecture"
-        description: >
-          Based on the audit and Astro investigation, design a new i18n
-          architecture that solves the three pain points. Write an ADR
-          (Architecture Decision Record) with the chosen approach, trade-offs,
-          and migration plan.
-        status: backlog
-        completion: 0
-        difficulty: hard
-        priority: high
-        depends_on:
-          - "i18n-audit-current"
-          - "i18n-investigate-astro-builtin"
-        effort: "PT4H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must address all three pain points explicitly"
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-
-      - id: i18n-shared-resources
-        title: "Implement shared static resources across languages"
-        description: >
-          Design and implement a system where post cover images and other
-          static assets can be defined once and shared across all language
-          versions of the same post. This likely involves a content schema
-          change where the "canonical" assets live in one location and
-          translations reference them.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on:
-          - "i18n-design-new-architecture"
-        effort: "PT6H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must not break image optimization pipeline"
-          - "Must work with Astro's content collections asset handling"
-        forbidden:
-          - "Do not symlink assets - use references or a shared assets directory"
-        references: []
-        notes: []
-        subtasks: []
-
-      - id: i18n-eliminate-folder-duplication
-        title: "Eliminate /it/ page folder duplication"
-        description: >
-          Refactor src/pages/ so that language-specific page variants are
-          generated from a single set of page templates rather than
-          maintaining parallel folder trees (src/pages/blog/ and
-          src/pages/it/blog/ etc.). Use dynamic routing with language as
-          a parameter.
-        status: backlog
-        completion: 0
-        difficulty: hard
-        priority: high
-        depends_on:
-          - "i18n-design-new-architecture"
-        effort: "P1D"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must produce identical URL structure as current site"
-          - "Default language (en) must remain unprefixed"
-        forbidden: []
-        references: []
-        notes: []
-        subtasks:
-
-          - id: i18n-dynamic-routing
-            title: "Implement language-parameterized dynamic routes"
-            description: >
-              Create dynamic route templates like src/pages/[lang]/blog/
-              that handle all languages from a single file. The default
-              language routes (unprefixed) must also be generated.
-            status: backlog
-            completion: 0
-            difficulty: hard
-            priority: high
-            depends_on: []
-            effort: "PT6H"
-            started_at: null
-            ended_at: null
-            constraints: []
-            forbidden: []
-            references: []
-            notes: []
-            subtasks: []
-
-          - id: i18n-remove-it-pages
-            title: "Remove duplicated /it/ page files"
-            description: >
-              Once dynamic routing is confirmed working, remove the
-              src/pages/it/ directory and all its contents.
-            status: backlog
-            completion: 0
-            difficulty: trivial
-            priority: medium
-            depends_on:
-              - "i18n-dynamic-routing"
-            effort: "PT30M"
-            started_at: null
-            ended_at: null
-            constraints:
-              - "Only after dynamic routing is fully tested"
-            forbidden: []
-            references: []
-            notes: []
-            subtasks: []
-
-      - id: i18n-language-switcher-upgrade
-        title: "Upgrade language switcher for reliable page jumping"
-        description: >
-          Improve LanguageDropdown.vue so it can reliably jump between
-          language versions of the same page/post. Currently it uses
-          fetch HEAD to check if the target URL exists, which is fragile.
-          The new system should have a build-time map of page-to-translation
-          correspondences.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on:
-          - "i18n-design-new-architecture"
-        effort: "PT4H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must handle pages that exist in some languages but not others (graceful fallback)"
-          - "Must not require runtime API calls to check page existence"
-        forbidden:
-          - "Do not use fetch HEAD for existence checks in production"
-        references:
-          - "src/components/LanguageDropdown.vue"
-        notes: []
-        subtasks: []
-
-      - id: i18n-content-collection-refactor
-        title: "Refactor content collections for multilingual support"
-        description: >
-          Restructure src/content/blog/ and src/content/pages/ so that
-          translations are explicitly linked (e.g. via a shared slug or
-          translation_of field in frontmatter) rather than relying on
-          parallel directory structures.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on:
-          - "i18n-design-new-architecture"
-        effort: "PT6H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must update content collection schema in src/content/config.ts"
-          - "Must migrate all existing content to new structure"
-        forbidden: []
-        references:
-          - "src/content/config.ts"
-          - "src/content/blog/"
-          - "src/content/blog/it/"
-        notes: []
-        subtasks: []
-
-      - id: i18n-migration-testing
-        title: "Full regression testing after migration"
-        description: >
-          Run a complete build and verify every page renders correctly in
-          all languages. Check RSS feeds, sitemap, hreflang tags, OG meta,
-          and all navigation paths. Compare old and new URL structures.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on:
-          - "i18n-shared-resources"
-          - "i18n-eliminate-folder-duplication"
-          - "i18n-language-switcher-upgrade"
-          - "i18n-content-collection-refactor"
-        effort: "PT4H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must verify no 404s for previously working URLs"
-          - "Must verify SEO metadata is preserved"
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-
-      - id: i18n-series-navigation
-        title: "Translate SeriesNavigation.astro strings"
-        description: >
-          SeriesNavigation.astro has all user-visible strings hardcoded
-          in English: "Series", "Part X of Y", "All parts in this series",
-          "Previous:", "Next:", and "(current)". These must be replaced
-          with translation keys from ui.ts and rendered via the i18n
-          utilities so they display correctly for Italian (and future
-          language) users.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: medium
-        depends_on: []
-        effort: "PT30M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must add all new translation keys to ui.ts for en, it, and nl"
-        forbidden: []
-        references:
-          - "src/components/SeriesNavigation.astro"
-          - "src/i18n/ui.ts"
-        notes: []
-        subtasks: []
-
-      - id: i18n-it-page-meta
-        title: "Translate Italian page meta descriptions and titles"
-        description: >
-          Several Italian pages have English meta descriptions and titles
-          that were never translated: (1) tags index page — title "All Tags"
-          and description "A list of all the topics...", (2) tags by tag
-          page — English description and pagination text "Previous Tags"/
-          "Next Tags", (3) blog listing page — description "List of all
-          the blog posts." These must be replaced with Italian translations.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: medium
-        depends_on: []
-        effort: "PT30M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/it/tags/index.astro"
-          - "src/pages/it/tags/[tag]/[...page].astro"
-          - "src/pages/it/blog/[...path].astro"
-        notes: []
-        subtasks: []
-
-      - id: i18n-it-projects-page
-        title: "Translate Italian projects page chrome"
-        description: >
-          The Italian projects page (src/pages/it/projects/index.astro)
-          has its title ("Projects") and description in English. The page
-          chrome is identical to the English version with no translation.
-          Must translate the page title, description, and any hardcoded
-          strings.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/it/projects/index.astro"
-        notes: []
-        subtasks: []
-
-      - id: i18n-date-locale
-        title: "Make date formatting language-aware"
-        description: >
-          The date locale in src/site-config.ts is hardcoded to "en-GB"
-          via siteConfig.date.locale. This means Italian pages render
-          dates in English format (e.g., "27 November 2024" instead of
-          "27 novembre 2024"). The getFormattedDate() utility in
-          src/utils/date.ts should accept a language parameter and use
-          the appropriate locale ("en-GB" for English, "it-IT" for
-          Italian).
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT30M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must update all callers to pass the page language"
-          - "Must maintain the existing date format style, just change locale"
-        forbidden: []
-        references:
-          - "src/site-config.ts"
-          - "src/utils/date.ts"
-        notes: []
-        subtasks: []
-
-      - id: i18n-related-posts
-        title: "Replace RelatedPosts.astro hardcoded language check"
-        description: >
-          In src/components/RelatedPosts.astro, the "Related Posts" heading
-          uses an if/else check on lang === 'it' instead of using the i18n
-          translation system. Replace with a proper useTranslate() call
-          and add translation keys to ui.ts.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: low
-        depends_on: []
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/components/RelatedPosts.astro"
-          - "src/i18n/ui.ts"
-        notes: []
-        subtasks: []
-
-      - id: i18n-scroll-to-top
-        title: "Translate ScrollToTop.vue aria-label"
-        description: >
-          ScrollToTop.vue has its aria-label hardcoded as "Scroll to top"
-          in English. This should use the i18n system to provide the
-          correct translation for the current page language. Add a
-          translation key to ui.ts and pass the translated string as
-          the aria-label.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: low
-        depends_on: []
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/components/ScrollToTop.vue"
-          - "src/i18n/ui.ts"
         notes: []
         subtasks: []
 
@@ -1461,81 +748,6 @@ features:
         references:
           - "https://marpit.marp.app/theme-css"
           - "uno.config.ts"
-        notes: []
-        subtasks: []
-
-  # ---------------------------------------------------------------------------
-  # FEATURE 8: TorinoJS organizer in projects section
-  # ---------------------------------------------------------------------------
-  - id: torinojs-projects
-    title: "Add TorinoJS organizer role to projects section"
-    description: >
-      Add a new project group in the projects section (src/pages/projects/data.ts)
-      to highlight the role as an organizer at TorinoJS — a community that hosts
-      async events about JavaScript, Node.js, IoT, and open source web
-      technologies in Torino. The entry should link to https://torino.js.org
-      and describe the community and the organizer role. Should also be
-      reflected in the Italian projects data (src/pages/it/projects/data.ts).
-    status: backlog
-    completion: 0
-    difficulty: trivial
-    priority: high
-    depends_on: []
-    effort: "PT30M"
-    started_at: null
-    ended_at: null
-    constraints:
-      - "Must appear in both EN and IT project data files"
-      - "Must use an appropriate icon from the Remix Icon set (i-ri-*)"
-      - "Description must accurately represent the organizer role"
-    forbidden:
-      - "Do not claim ownership of TorinoJS — describe as organizer/contributor"
-    references:
-      - "https://torino.js.org"
-      - "https://github.com/TorinoJS"
-      - "src/pages/projects/data.ts"
-      - "src/pages/it/projects/data.ts"
-    notes:
-      - "2026-03-10: Feature added to backlog. TorinoJS is a community hosting events about JS, Node.js, IoT, and open source web tech in Torino. Currently in 'reboot' status per their website. The projects data.ts files already have group categories (Maintained FOSS, Rust experiments, Code challenges, Crypto experiments)."
-    subtasks:
-
-      - id: torinojs-data-en
-        title: "Add TorinoJS entry to EN project data"
-        description: >
-          Add a new group (e.g. 'Community') or entry in src/pages/projects/data.ts
-          with TorinoJS details, link, and icon.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/projects/data.ts"
-        notes: []
-        subtasks: []
-
-      - id: torinojs-data-it
-        title: "Add TorinoJS entry to IT project data"
-        description: >
-          Mirror the TorinoJS entry in src/pages/it/projects/data.ts with
-          Italian description text.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/it/projects/data.ts"
         notes: []
         subtasks: []
 
@@ -1944,840 +1156,6 @@ features:
         forbidden: []
         references:
           - "src/i18n/ui.ts"
-        notes: []
-        subtasks: []
-
-  # ---------------------------------------------------------------------------
-  # FEATURE 11: Accessibility pass (WCAG 2.1 AA)
-  # ---------------------------------------------------------------------------
-  - id: accessibility-pass
-    title: "Comprehensive accessibility pass (WCAG 2.1 AA)"
-    description: >
-      Perform a full accessibility audit and remediation across the entire site
-      targeting WCAG 2.1 AA compliance. Known issues include: no skip-to-content
-      link, a malformed tag in Header.astro (line 34: <i> closed with </span>),
-      no aria-expanded on toggle buttons (mobile nav, theme toggle, language
-      dropdown), no aria-current="page" on active nav links, no keyboard Escape
-      key handler to dismiss drawers/dropdowns, no focus trap on the mobile
-      navigation drawer, no :focus-visible audit across components, and
-      unverified color contrast ratios (especially the purple #380541 used in
-      accents). This feature covers structural HTML semantics, ARIA attributes,
-      keyboard navigation, focus management, and color contrast.
-    status: backlog
-    completion: 0
-    difficulty: hard
-    priority: critical
-    depends_on: []
-    effort: "P2D"
-    started_at: null
-    ended_at: null
-    constraints:
-      - "Must achieve WCAG 2.1 AA compliance as verified by axe-core or Lighthouse accessibility audit"
-      - "Must not break existing visual design"
-      - "Must work with View Transitions (focus management after navigation)"
-      - "All interactive elements must be keyboard-operable"
-      - "Color contrast must meet 4.5:1 for normal text, 3:1 for large text (WCAG AA)"
-      - "Must test with at least one screen reader (NVDA, VoiceOver, or ORCA)"
-    forbidden:
-      - "Do not add ARIA attributes where native HTML semantics suffice (use <button> not <div role=button>)"
-      - "Do not use tabindex values greater than 0"
-      - "Do not disable outline/focus styles without providing a visible alternative"
-    references:
-      - "https://www.w3.org/WAI/WCAG21/quickref/?levels=aaa"
-      - "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA"
-      - "src/components/Header.astro"
-      - "src/components/Header.vue"
-      - "src/components/ThemeToggle.vue"
-      - "src/components/LanguageDropdown.vue"
-      - "src/layouts/BaseLayout.astro"
-    notes:
-      - "2026-03-10: Feature added to backlog at critical priority. Accessibility gaps identified during codebase audit: missing skip-to-content, malformed HTML in Header.astro:34, missing ARIA attributes on toggles, no focus trap on mobile nav, no keyboard dismiss, color contrast unverified."
-    subtasks:
-
-      - id: a11y-skip-to-content
-        title: "Add skip-to-content link"
-        description: >
-          Add a visually hidden skip link as the first focusable element in
-          BaseLayout.astro that becomes visible on focus and jumps to the
-          main content area (#main-content). Ensure the main content landmark
-          has the appropriate id. Must work with View Transitions.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: critical
-        depends_on: []
-        effort: "PT30M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must be the first focusable element on every page"
-          - "Must be visible when focused (not permanently hidden)"
-          - "Must use sr-only class pattern that reveals on :focus"
-        forbidden: []
-        references:
-          - "src/layouts/BaseLayout.astro"
-          - "https://webaim.org/techniques/skipnav/"
-        notes: []
-        subtasks: []
-
-      - id: a11y-fix-malformed-html
-        title: "Fix malformed tag in Header.astro"
-        description: >
-          Fix Header.astro line 34 where an icon element is incorrectly closed
-          with the wrong tag. The opening <i> must be closed with </i> not
-          </span>. This is a direct HTML validity bug that may confuse
-          assistive technologies.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: critical
-        depends_on: []
-        effort: "PT10M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must not change the visual appearance"
-        forbidden: []
-        references:
-          - "src/components/Header.astro:34"
-        notes:
-          - "2026-03-10: DUPLICATE — this is the exact same fix as bug-header-tag-mismatch in bug-fixes-batch (Header.astro line 34: <i> closed with </span>). Completing either one resolves both. Coordinate to avoid double work."
-        subtasks: []
-
-      - id: a11y-aria-expanded-toggles
-        title: "Add aria-expanded to all toggle buttons"
-        description: >
-          Add aria-expanded attributes to: (1) mobile navigation hamburger
-          button in Header.vue, (2) theme toggle button in ThemeToggle.vue,
-          (3) language dropdown trigger in LanguageDropdown.vue. The attribute
-          must reactively update when the toggle state changes. Also add
-          aria-controls pointing to the controlled element id.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: critical
-        depends_on: []
-        effort: "PT1H30M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "aria-expanded must be true when open, false when closed"
-          - "Controlled elements must have matching id attributes"
-          - "Must be reactive (update on state change, not just initial render)"
-        forbidden: []
-        references:
-          - "src/components/Header.vue"
-          - "src/components/ThemeToggle.vue"
-          - "src/components/LanguageDropdown.vue"
-        notes: []
-        subtasks: []
-
-      - id: a11y-aria-current-page
-        title: "Add aria-current=page to active nav links"
-        description: >
-          Add aria-current="page" to the currently active navigation link
-          in the header. The site already has visual indicators for active
-          links. The aria-current attribute provides the semantic equivalent
-          for screen readers.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT1H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must compare current URL path against each nav link href"
-          - "Must work with View Transitions (update after client-side navigation)"
-        forbidden: []
-        references:
-          - "src/components/Header.vue"
-        notes: []
-        subtasks: []
-
-      - id: a11y-keyboard-dismiss
-        title: "Add keyboard Escape to dismiss drawers and dropdowns"
-        description: >
-          Add Escape key handlers to all overlay/dropdown elements: mobile
-          navigation drawer (Header.vue), language dropdown (LanguageDropdown.vue),
-          and any other popover-style components. Pressing Escape should close
-          the element and return focus to the trigger button.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT1H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Focus must return to the trigger element after dismissal"
-          - "Must not interfere with browser default Escape behavior"
-        forbidden: []
-        references:
-          - "src/components/Header.vue"
-          - "src/components/LanguageDropdown.vue"
-        notes: []
-        subtasks: []
-
-      - id: a11y-focus-trap-mobile-nav
-        title: "Add focus trap to mobile navigation drawer"
-        description: >
-          When the mobile navigation drawer is open, keyboard focus must be
-          trapped within it (Tab/Shift+Tab cycle through drawer items only).
-          This prevents users from tabbing into obscured page content behind
-          the drawer. Release the trap when the drawer closes.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on:
-          - "a11y-keyboard-dismiss"
-        effort: "PT2H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must trap Tab and Shift+Tab within the drawer"
-          - "Must handle dynamic content (focusable elements may change)"
-          - "Must release trap and restore focus on close"
-        forbidden:
-          - "Do not use a heavy focus-trap library if a lightweight solution is feasible"
-        references:
-          - "src/components/Header.vue"
-        notes: []
-        subtasks: []
-
-      - id: a11y-focus-visible-audit
-        title: "Audit and fix :focus-visible styles across all components"
-        description: >
-          Ensure all interactive elements (links, buttons, inputs, toggles)
-          have visible focus indicators when navigated via keyboard. Check
-          UnoCSS shortcuts and global styles for any outline:none or similar
-          focus-suppressing rules. Add consistent focus ring styles.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT2H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Focus indicators must be visible in both light and dark themes"
-          - "Must use :focus-visible (not :focus) to avoid showing on mouse click"
-          - "Focus ring must have sufficient contrast against background"
-        forbidden:
-          - "Do not remove existing focus styles without replacement"
-        references:
-          - "src/styles/global.css"
-          - "uno.config.ts"
-        notes: []
-        subtasks: []
-
-      - id: a11y-color-contrast-audit
-        title: "Audit and fix color contrast ratios"
-        description: >
-          Check all text/background color combinations across the site for
-          WCAG AA compliance (4.5:1 for normal text, 3:1 for large text,
-          3:1 for UI components). Known concern: the purple accent #380541.
-          Use axe-core DevTools or Lighthouse to identify failures. Test in
-          both light and dark themes.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on: []
-        effort: "PT3H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must meet WCAG AA minimum contrast ratios"
-          - "Must maintain the site visual identity (purple accents etc.)"
-          - "Must test both light and dark themes"
-        forbidden:
-          - "Do not change the brand color palette drastically, adjust shades/tints as needed"
-        references:
-          - "uno.config.ts"
-          - "src/styles/global.css"
-          - "https://webaim.org/resources/contrastchecker/"
-        notes: []
-        subtasks: []
-
-      - id: a11y-landmark-semantics
-        title: "Verify HTML landmark semantics"
-        description: >
-          Ensure the site uses proper HTML5 landmarks: header, nav, main,
-          footer, aside. Verify that each page has exactly one main element.
-          Add aria-label to distinguish multiple nav elements. Check that
-          heading hierarchy (h1-h6) is logical and not skipped.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: medium
-        depends_on: []
-        effort: "PT1H30M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Each page must have exactly one main element"
-          - "Multiple nav elements must have distinct aria-label values"
-          - "Heading levels must not skip (e.g. h1 then h3 without h2)"
-        forbidden: []
-        references:
-          - "src/layouts/BaseLayout.astro"
-        notes: []
-        subtasks: []
-
-  # ---------------------------------------------------------------------------
-  # FEATURE 12: Bug fixes batch
-  # ---------------------------------------------------------------------------
-  - id: bug-fixes-batch
-    title: "Fix known bugs discovered during codebase audit"
-    description: >
-      Fix all 7 concrete bugs discovered during the comprehensive codebase
-      audit. These range from string immutability errors in utility code to
-      HTML tag mismatches, incorrect RSS self-references, missing RSS elements,
-      hardcoded language values, stray console.log statements in production,
-      and CI/CD pipeline ordering issues.
-    status: backlog
-    completion: 0
-    difficulty: easy
-    priority: critical
-    depends_on: []
-    effort: "PT4H"
-    started_at: null
-    ended_at: null
-    constraints:
-      - "Each fix must be verified by running the build successfully"
-      - "Fixes must not introduce regressions in other functionality"
-      - "All RSS/Atom feeds must validate after fixes"
-    forbidden:
-      - "Do not refactor beyond the minimal fix needed for each bug"
-      - "Do not introduce new dependencies to fix these bugs"
-    references:
-      - "src/utils/posts.ts"
-      - "src/components/Header.astro"
-      - "src/pages/it/rss.xml.ts"
-      - "src/pages/last-ten.xml.ts"
-      - "src/components/GiscusComments.vue"
-      - ".github/workflows/deploy.yml"
-    notes:
-      - "2026-03-10: Feature added to backlog at critical priority. 7 bugs identified during comprehensive codebase audit. All are concrete, reproducible issues with clear fixes."
-    subtasks:
-
-      - id: bug-string-immutability
-        title: "Fix string immutability bug in posts.ts"
-        description: >
-          In src/utils/posts.ts line 55, path.replace() result is never
-          reassigned. JavaScript strings are immutable, so .replace() returns
-          a new string but the original variable is unchanged. Fix by
-          reassigning: path = path.replace(...).
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: critical
-        depends_on: []
-        effort: "PT10M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/utils/posts.ts:55"
-        notes: []
-        subtasks: []
-
-      - id: bug-header-tag-mismatch
-        title: "Fix <i> closed with </span> in Header.astro"
-        description: >
-          In src/components/Header.astro line 34, an <i> element used for
-          social link icons is incorrectly closed with </span>. Change
-          </span> to </i> to fix the HTML validity error.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: critical
-        depends_on: []
-        effort: "PT5M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/components/Header.astro:34"
-        notes:
-          - "2026-03-10: DUPLICATE — this is the exact same fix as a11y-fix-malformed-html in accessibility-pass (Header.astro line 34: <i> closed with </span>). Completing either one resolves both. Coordinate to avoid double work."
-        subtasks: []
-
-      - id: bug-it-rss-self-ref
-        title: "Fix Italian RSS atom:link self-reference"
-        description: >
-          In src/pages/it/rss.xml.ts, the atom:link self-reference points to
-          /rss.xml instead of /it/rss.xml. This means the Italian RSS feed
-          claims to live at the English feed URL. Fix the href to point to
-          the correct /it/rss.xml path.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT10M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must validate as valid Atom/RSS after fix"
-        forbidden: []
-        references:
-          - "src/pages/it/rss.xml.ts"
-        notes: []
-        subtasks: []
-
-      - id: bug-last-ten-missing-elements
-        title: "Add missing atom:link and XSL stylesheet to last-ten.xml"
-        description: >
-          The src/pages/last-ten.xml.ts feed is missing an atom:link
-          self-reference (required by Atom spec) and an XSL stylesheet
-          reference (present in other feeds for browser rendering). Add
-          both to match the structure of rss.xml.ts.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must validate as valid RSS/Atom after fix"
-          - "XSL stylesheet path must match the existing pattern used by rss.xml.ts"
-        forbidden: []
-        references:
-          - "src/pages/last-ten.xml.ts"
-          - "src/pages/rss.xml.ts"
-        notes: []
-        subtasks: []
-
-      - id: bug-giscus-hardcoded-lang
-        title: "Fix Giscus hardcoded data-lang=en"
-        description: >
-          In src/components/GiscusComments.vue line 29, data-lang is hardcoded
-          to "en". This means Italian pages show English Giscus UI. Fix by
-          accepting a lang prop or detecting the current language from the URL
-          and passing it to the Giscus script configuration.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT30M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must map site language codes to Giscus-supported language codes"
-          - "Must update when language changes (if applicable via View Transitions)"
-        forbidden: []
-        references:
-          - "src/components/GiscusComments.vue:29"
-          - "https://giscus.app"
-        notes:
-          - "2026-03-10: Note: This overlaps with feature J (giscus-i18n). This subtask covers the minimal bug fix; feature J covers the full i18n integration."
-        subtasks: []
-
-      - id: bug-console-log-production
-        title: "Remove stray console.log in posts.ts"
-        description: >
-          In src/utils/posts.ts line 59, there is a console.log statement
-          that logs all returned post slugs. This runs in production and
-          clutters the build output. Remove it or guard it behind an
-          environment check.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT5M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must not break the getPosts function"
-        forbidden:
-          - "Do not add a logging framework just for this"
-        references:
-          - "src/utils/posts.ts:59"
-        notes: []
-        subtasks: []
-
-      - id: bug-ci-test-ordering
-        title: "Fix test ordering in deploy workflow"
-        description: >
-          In .github/workflows/deploy.yml, tests run after the build artifact
-          is uploaded. This means a failing test does not prevent deployment.
-          Reorder the steps so that tests run before the artifact upload step.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Tests must complete successfully before artifact upload"
-          - "Must not break the GitHub Actions workflow syntax"
-        forbidden: []
-        references:
-          - ".github/workflows/deploy.yml"
-        notes: []
-        subtasks: []
-
-      - id: bug-trans-hardcoded-url
-        title: "Fix Trans.astro hardcoded URL with typo"
-        description: >
-          In src/components/Trans.astro line 17, getLangFromUrl() is called
-          with a hardcoded string "/it/blogss" (note the typo "blogss")
-          instead of using Astro.url. This means the component always
-          detects Italian language regardless of the actual page URL.
-          Fix to use the actual page URL from Astro.url.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT10M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/components/Trans.astro:17"
-        notes: []
-        subtasks: []
-
-      - id: bug-trans-console-log
-        title: "Remove console.log from Trans.astro"
-        description: >
-          In src/components/Trans.astro line 20, there is a debug
-          console.log("Received key:", key) statement that runs in
-          production on every use of the Trans component.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT5M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/components/Trans.astro:20"
-        notes: []
-        subtasks: []
-
-      - id: bug-it-posts-console-log
-        title: "Remove console.log from Italian posts template"
-        description: >
-          In src/pages/it/posts/[...slug].astro lines 32-35, there is a
-          console.log that dumps all Italian post slugs during build.
-          This debug logging should be removed.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT5M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/it/posts/[...slug].astro:32-35"
-        notes: []
-        subtasks: []
-
-      - id: bug-tags-semantic-html
-        title: "Fix tags page content wrapped inside <a> tag"
-        description: >
-          In src/pages/tags/[tag]/[...page].astro (both EN and IT), the
-          entire content section (h1, post list, paginator) is wrapped
-          inside an <a> tag that serves as the "Back" button link. This
-          is semantically invalid HTML — block-level content should not
-          be inside an anchor element. It likely causes accessibility
-          issues with screen readers. Restructure so the back link is
-          separate from the content.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT20M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must fix both EN and IT versions"
-          - "Must preserve the back navigation functionality"
-        forbidden: []
-        references:
-          - "src/pages/tags/[tag]/[...page].astro"
-          - "src/pages/it/tags/[tag]/[...page].astro"
-        notes: []
-        subtasks: []
-
-      - id: bug-header-astro-noscript
-        title: "Fix Header.astro noscript fallback issues"
-        description: >
-          Header.astro (the noscript fallback header) has multiple issues:
-          (1) Line 15 uses :href (Vue bind syntax) instead of href — in
-          an Astro template this renders literally as a :href attribute,
-          not as a dynamic binding. (2) The <style> block at the bottom
-          (lines 49-75) appears truncated — .social-links ul rule has
-          'gap:' with no value and no closing brace.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must use standard href= attribute syntax in Astro templates"
-        forbidden: []
-        references:
-          - "src/components/Header.astro:15"
-          - "src/components/Header.astro:49-75"
-        notes: []
-        subtasks: []
-
-      - id: bug-postpreview-i18n
-        title: "Fix PostPreview.astro hardcoded English URLs"
-        description: >
-          In src/components/PostPreview.astro line 34, the post link href
-          is hardcoded as /posts/${post.slug}/ without language prefix.
-          Italian tag pages that use this component will link to /posts/...
-          instead of /it/posts/..., sending Italian users to the English
-          version of the post. Must use translatePath or a language-aware
-          href construction.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT20M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must work for all languages"
-          - "Must use the existing i18n utilities"
-        forbidden: []
-        references:
-          - "src/components/PostPreview.astro:34"
-          - "src/i18n/utils.ts"
-        notes: []
-        subtasks: []
-
-      - id: bug-it-unlisted-noindex
-        title: "Fix Italian unlisted posts not set as noindex"
-        description: >
-          In src/pages/it/posts/[...slug].astro, the unlisted property
-          is never destructured from post.data and noindex is never
-          passed to BaseLayout for unlisted posts. The English version
-          correctly passes noindex={unlisted} to prevent search engine
-          indexing of unlisted posts. The Italian version must do the
-          same.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: "PT10M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/it/posts/[...slug].astro"
-          - "src/pages/posts/[...slug].astro"
-        notes: []
-        subtasks: []
-
-      - id: bug-it-unlisted-comments
-        title: "Fix Italian unlisted/draft posts showing comments"
-        description: >
-          In src/pages/it/posts/[...slug].astro, Giscus comments are
-          shown even for unlisted and draft posts. The English version
-          conditionally hides comments when !draft && !unlisted. The
-          Italian version must apply the same conditional logic.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: "PT10M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/it/posts/[...slug].astro"
-          - "src/pages/posts/[...slug].astro"
-        notes: []
-        subtasks: []
-
-      - id: bug-link-mailto-target
-        title: "Fix link.ts incorrectly targeting mailto/tel as _blank"
-        description: >
-          In src/utils/link.ts, isExternalLink() uses a regex that
-          matches any URL with a protocol prefix (including mailto:
-          and tel:). This causes getLinkTarget() to return _blank for
-          mailto and tel links, which is incorrect — these should open
-          in _self (the current window). Fix the regex to exclude
-          mailto: and tel: protocols.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: "PT10M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must still correctly identify http:// and https:// as external"
-        forbidden: []
-        references:
-          - "src/utils/link.ts"
-        notes: []
-        subtasks: []
-
-  # ---------------------------------------------------------------------------
-  # FEATURE 13: Search improvements
-  # ---------------------------------------------------------------------------
-  - id: search-improvements
-    title: "Search UX improvements with URL query parameter"
-    description: >
-      Improve the Pagefind search experience by adding URL query parameter
-      support so search queries can be shared via URL. The format must be
-      ${url}?s=${keyword} (using "s" parameter, not "q"). When a user
-      navigates to a search URL with ?s=keyword, the search input should be
-      pre-populated and results shown automatically. Also improve search
-      result presentation, add keyboard navigation, and ensure the search
-      works correctly across language versions.
-    status: backlog
-    completion: 0
-    difficulty: medium
-    priority: high
-    depends_on: []
-    effort: "PT6H"
-    started_at: null
-    ended_at: null
-    constraints:
-      - "URL parameter must be ?s= (not ?q= or other)"
-      - "Must update URL in real-time as user types (pushState, not page reload)"
-      - "Must work with View Transitions"
-      - "Must work on both /search and /it/search pages"
-      - "Must handle URL-encoded special characters in search terms"
-    forbidden:
-      - "Do not use ?q= parameter — must be ?s="
-      - "Do not add server-side search — keep it Pagefind client-side"
-    references:
-      - "src/pages/search.astro"
-      - "src/pages/it/search.astro"
-      - "https://pagefind.app"
-    notes:
-      - "2026-03-10: Feature added to backlog. User specifically requested ?s= URL parameter format. Current search pages are duplicated (EN/IT) with Pagefind client-side indexing."
-    subtasks:
-
-      - id: search-url-param-read
-        title: "Read search query from URL parameter on page load"
-        description: >
-          On search page load, check for ?s= URL parameter. If present,
-          populate the search input and trigger a Pagefind search automatically.
-          This enables shareable search links.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT1H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must URL-decode the parameter value"
-          - "Must handle empty or missing parameter gracefully"
-        forbidden: []
-        references:
-          - "src/pages/search.astro"
-        notes: []
-        subtasks: []
-
-      - id: search-url-param-write
-        title: "Update URL parameter as user types"
-        description: >
-          As the user types in the search input, update the browser URL using
-          history.replaceState to reflect the current query (e.g.
-          /search?s=astro). Clear the parameter when the input is empty.
-          Use debouncing to avoid excessive history entries.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT1H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must use history.replaceState (not pushState) to avoid polluting back button history"
-          - "Must debounce URL updates (300ms or similar)"
-          - "Must URL-encode special characters"
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-
-      - id: search-keyboard-navigation
-        title: "Add keyboard navigation to search results"
-        description: >
-          Enable arrow key navigation through search results. Up/Down arrows
-          move focus through result items. Enter on a focused result navigates
-          to that page. Escape clears the search or returns focus to input.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: medium
-        depends_on: []
-        effort: "PT2H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must maintain visible focus indicator on active result"
-          - "Must work with screen readers (aria-activedescendant or roving tabindex)"
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-
-      - id: search-result-improvements
-        title: "Improve search result presentation"
-        description: >
-          Enhance the display of Pagefind search results with: highlighted
-          search terms in result excerpts, result category/type indicators
-          (blog post, page, project), publication date for blog posts, and
-          estimated reading time where available.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: medium
-        depends_on: []
-        effort: "PT2H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must work with Pagefind result format"
-          - "Must be visually consistent with the rest of the site"
-        forbidden: []
-        references:
-          - "https://pagefind.app/docs/ui/"
         notes: []
         subtasks: []
 
@@ -4941,3 +3319,770 @@ features:
         notes:
           - "2026-03-11: GitHub Pages serves static files with its own caching headers. Custom headers via _headers files are NOT supported. This may need to be implemented as a Cloudflare Workers or similar edge function if GitHub Pages cannot serve custom headers, or it may need to use HTML meta http-equiv as a workaround (which does not work for Cache-Control). Investigate feasibility."
         subtasks: []
+
+# =============================================================================
+# Archive - completed or cancelled features (end of life-cycle)
+# =============================================================================
+archive:
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 1: SplatHash integration (DONE 2026-03-10)
+  # ---------------------------------------------------------------------------
+  - id: splathash-integration
+    title: "SplatHash integration for ultrafast TTFF"
+    description: >
+      Integrated splathash-ts (zero-dep, 16-byte image hashes) for blur
+      placeholders. At build time, each image is encoded to a 16-byte hash
+      stored in data-splat attribute (~24 chars base64). Client-side decoder
+      renders hash to canvas and sets blob: URL as background-image on <img>.
+      No-JS fallback uses average color from hash as background-color.
+      Applied to post templates (EN/IT), ListPosts, and PokerPic.
+    status: done
+    completion: 100
+    difficulty: hard
+    priority: high
+    started_at: "2026-03-10"
+    ended_at: "2026-03-10"
+    notes:
+      - "2026-03-10: Second bugfix — removed format=webp from SplatImage callers (caused 404s due to Astro cache), replaced canvas.toDataURL() base64 with toBlob()+createObjectURL() blob: URLs, fixed variable shadowing in decoder."
+      - "2026-03-10: Bugfix fix-splathash merged — replaced useless encode→decode→sharp→PNG round-trip with true 16-byte SplatHash: data-splat contains base64 of 16-byte hash (~24 chars), client-side decoder renders to canvas, no-JS fallback uses average color extracted from hash. Reduces per-image placeholder from ~1-3KB to 24 chars."
+      - "2026-03-10: All 5 subtasks completed. splathash-ts v1.3.0 added as dependency. SplatImage.astro is a drop-in <Image> replacement. Hashes cached in-memory during build (~25ms/image). No persistent disk cache yet."
+    subtasks:
+      - id: splathash-research
+        title: "Research and prototype"
+        status: done
+        completion: 100
+      - id: splathash-build-pipeline
+        title: "Build-time hash generation pipeline"
+        status: done
+        completion: 100
+      - id: splathash-client-decoder
+        title: "Client-side decoder component (SplatImage.astro)"
+        status: done
+        completion: 100
+      - id: splathash-post-images
+        title: "Apply to blog post cover images"
+        status: done
+        completion: 100
+      - id: splathash-all-images
+        title: "Apply to all site images"
+        status: done
+        completion: 100
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 13: Search improvements (DONE 2026-03-10)
+  # ---------------------------------------------------------------------------
+  - id: search-improvements
+    title: "Search UX improvements with URL query parameter"
+    description: >
+      Improved Pagefind search with URL ?s= parameter support (read on load,
+      write on type via replaceState), keyboard navigation (ArrowUp/Down/Enter/
+      Escape with aria-activedescendant combobox pattern), and result type
+      badges (Blog/Project/Tag/Page) with color-coded borders. Applied to
+      both EN and IT search pages.
+    status: done
+    completion: 100
+    difficulty: medium
+    priority: high
+    started_at: "2026-03-10"
+    ended_at: "2026-03-10"
+    notes:
+      - "2026-03-10: All 4 subtasks completed. URL param uses ?s= format. Keyboard nav uses ARIA combobox pattern. Type badges inferred from URL patterns. Date display skipped (no pagefind metadata)."
+    subtasks:
+      - id: search-url-param-read
+        title: "Read search query from URL parameter on page load"
+        status: done
+        completion: 100
+      - id: search-url-param-write
+        title: "Update URL parameter as user types"
+        status: done
+        completion: 100
+      - id: search-keyboard-navigation
+        title: "Add keyboard navigation to search results"
+        status: done
+        completion: 100
+      - id: search-result-improvements
+        title: "Improve search result presentation"
+        status: done
+        completion: 100
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 2: Mastodon share button (DONE 2026-03-10)
+  # ---------------------------------------------------------------------------
+  - id: mastodon-share-button
+    title: "Official Mastodon share icon among sharing options"
+    description: >
+      Added official Mastodon share button to SharePost.vue using
+      share.joinmastodon.org endpoint. Uses i-ri-mastodon-line icon,
+      placed after Bluesky before Twitter/X. i18n labels for en/it/nl.
+    status: done
+    completion: 100
+    difficulty: easy
+    priority: high
+    started_at: "2026-03-10"
+    ended_at: "2026-03-10"
+    notes:
+      - "2026-03-10: All 4 subtasks completed. Official share tool, no tracking, browser-only."
+    subtasks:
+      - id: mastodon-icon-sourcing
+        title: "Source or create Mastodon icon"
+        status: done
+        completion: 100
+      - id: mastodon-share-url
+        title: "Implement share URL logic"
+        status: done
+        completion: 100
+      - id: mastodon-i18n-labels
+        title: "Add i18n labels for Mastodon share"
+        status: done
+        completion: 100
+      - id: mastodon-button-placement
+        title: "Decide button placement order"
+        status: done
+        completion: 100
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 8: TorinoJS organizer in projects section (DONE 2026-03-10)
+  # ---------------------------------------------------------------------------
+  - id: torinojs-projects
+    title: "Add TorinoJS organizer role to projects section"
+    description: >
+      Add a new project group in the projects section to highlight the role
+      as co-organizer at TorinoJS. Entry added to both EN and IT project data.
+    status: done
+    completion: 100
+    difficulty: trivial
+    priority: high
+    depends_on: []
+    effort: "PT30M"
+    started_at: "2026-03-10"
+    ended_at: "2026-03-10"
+    notes:
+      - "2026-03-10: Added 'Community' group with TorinoJS entry to both EN and IT project data files. Merged into develop via git flow feature finish. Moved to archive."
+    subtasks:
+      - id: torinojs-data-en
+        title: "Add TorinoJS entry to EN project data"
+        status: done
+        completion: 100
+      - id: torinojs-data-it
+        title: "Add TorinoJS entry to IT project data"
+        status: done
+        completion: 100
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 11: Accessibility pass (DONE 2026-03-10)
+  # ---------------------------------------------------------------------------
+  - id: accessibility-pass
+    title: "Comprehensive accessibility pass (WCAG 2.1 AA)"
+    description: >
+      Perform a full accessibility audit and remediation across the entire site
+      targeting WCAG 2.1 AA compliance. Known issues include: no skip-to-content
+      link, a malformed tag in Header.astro (line 34: <i> closed with </span>),
+      no aria-expanded on toggle buttons (mobile nav, theme toggle, language
+      dropdown), no aria-current="page" on active nav links, no keyboard Escape
+      key handler to dismiss drawers/dropdowns, no focus trap on the mobile
+      navigation drawer, no :focus-visible audit across components, and
+      unverified color contrast ratios (especially the purple #380541 used in
+      accents). This feature covers structural HTML semantics, ARIA attributes,
+      keyboard navigation, focus management, and color contrast.
+    status: done
+    completion: 100
+    difficulty: hard
+    priority: critical
+    depends_on: []
+    effort: "P2D"
+    started_at: "2026-03-10"
+    ended_at: "2026-03-10"
+    constraints:
+      - "Must achieve WCAG 2.1 AA compliance as verified by axe-core or Lighthouse accessibility audit"
+      - "Must not break existing visual design"
+      - "Must work with View Transitions (focus management after navigation)"
+      - "All interactive elements must be keyboard-operable"
+      - "Color contrast must meet 4.5:1 for normal text, 3:1 for large text (WCAG AA)"
+      - "Must test with at least one screen reader (NVDA, VoiceOver, or ORCA)"
+    forbidden:
+      - "Do not add ARIA attributes where native HTML semantics suffice (use <button> not <div role=button>)"
+      - "Do not use tabindex values greater than 0"
+      - "Do not disable outline/focus styles without providing a visible alternative"
+    references:
+      - "https://www.w3.org/WAI/WCAG21/quickref/?levels=aaa"
+      - "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA"
+      - "src/components/Header.astro"
+      - "src/components/Header.vue"
+      - "src/components/ThemeToggle.vue"
+      - "src/components/LanguageDropdown.vue"
+      - "src/layouts/BaseLayout.astro"
+    notes:
+      - "2026-03-10: Feature added to backlog at critical priority. Accessibility gaps identified during codebase audit: missing skip-to-content, malformed HTML in Header.astro:34, missing ARIA attributes on toggles, no focus trap on mobile nav, no keyboard dismiss, color contrast unverified."
+      - "2026-03-10: All 9 subtasks completed. Merged into develop via git flow feature finish. Moved to archive."
+    subtasks:
+
+      - id: a11y-skip-to-content
+        title: "Add skip-to-content link"
+        status: done
+        completion: 100
+
+      - id: a11y-fix-malformed-html
+        title: "Fix malformed tag in Header.astro"
+        status: done
+        completion: 100
+
+      - id: a11y-aria-expanded-toggles
+        title: "Add aria-expanded to all toggle buttons"
+        status: done
+        completion: 100
+
+      - id: a11y-aria-current-page
+        title: "Add aria-current=page to active nav links"
+        status: done
+        completion: 100
+
+      - id: a11y-keyboard-dismiss
+        title: "Add keyboard Escape to dismiss drawers and dropdowns"
+        status: done
+        completion: 100
+
+      - id: a11y-focus-trap-mobile-nav
+        title: "Add focus trap to mobile navigation drawer"
+        status: done
+        completion: 100
+
+      - id: a11y-focus-visible-audit
+        title: "Audit and fix :focus-visible styles across all components"
+        status: done
+        completion: 100
+
+      - id: a11y-color-contrast-audit
+        title: "Audit and fix color contrast ratios"
+        status: done
+        completion: 100
+
+      - id: a11y-landmark-semantics
+        title: "Verify HTML landmark semantics"
+        status: done
+        completion: 100
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 12: Bug fixes batch (DONE 2026-03-10)
+  # ---------------------------------------------------------------------------
+  - id: bug-fixes-batch
+    title: "Fix known bugs discovered during codebase audit"
+    description: >
+      Fix all 7 concrete bugs discovered during the comprehensive codebase
+      audit. These range from string immutability errors in utility code to
+      HTML tag mismatches, incorrect RSS self-references, missing RSS elements,
+      hardcoded language values, stray console.log statements in production,
+      and CI/CD pipeline ordering issues.
+    status: done
+    completion: 100
+    difficulty: easy
+    priority: critical
+    depends_on: []
+    effort: "PT4H"
+    started_at: "2026-03-10T13:06:00+01:00"
+    ended_at: "2026-03-10T15:35:00+01:00"
+    constraints:
+      - "Each fix must be verified by running the build successfully"
+      - "Fixes must not introduce regressions in other functionality"
+      - "All RSS/Atom feeds must validate after fixes"
+    forbidden:
+      - "Do not refactor beyond the minimal fix needed for each bug"
+      - "Do not introduce new dependencies to fix these bugs"
+    references:
+      - "src/utils/posts.ts"
+      - "src/components/Header.astro"
+      - "src/pages/it/rss.xml.ts"
+      - "src/pages/last-ten.xml.ts"
+      - "src/components/GiscusComments.vue"
+      - ".github/workflows/deploy.yml"
+    notes:
+      - "2026-03-10: Feature added to backlog at critical priority. 7 bugs identified during comprehensive codebase audit. All are concrete, reproducible issues with clear fixes."
+      - "2026-03-10: All 16 subtask bugs fixed and build verified. Committed on feature/bug-fixes-batch branch (5c872eb). bug-string-immutability was N/A (code already correct). 3 console.logs found in posts.ts (not 1). IT post template had additional parity issues fixed."
+      - "2026-03-10: Merged into develop via git flow feature finish. Moved to archive."
+    subtasks:
+
+      - id: bug-string-immutability
+        title: "Fix string immutability bug in posts.ts"
+        description: >
+          In src/utils/posts.ts line 55, path.replace() result is never
+          reassigned. JavaScript strings are immutable, so .replace() returns
+          a new string but the original variable is unchanged. Fix by
+          reassigning: path = path.replace(...).
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: critical
+        depends_on: []
+        effort: "PT10M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T13:30:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/utils/posts.ts:55"
+        notes:
+          - "2026-03-10: N/A — path.replace() does not exist in current getPosts function. Bug was either already fixed or line numbers shifted. No action needed."
+        subtasks: []
+
+      - id: bug-header-tag-mismatch
+        title: "Fix <i> closed with </span> in Header.astro"
+        description: >
+          In src/components/Header.astro line 34, an <i> element used for
+          social link icons is incorrectly closed with </span>. Change
+          </span> to </i> to fix the HTML validity error.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: critical
+        depends_on: []
+        effort: "PT5M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T13:15:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/Header.astro:34"
+        notes:
+          - "2026-03-10: DUPLICATE — this is the exact same fix as a11y-fix-malformed-html in accessibility-pass (Header.astro line 34: <i> closed with </span>). Completing either one resolves both. Coordinate to avoid double work."
+          - "2026-03-10: Fixed — changed </span> to </i> on line 34."
+        subtasks: []
+
+      - id: bug-it-rss-self-ref
+        title: "Fix Italian RSS atom:link self-reference"
+        description: >
+          In src/pages/it/rss.xml.ts, the atom:link self-reference points to
+          /rss.xml instead of /it/rss.xml. This means the Italian RSS feed
+          claims to live at the English feed URL. Fix the href to point to
+          the correct /it/rss.xml path.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT10M"
+        started_at: "2026-03-10T13:15:00+01:00"
+        ended_at: "2026-03-10T13:25:00+01:00"
+        constraints:
+          - "Must validate as valid Atom/RSS after fix"
+        forbidden: []
+        references:
+          - "src/pages/it/rss.xml.ts"
+        notes:
+          - "2026-03-10: Fixed — changed 'rss.xml' to 'it/rss.xml' in atom:link href."
+        subtasks: []
+
+      - id: bug-last-ten-missing-elements
+        title: "Add missing atom:link and XSL stylesheet to last-ten.xml"
+        description: >
+          The src/pages/last-ten.xml.ts feed is missing an atom:link
+          self-reference (required by Atom spec) and an XSL stylesheet
+          reference (present in other feeds for browser rendering). Add
+          both to match the structure of rss.xml.ts.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT15M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must validate as valid RSS/Atom after fix"
+          - "XSL stylesheet path must match the existing pattern used by rss.xml.ts"
+        forbidden: []
+        references:
+          - "src/pages/last-ten.xml.ts"
+          - "src/pages/rss.xml.ts"
+        notes:
+          - "2026-03-10: Fixed — added atom:link self-reference and XSL stylesheet to match rss.xml.ts structure."
+        subtasks: []
+
+      - id: bug-giscus-hardcoded-lang
+        title: "Fix Giscus hardcoded data-lang=en"
+        description: >
+          In src/components/GiscusComments.vue line 29, data-lang is hardcoded
+          to "en". This means Italian pages show English Giscus UI. Fix by
+          accepting a lang prop or detecting the current language from the URL
+          and passing it to the Giscus script configuration.
+        status: done
+        completion: 100
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: "PT30M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must map site language codes to Giscus-supported language codes"
+          - "Must update when language changes (if applicable via View Transitions)"
+        forbidden: []
+        references:
+          - "src/components/GiscusComments.vue:29"
+          - "https://giscus.app"
+        notes:
+          - "2026-03-10: Note: This overlaps with feature J (giscus-i18n). This subtask covers the minimal bug fix; feature J covers the full i18n integration."
+          - "2026-03-10: Fixed — added lang prop and detectLang() function that reads language from URL path."
+        subtasks: []
+
+      - id: bug-console-log-production
+        title: "Remove stray console.log in posts.ts"
+        description: >
+          In src/utils/posts.ts line 59, there is a console.log statement
+          that logs all returned post slugs. This runs in production and
+          clutters the build output. Remove it or guard it behind an
+          environment check.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT5M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must not break the getPosts function"
+        forbidden:
+          - "Do not add a logging framework just for this"
+        references:
+          - "src/utils/posts.ts:59"
+        notes:
+          - "2026-03-10: Fixed — removed 3 console.log statements (lines 42, 59, 71), not just 1 as originally described."
+        subtasks: []
+
+      - id: bug-ci-test-ordering
+        title: "Fix test ordering in deploy workflow"
+        description: >
+          In .github/workflows/deploy.yml, tests run after the build artifact
+          is uploaded. This means a failing test does not prevent deployment.
+          Reorder the steps so that tests run before the artifact upload step.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT15M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Tests must complete successfully before artifact upload"
+          - "Must not break the GitHub Actions workflow syntax"
+        forbidden: []
+        references:
+          - ".github/workflows/deploy.yml"
+        notes:
+          - "2026-03-10: Fixed — restructured workflow to run tests before build/upload step."
+        subtasks: []
+
+      - id: bug-trans-hardcoded-url
+        title: "Fix Trans.astro hardcoded URL with typo"
+        description: >
+          In src/components/Trans.astro line 17, getLangFromUrl() is called
+          with a hardcoded string "/it/blogss" (note the typo "blogss")
+          instead of using Astro.url. This means the component always
+          detects Italian language regardless of the actual page URL.
+          Fix to use the actual page URL from Astro.url.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT10M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/Trans.astro:17"
+        notes:
+          - "2026-03-10: Fixed — replaced hardcoded '/it/blogss' with Astro.url."
+        subtasks: []
+
+      - id: bug-trans-console-log
+        title: "Remove console.log from Trans.astro"
+        description: >
+          In src/components/Trans.astro line 20, there is a debug
+          console.log("Received key:", key) statement that runs in
+          production on every use of the Trans component.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT5M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/components/Trans.astro:20"
+        notes:
+          - "2026-03-10: Fixed — removed console.log('Received key:', key)."
+        subtasks: []
+
+      - id: bug-it-posts-console-log
+        title: "Remove console.log from Italian posts template"
+        description: >
+          In src/pages/it/posts/[...slug].astro lines 32-35, there is a
+          console.log that dumps all Italian post slugs during build.
+          This debug logging should be removed.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT5M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/it/posts/[...slug].astro:32-35"
+        notes:
+          - "2026-03-10: Fixed — removed console.log dumping post slugs."
+        subtasks: []
+
+      - id: bug-tags-semantic-html
+        title: "Fix tags page content wrapped inside <a> tag"
+        description: >
+          In src/pages/tags/[tag]/[...page].astro (both EN and IT), the
+          entire content section (h1, post list, paginator) is wrapped
+          inside an <a> tag that serves as the "Back" button link. This
+          is semantically invalid HTML — block-level content should not
+          be inside an anchor element. It likely causes accessibility
+          issues with screen readers. Restructure so the back link is
+          separate from the content.
+        status: done
+        completion: 100
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: "PT20M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must fix both EN and IT versions"
+          - "Must preserve the back navigation functionality"
+        forbidden: []
+        references:
+          - "src/pages/tags/[tag]/[...page].astro"
+          - "src/pages/it/tags/[tag]/[...page].astro"
+        notes:
+          - "2026-03-10: Fixed — extracted h1, section, Paginator out of <a> tag; back link is now a separate element."
+        subtasks: []
+
+      - id: bug-header-astro-noscript
+        title: "Fix Header.astro noscript fallback issues"
+        description: >
+          Header.astro (the noscript fallback header) has multiple issues:
+          (1) Line 15 uses :href (Vue bind syntax) instead of href — in
+          an Astro template this renders literally as a :href attribute,
+          not as a dynamic binding. (2) The <style> block at the bottom
+          (lines 49-75) appears truncated — .social-links ul rule has
+          'gap:' with no value and no closing brace.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT15M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must use standard href= attribute syntax in Astro templates"
+        forbidden: []
+        references:
+          - "src/components/Header.astro:15"
+          - "src/components/Header.astro:49-75"
+        notes:
+          - "2026-03-10: Fixed — corrected :href to href on line 15; fixed truncated CSS (.social-links ul now has gap: 0.5rem and closing brace)."
+        subtasks: []
+
+      - id: bug-postpreview-i18n
+        title: "Fix PostPreview.astro hardcoded English URLs"
+        description: >
+          In src/components/PostPreview.astro line 34, the post link href
+          is hardcoded as /posts/${post.slug}/ without language prefix.
+          Italian tag pages that use this component will link to /posts/...
+          instead of /it/posts/..., sending Italian users to the English
+          version of the post. Must use translatePath or a language-aware
+          href construction.
+        status: done
+        completion: 100
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: "PT20M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must work for all languages"
+          - "Must use the existing i18n utilities"
+        forbidden: []
+        references:
+          - "src/components/PostPreview.astro:34"
+          - "src/i18n/utils.ts"
+        notes:
+          - "2026-03-10: Fixed — added language detection from slug; builds href with lang prefix using getLangFromSlug and removeLangFromSlug."
+        subtasks: []
+
+      - id: bug-it-unlisted-noindex
+        title: "Fix Italian unlisted posts not set as noindex"
+        description: >
+          In src/pages/it/posts/[...slug].astro, the unlisted property
+          is never destructured from post.data and noindex is never
+          passed to BaseLayout for unlisted posts. The English version
+          correctly passes noindex={unlisted} to prevent search engine
+          indexing of unlisted posts. The Italian version must do the
+          same.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: "PT10M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/it/posts/[...slug].astro"
+          - "src/pages/posts/[...slug].astro"
+        notes:
+          - "2026-03-10: Fixed — added unlisted to destructured props and noindex={unlisted} to BaseLayout."
+        subtasks: []
+
+      - id: bug-it-unlisted-comments
+        title: "Fix Italian unlisted/draft posts showing comments"
+        description: >
+          In src/pages/it/posts/[...slug].astro, Giscus comments are
+          shown even for unlisted and draft posts. The English version
+          conditionally hides comments when !draft && !unlisted. The
+          Italian version must apply the same conditional logic.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT10M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints: []
+        forbidden: []
+        references:
+          - "src/pages/it/posts/[...slug].astro"
+          - "src/pages/posts/[...slug].astro"
+        notes:
+          - "2026-03-10: Fixed — changed condition to {!draft && !unlisted && <GiscusComments>} and same for RelatedPosts."
+        subtasks: []
+
+      - id: bug-link-mailto-target
+        title: "Fix link.ts incorrectly targeting mailto/tel as _blank"
+        description: >
+          In src/utils/link.ts, isExternalLink() uses a regex that
+          matches any URL with a protocol prefix (including mailto:
+          and tel:). This causes getLinkTarget() to return _blank for
+          mailto and tel links, which is incorrect — these should open
+          in _self (the current window). Fix the regex to exclude
+          mailto: and tel: protocols.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT10M"
+        started_at: "2026-03-10T13:06:00+01:00"
+        ended_at: "2026-03-10T15:30:00+01:00"
+        constraints:
+          - "Must still correctly identify http:// and https:// as external"
+        forbidden: []
+        references:
+          - "src/utils/link.ts"
+        notes:
+          - "2026-03-10: Fixed — added isNonNavigableProtocol() function checking mailto:, tel:, sms:, geo:, data: before regex check. Note: existing regex /^[a-z0-9-]+:\\/\\//i already excludes mailto/tel since they lack ://, but guard added for robustness."
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 7: i18n architecture overhaul (DONE 2026-03-11)
+  # ---------------------------------------------------------------------------
+  - id: i18n-overhaul
+    title: "Redo i18n for easier language management"
+    description: >
+      Redesigned the internationalization system to solve three pain points:
+      language switching, shared resources across translations, and page folder
+      duplication. Enabled Astro built-in i18n, converted pubDate to Date objects,
+      translated hardcoded strings, shared images across language versions (32
+      duplicate images eliminated), added lang/translationOf to content schema,
+      eliminated page folder duplication via dynamic [...lang] routing (11 page
+      pairs to 9 parameterized pages), upgraded language switcher to build-time
+      translation map, and fixed sitemap hreflang codes.
+    status: done
+    completion: 100
+    difficulty: very_hard
+    priority: high
+    started_at: "2026-03-10"
+    ended_at: "2026-03-11"
+    notes:
+      - "2026-03-11: All 15 subtasks completed. 10 commits merged (102 files changed, 1117 insertions, 1294 deletions, 32 image files deleted). ADR-001 written. Full regression testing passed (6 PASS, 0 FAIL)."
+      - "2026-03-10: Astro built-in i18n re-enabled — old config had buggy array indexing. Works with prefixDefaultLocale: false."
+      - "2026-03-10: SplatImage approach uses background-image CSS on <img> — no wrapper div, no client-side JS."
+    subtasks:
+      - id: i18n-audit-current
+        title: "Audit current i18n implementation"
+        status: done
+        completion: 100
+      - id: i18n-investigate-astro-builtin
+        title: "Investigate Astro built-in i18n"
+        status: done
+        completion: 100
+      - id: i18n-design-new-architecture
+        title: "Design new i18n architecture (ADR-001)"
+        status: done
+        completion: 100
+      - id: i18n-shared-resources
+        title: "Shared static resources across languages"
+        status: done
+        completion: 100
+      - id: i18n-eliminate-folder-duplication
+        title: "Eliminate /it/ page folder duplication"
+        status: done
+        completion: 100
+      - id: i18n-language-switcher-upgrade
+        title: "Upgrade language switcher (build-time map)"
+        status: done
+        completion: 100
+      - id: i18n-content-collection-refactor
+        title: "Refactor content collections (lang/translationOf)"
+        status: done
+        completion: 100
+      - id: i18n-migration-testing
+        title: "Full regression testing"
+        status: done
+        completion: 100
+      - id: i18n-series-navigation
+        title: "Translate SeriesNavigation.astro strings"
+        status: done
+        completion: 100
+      - id: i18n-it-page-meta
+        title: "Translate Italian page meta descriptions"
+        status: done
+        completion: 100
+      - id: i18n-it-projects-page
+        title: "Translate Italian projects page chrome"
+        status: done
+        completion: 100
+      - id: i18n-date-locale
+        title: "Language-aware date formatting"
+        status: done
+        completion: 100
+      - id: i18n-related-posts
+        title: "Replace RelatedPosts hardcoded language check"
+        status: done
+        completion: 100
+      - id: i18n-scroll-to-top
+        title: "Translate ScrollToTop.vue aria-label"
+        status: done
+        completion: 100
+      - id: i18n-dynamic-routing
+        title: "Dynamic [...lang] routing"
+        status: done
+        completion: 100

@@ -1,8 +1,9 @@
 ---
 import type { CollectionPost } from '@/types'
 import { getRelatedPosts, getHref, getDate } from '@/utils/posts'
-import { translatePath } from '@/i18n/utils'
+import { translatePath, useTranslate } from '@/i18n/utils'
 import { type Languages } from '@/i18n/ui'
+import { getFormattedDate } from '@/utils/date'
 import TagsList from '@/components/TagsList.vue'
 
 interface Props {
@@ -14,12 +15,13 @@ interface Props {
 
 const { currentPost, allPosts, lang, maxResults = 3 } = Astro.props
 const relatedPosts = getRelatedPosts(currentPost, allPosts, maxResults)
+const t = useTranslate(lang)
 ---
 
 {relatedPosts.length > 0 && (
   <aside class="related-posts !mt-12 !mb-4">
     <h2 class="!text-lg !mb-4 opacity-70 font-semibold">
-      {lang === 'it' ? 'Articoli correlati' : 'Related Posts'}
+      {t('relatedPosts.heading')}
     </h2>
     <ul class="!list-none !p-0 !m-0 flex flex-col gap-3">
       {relatedPosts.map((post) => (
@@ -33,7 +35,7 @@ const relatedPosts = getRelatedPosts(currentPost, allPosts, maxResults)
             <span class="opacity-50 text-sm flex flex-gap-1 flex-wrap">
               {post.data.pubDate && (
                 <time datetime={getDate(post.data.pubDate)}>
-                  {`${post.data.pubDate}`.split(',')[0]}
+                  {getFormattedDate(post.data.pubDate, lang)}
                 </time>
               )}
               <TagsList tags={post.data.tags} link={false} verbose={false} noDot={false} />

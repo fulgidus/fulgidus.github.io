@@ -12,6 +12,7 @@ tags:
   - tutorial
   - tech-culture
   - team-building 
+lang: en
 ---
 
 December is here, and for programmers worldwide, that means one thing: Advent of Code is back! Created by Eric Wastl, this beloved annual event transforms the holiday season into an exciting coding adventure that draws participants from all corners of the programming world.

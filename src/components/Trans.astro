@@ -14,10 +14,8 @@ type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
   lang?: Languages;
 };
 
-const currentLang = getLangFromUrl("/it/blogss");
+const currentLang = getLangFromUrl(Astro.url);
 const { key, lang = currentLang, ...props }: Props<"span"> = Astro.props;
-
-console.log("Received key:", key); // Add this line
 ---
 
 <span {...props}>

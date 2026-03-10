@@ -1,16 +1,40 @@
 import { siteConfig } from '@/site-config'
+import type { Languages } from '@/i18n/ui'
+
+/** Maps site languages to Intl locale strings */
+const localeMap: Record<string, string> = {
+	en: 'en-GB',
+	it: 'it-IT',
+	nl: 'nl-NL',
+}
+
+function getLocale(lang?: Languages | string): string {
+	if (lang && lang in localeMap) return localeMap[lang]
+	return siteConfig.date.locale
+}
 
 const dateFormat = new Intl.DateTimeFormat(siteConfig.date.locale, siteConfig.date.options)
 
 export function getFormattedDate(
 	date: string | number | Date,
-	options?: Intl.DateTimeFormatOptions
+	optionsOrLang?: Intl.DateTimeFormatOptions | Languages | string,
+	lang?: Languages | string
 ) {
-	if (typeof options !== 'undefined') {
-		return new Date(date).toLocaleDateString(siteConfig.date.locale, {
+	const resolvedLang = typeof optionsOrLang === 'string' && !(optionsOrLang as string).includes('{')
+		? optionsOrLang as string
+		: lang
+	const resolvedOptions = typeof optionsOrLang === 'object' ? optionsOrLang : undefined
+	const locale = getLocale(resolvedLang)
+
+	if (resolvedOptions) {
+		return new Date(date).toLocaleDateString(locale, {
 			...(siteConfig.date.options as Intl.DateTimeFormatOptions),
-			...options
+			...resolvedOptions
 		})
+	}
+
+	if (resolvedLang) {
+		return new Date(date).toLocaleDateString(locale, siteConfig.date.options as Intl.DateTimeFormatOptions)
 	}
 
 	return dateFormat.format(new Date(date))

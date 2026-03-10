@@ -1,7 +1,7 @@
 ---
 title: "Advent of Code 2024: La Sfida di Programmazione per le tue Feste"
 description: Scopri Advent of Code 2024, un'originale sfida di programmazione che trasforma dicembre in un'avventura di coding. Con puzzle giornalieri che spaziano dal livello principiante all'esperto, questo evento gratuito ti permette di esercitare le tue abilità di programmazione, competere a livello globale e unirti a una vivace comunità di sviluppatori. Scopri come iniziare e sfruttare al meglio questa tradizione natalizia del coding.
-image: advent.png
+image: "../../Advent 2024/advent.png"
 imageAlt: Screenshot of the 2024 advent calendar
 imageSize: lg
 pubDate: 2024-12-01T12:00:00
@@ -12,6 +12,8 @@ tags:
   - tutorial
   - tech-culture
   - team-building 
+lang: it
+translationOf: "Advent 2024"
 ---
 
 Dicembre è arrivato, e per i programmatori di tutto il mondo questo significa una cosa sola: è tornato l'Advent of Code! Creato da Eric Wastl, questo amato evento annuale trasforma il periodo natalizio in un'entusiasmante avventura di programmazione che attrae partecipanti da ogni angolo del mondo dello sviluppo software.

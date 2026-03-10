@@ -1,16 +1,19 @@
 ---
 import type { HTMLAttributes } from 'astro/types'
-
+import type { Languages } from '@/i18n/ui'
 import { getFormattedDate } from '@/utils/date'
 
 type Props = HTMLAttributes<'time'> & {
-	date: Date
+	date: Date | string
 	dateTimeOptions?: Intl.DateTimeFormatOptions
+	lang?: Languages
 }
 
-const { date, dateTimeOptions, ...attrs } = Astro.props
+const { date, dateTimeOptions, lang, ...attrs } = Astro.props
 
-const postDate = getFormattedDate(date, dateTimeOptions)
+const postDate = dateTimeOptions
+	? getFormattedDate(date, dateTimeOptions, lang)
+	: getFormattedDate(date, lang)
 ---
 
 <time datetime={new Date(date).toISOString()} {...attrs}>

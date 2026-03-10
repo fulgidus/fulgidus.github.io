@@ -13,6 +13,7 @@ tags:
 imageAlt: Email address protection with Vue.js and Astro
 imageSize: md
 draft: false
+lang: en
 ---
 
 ## Introduction

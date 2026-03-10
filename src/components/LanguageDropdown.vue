@@ -1,13 +1,15 @@
 <template>
     <div class="language-dropdown">
-        <button @click="toggleDropdown" class="dropdown-toggle flex items-center justify-between gap-1"
-            :aria-label="translate('changeLanguage')">
+        <button ref="dropdownTrigger" @click="toggleDropdown" class="dropdown-toggle flex items-center justify-between gap-1"
+            :aria-label="translate('changeLanguage')"
+            :aria-expanded="isDropdownOpen.toString()"
+            aria-controls="language-dropdown-menu">
             {{ ui[currentLang]?.flag }}<i i-ri-arrow-down-s-line />
         </button>
         <transition name="slide-fade">
-            <ul v-if="isDropdownOpen" class="dropdown-menu bg-main">
+                <ul v-if="isDropdownOpen" id="language-dropdown-menu" role="listbox" class="dropdown-menu bg-main">
                 <li v-for="([lang, label]) in languages" :key="lang" class="dropdown-item">
-                    <a v-if="ui[lang]?.disabled !== 'true'" :href="translatePath(url !== undefined ? stripLangFromPath(url.pathname) : '/', lang as Languages)" nav-link p-2 flex
+                    <a v-if="ui[lang]?.disabled !== 'true'" :href="pageTranslations[lang] ?? translatePath('/', lang as Languages)" nav-link p-2 flex
                         items-center justify-between gap-2 @click="(e) => {
                             e.preventDefault();
                             changeLanguage(lang as Languages);
@@ -22,24 +24,31 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { getLangFromUrl, stripLangFromPath, translatePath, useTranslate } from '../i18n/utils';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { getLangFromUrl, translatePath, useTranslate } from '../i18n/utils';
 import { defaultLang, Languages, ui } from '@/i18n/ui';
 
 
 const isDropdownOpen = ref(false);
 const currentLang = ref(defaultLang);
+const dropdownTrigger = ref<HTMLButtonElement | null>(null);
 let url: URL | undefined
 const translate = computed(() => useTranslate(currentLang.value as Languages))
 
-const changeLanguage = async (lang: Languages) => {
-    const newUrl = translatePath(url ? stripLangFromPath(url.pathname) : '/', lang);
-    const newUrlIsValid = await checkLink(newUrl);
-    const targetUrl = newUrlIsValid
-        ? newUrl
-        : url?.pathname.includes('/posts/')
+// Read build-time translation map injected by BaseLayout
+const pageTranslations = ref<Record<string, string>>({})
+
+function readPageTranslations() {
+    pageTranslations.value = (window as any).__pageTranslations__ ?? {}
+}
+
+const changeLanguage = (lang: Languages) => {
+    // Look up the target URL from the build-time translation map
+    const translatedUrl = pageTranslations.value[lang]
+    const targetUrl = translatedUrl
+        ?? (url?.pathname.includes('/posts/')
             ? translatePath('/blog', lang)
-            : translatePath('/', lang);
+            : translatePath('/', lang))
 
     // Use Astro's view transition router by simulating a link click
     // instead of window.location.href which causes a full page reload
@@ -52,24 +61,11 @@ const changeLanguage = async (lang: Languages) => {
     document.body.removeChild(link);
     isDropdownOpen.value = false;
 };
-async function checkLink(newUrl: string): Promise<boolean> {
-    return await fetch(newUrl, { method: 'HEAD' })
-        .then(response => {
-            if (response.ok) {
-                return true;
-            } else {
-                return false;
-            }
-        })
-        .catch(() => {
-            return false;
-        });
-    
-}
 function updateLangFromUrl() {
     url = new URL(window.location.href);
     currentLang.value = getLangFromUrl(url);
     isDropdownOpen.value = false;
+    readPageTranslations();
 }
 
 onMounted(() => {
@@ -82,12 +78,6 @@ onUnmounted(() => {
     document.removeEventListener('astro:page-load', updateLangFromUrl);
 })
 
-
-
-// const currentLangLabel = computed(() => {
-//     return ui[currentLang.value as Languages]?.language || 'Language';
-// });
-
 const languages = computed(() => {
     const availableLanguages = Object.keys(ui) as Languages[]
     return availableLanguages.map(lang => [lang, ui[lang].language])
@@ -97,6 +87,32 @@ const languages = computed(() => {
 const toggleDropdown = () => {
     isDropdownOpen.value = !isDropdownOpen.value;
 };
+
+// Close dropdown on Escape and return focus to trigger
+function handleDropdownEscape(event: KeyboardEvent) {
+    if (event.key === 'Escape' && isDropdownOpen.value) {
+        isDropdownOpen.value = false;
+        dropdownTrigger.value?.focus();
+    }
+}
+
+// Close dropdown on click outside
+function handleClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (isDropdownOpen.value && !target.closest('.language-dropdown')) {
+        isDropdownOpen.value = false;
+    }
+}
+
+watch(isDropdownOpen, (isOpen) => {
+    if (isOpen) {
+        document.addEventListener('keydown', handleDropdownEscape);
+        document.addEventListener('click', handleClickOutside, true);
+    } else {
+        document.removeEventListener('keydown', handleDropdownEscape);
+        document.removeEventListener('click', handleClickOutside, true);
+    }
+});
 
 </script>
 

@@ -149,7 +149,7 @@ const ogCache = new Map<string, OGImageData>()
 /**
  * Generates an OG image PNG for the given post data.
  */
-async function renderOgPng(post: { title: string; description?: string; pubDate?: string }, lang: Languages): Promise<Buffer> {
+async function renderOgPng(post: { title: string; description?: string; pubDate?: string | Date }, lang: Languages): Promise<Buffer> {
     const { title, description, pubDate } = post
     const fonts = await getFonts()
 
@@ -157,6 +157,10 @@ async function renderOgPng(post: { title: string; description?: string; pubDate?
 
     const truncatedDescription = description
         ? description.slice(0, 140) + (description.length > 140 ? '...' : '')
+        : ''
+
+    const formattedDate = pubDate
+        ? new Date(pubDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
         : ''
 
     const templateHtml = `
@@ -172,7 +176,7 @@ async function renderOgPng(post: { title: string; description?: string; pubDate?
                 <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                     <div style="display: flex; align-items: center; gap: 16px;">
                         <span style="color: #9ca3af; font-size: 18px;">${siteConfig.author}</span>
-                        ${pubDate ? `<span style="color: #6b7280; font-size: 18px;">\u00B7</span><span style="color: #9ca3af; font-size: 18px;">${pubDate}</span>` : ''}
+                        ${formattedDate ? `<span style="color: #6b7280; font-size: 18px;">\u00B7</span><span style="color: #9ca3af; font-size: 18px;">${formattedDate}</span>` : ''}
                     </div>
                     <div style="display: flex; align-items: center; background: rgba(167, 139, 250, 0.15); border: 1px solid rgba(167, 139, 250, 0.4); border-radius: 8px; padding: 8px 20px;">
                         <span style="color: #a78bfa; font-size: 18px; font-weight: 700;">${ctaText}</span>
@@ -208,7 +212,7 @@ function computeShortHash(data: Buffer): string {
  */
 export async function getOgImageData(
     slug: string,
-    postData: { title: string; description?: string; pubDate?: string }
+    postData: { title: string; description?: string; pubDate?: string | Date }
 ): Promise<OGImageData> {
     const cached = ogCache.get(slug)
     if (cached) return cached
@@ -232,7 +236,7 @@ export async function getOgImageData(
  */
 export async function getOgImagePath(
     slug: string,
-    postData: { title: string; description?: string; pubDate?: string }
+    postData: { title: string; description?: string; pubDate?: string | Date }
 ): Promise<string> {
     const { hash } = await getOgImageData(slug, postData)
     return `/og/${slug}-${hash}.png`

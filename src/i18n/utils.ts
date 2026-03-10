@@ -4,6 +4,16 @@ function isValidLanguage(lang: string): lang is Languages {
     return lang in ui;
 }
 
+/**
+ * Returns languages that are not disabled (i.e., have no `disabled: 'true'` flag in ui.ts).
+ * Used by getStaticPaths() to generate routes for all active languages.
+ */
+export function getActiveLanguages(): Languages[] {
+    return availableLanguages.filter(
+        l => !ui[l]['disabled' as keyof (typeof ui)[typeof l]]
+    );
+}
+
 export function getLangFromUrl(url: URL | string): Languages {
     const [, lang] = (typeof url === 'string' ? url : url.pathname).split('/');
     if (isValidLanguage(lang)) {

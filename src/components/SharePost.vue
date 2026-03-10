@@ -51,7 +51,7 @@ function shareOn(platform: string) {
             window.open(`https://bsky.app/intent/compose?text=${encodeURI(shareTitle)}${encodeURI('\n')}${encodeURI(window.location.href)}`, '_blank');
             break;
         case 'mastodon':
-            window.open(`https://mastodon.social/share?text=${encodeURI(window.location.href)}`, '_blank');
+            window.open(`https://share.joinmastodon.org/?text=${encodeURIComponent(shareTitle + '\n' + window.location.href)}`, '_blank');
             break;
         case 'reddit':
             window.open(`https://www.reddit.com/submit?url=${encodeURI(window.location.href)}`, '_blank');
@@ -92,6 +92,8 @@ function copyLink() {
                             i-ri-reddit-line /></button>
                     <button class="flex flex-nowrap items-center justify-center" @click="shareOn('bluesky')"><i
                             i-ri-bluesky-line /></button>
+                    <button class="flex flex-nowrap items-center justify-center" @click="shareOn('mastodon')"><i
+                            i-ri-mastodon-line /></button>
                     <button class="flex flex-nowrap items-center justify-center" @click="shareOn('twitter')"><i
                             i-ri-twitter-x-line /></button>
                     <button class="flex flex-nowrap items-center justify-center" @click="shareOn('linkedin')"><i
@@ -115,6 +117,8 @@ function copyLink() {
                         i-ri-reddit-line /></button>
                 <button class="flex flex-nowrap items-center justify-center" @click="shareOn('bluesky')"><i
                         i-ri-bluesky-line /></button>
+                <button class="flex flex-nowrap items-center justify-center" @click="shareOn('mastodon')"><i
+                        i-ri-mastodon-line /></button>
                 <button class="flex flex-nowrap items-center justify-center" @click="shareOn('twitter')"><i
                         i-ri-twitter-x-line /></button>
                 <button class="flex flex-nowrap items-center justify-center" @click="shareOn('linkedin')"><i

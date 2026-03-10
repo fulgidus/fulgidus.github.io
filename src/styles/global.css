@@ -62,3 +62,54 @@ html.dark::view-transition-old(root) {
 html.dark::view-transition-new(root) {
   z-index: 1;
 }
+
+/* Skip-to-content link: visually hidden until focused */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: 9999;
+  padding: 0.75rem 1.5rem;
+  background: var(--skip-bg, #0d1117);
+  color: var(--skip-fg, #eef5fc);
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 0 0 0.5rem 0;
+}
+html:not(.dark) .skip-to-content {
+  --skip-bg: #eef5fc;
+  --skip-fg: #0d1117;
+  border: 2px solid #0d1117;
+}
+html.dark .skip-to-content {
+  --skip-bg: #0d1117;
+  --skip-fg: #eef5fc;
+  border: 2px solid #eef5fc;
+}
+.skip-to-content:focus {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+}
+
+/* Global :focus-visible styles for keyboard navigation */
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Ensure focus ring is visible in both themes */
+html:not(.dark) :focus-visible {
+  outline-color: #380541;
+}
+html.dark :focus-visible {
+  outline-color: #c9a0d0;
+}

@@ -1,0 +1,40 @@
+---
+import { projectDataByLang } from '@/data/projects'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import ListProjects from '@/components/ListProjects.vue'
+import { useTranslate, getActiveLanguages } from '@/i18n/utils'
+import { defaultLang, type Languages } from '@/i18n/ui'
+
+export function getStaticPaths() {
+  return getActiveLanguages().map(lang => ({
+    params: { lang: lang === defaultLang ? undefined : lang },
+    props: { lang },
+  }))
+}
+
+const { lang } = Astro.props as { lang: Languages }
+const t = useTranslate(lang)
+const projectData = projectDataByLang[lang] ?? projectDataByLang[defaultLang]
+---
+
+<BaseLayout title={t('projects.title')} description={t('projects.description')}>
+  <h1 class="mb-10 text-title">{t('projects.title')}</h1>
+  <div mb-16 sm:mb-24>
+    {
+      projectData.length > 0 && (
+        <div>
+          {projectData.map((i) => (
+            <div mb-10>
+              <h2 class="select-none relative h20 pointer-events-none font-title">
+                <span class="text-3.2em color-transparent font-bold text-stroke-1.5 text-stroke-hex-aaa op35 dark:op20 absolute top-0">
+                  {i.title}
+                </span>
+              </h2>
+              <ListProjects list={i.projects} />
+            </div>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>

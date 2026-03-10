@@ -2,6 +2,9 @@
 import type { HTMLTag, Polymorphic } from "astro/types";
 import type { CollectionEntry } from "astro:content";
 import FormattedDate from "./FormattedDate.astro";
+import { getLangFromSlug } from "@/i18n/utils";
+import { removeLangFromSlug } from "@/utils/posts";
+import { defaultLang } from "@/i18n/ui";
 
 type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
   post: CollectionEntry<"blog">;
@@ -10,10 +13,13 @@ type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
 
 const { as: Tag = "div", post, withDesc = false } = Astro.props;
 const postDate = post.data.pubDate;
+const lang = getLangFromSlug(post.slug);
+const langPrefix = lang === defaultLang ? '' : `/${lang}`;
+const postHref = `${langPrefix}/posts/${removeLangFromSlug(post.slug)}/`;
 ---
 
 <li class="flex flex-col gap-2 sm:flex-row sm:gap-x-4 [&_q]:basis-full">
-  <FormattedDate class="min-w-[120px]" date={postDate} />
+  <FormattedDate class="min-w-[120px]" date={postDate} lang={lang} />
   <Tag>
     {
       post.data.draft && (
@@ -31,7 +37,7 @@ const postDate = post.data.pubDate;
     }
     <a
       data-astro-prefetch
-      href={`/posts/${post.slug}/`}
+      href={postHref}
       class="transition-all hover:text-muted-foreground"
     >
       {post.data.title}
