@@ -79,7 +79,7 @@ version: "1.0"
 # Metadata about this tracking file
 meta:
   created_at: "2026-03-10T00:00:00+01:00"
-  updated_at: "2026-03-10T15:35:00+01:00"
+  updated_at: "2026-03-11T00:00:00+01:00"
   project: "fulgidus.github.io"
   generator: "Astro 4.x"
   maintainer: "fulgidus"
@@ -383,441 +383,6 @@ features:
         forbidden: []
         references:
           - "src/pages/404.astro"
-        notes: []
-        subtasks: []
-
-  # ---------------------------------------------------------------------------
-  # FEATURE 5: i18n architecture overhaul
-  # ---------------------------------------------------------------------------
-  - id: i18n-overhaul
-    title: "Redo i18n for easier language management"
-    description: >
-      Redesign the internationalization system to solve three pain points:
-      (1) Easier jumping between language versions of the same page/post,
-      (2) Ability to share static resources (cover images, assets) across
-      language versions of a post without duplication, and (3) Eliminate the
-      /it/ folder duplication pattern in src/pages/ and src/content/ that
-      mirrors the entire English structure. The current system is a hand-rolled
-      solution because Astro's built-in i18n "breaks the site for some reason"
-      (noted in astro.config.ts). The new system should be cleaner while
-      remaining compatible with Astro's static output for GitHub Pages.
-    status: backlog
-    completion: 0
-    difficulty: very_hard
-    priority: high
-    depends_on: []
-    effort: "P5D"
-    started_at: null
-    ended_at: null
-    constraints:
-      - "Must remain fully static (GitHub Pages deployment)"
-      - "Must not break existing URLs - implement redirects if paths change"
-      - "Must support at least en and it; should be extensible to nl and others"
-      - "Must preserve RSS feeds per language"
-      - "Must preserve sitemap with hreflang alternates"
-      - "Must preserve or improve SEO (hreflang tags, canonical URLs)"
-      - "Must work with Astro Content Collections v2/v3"
-    forbidden:
-      - "Do not use Astro's built-in i18n routing if it remains broken - investigate first, but don't force it"
-      - "Do not use heavy i18n libraries (i18next, etc.) client-side - keep translations in build-time data"
-      - "Do not require a CMS or external translation service"
-    references:
-      - "src/i18n/ui.ts"
-      - "src/i18n/utils.ts"
-      - "astro.config.ts"
-      - "src/pages/it/"
-      - "src/content/blog/it/"
-    notes:
-      - "2026-03-10: Feature added to backlog. This is the largest feature - impacts nearly every page and component. Current system works but has significant DRY violations and makes language switching fragile."
-    subtasks:
-
-      - id: i18n-audit-current
-        title: "Audit current i18n implementation"
-        description: >
-          Thoroughly document the current i18n system: all files involved,
-          how routing works, how translations are loaded, how content is
-          associated across languages, and all known pain points.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT3H"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-
-      - id: i18n-investigate-astro-builtin
-        title: "Investigate Astro built-in i18n (again)"
-        description: >
-          Re-test Astro's native i18n routing to understand exactly why it
-          "breaks the site." Document the specific failures. Determine if
-          recent Astro updates have fixed the issues. This may be the
-          simplest path forward if it works now.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on: []
-        effort: "PT4H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Test on a branch - do not break main"
-        forbidden: []
-        references:
-          - "https://docs.astro.build/en/guides/internationalization/"
-          - "astro.config.ts"
-        notes: []
-        subtasks: []
-
-      - id: i18n-design-new-architecture
-        title: "Design new i18n architecture"
-        description: >
-          Based on the audit and Astro investigation, design a new i18n
-          architecture that solves the three pain points. Write an ADR
-          (Architecture Decision Record) with the chosen approach, trade-offs,
-          and migration plan.
-        status: backlog
-        completion: 0
-        difficulty: hard
-        priority: high
-        depends_on:
-          - "i18n-audit-current"
-          - "i18n-investigate-astro-builtin"
-        effort: "PT4H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must address all three pain points explicitly"
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-
-      - id: i18n-shared-resources
-        title: "Implement shared static resources across languages"
-        description: >
-          Design and implement a system where post cover images and other
-          static assets can be defined once and shared across all language
-          versions of the same post. This likely involves a content schema
-          change where the "canonical" assets live in one location and
-          translations reference them.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on:
-          - "i18n-design-new-architecture"
-        effort: "PT6H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must not break image optimization pipeline"
-          - "Must work with Astro's content collections asset handling"
-        forbidden:
-          - "Do not symlink assets - use references or a shared assets directory"
-        references: []
-        notes: []
-        subtasks: []
-
-      - id: i18n-eliminate-folder-duplication
-        title: "Eliminate /it/ page folder duplication"
-        description: >
-          Refactor src/pages/ so that language-specific page variants are
-          generated from a single set of page templates rather than
-          maintaining parallel folder trees (src/pages/blog/ and
-          src/pages/it/blog/ etc.). Use dynamic routing with language as
-          a parameter.
-        status: backlog
-        completion: 0
-        difficulty: hard
-        priority: high
-        depends_on:
-          - "i18n-design-new-architecture"
-        effort: "P1D"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must produce identical URL structure as current site"
-          - "Default language (en) must remain unprefixed"
-        forbidden: []
-        references: []
-        notes: []
-        subtasks:
-
-          - id: i18n-dynamic-routing
-            title: "Implement language-parameterized dynamic routes"
-            description: >
-              Create dynamic route templates like src/pages/[lang]/blog/
-              that handle all languages from a single file. The default
-              language routes (unprefixed) must also be generated.
-            status: backlog
-            completion: 0
-            difficulty: hard
-            priority: high
-            depends_on: []
-            effort: "PT6H"
-            started_at: null
-            ended_at: null
-            constraints: []
-            forbidden: []
-            references: []
-            notes: []
-            subtasks: []
-
-          - id: i18n-remove-it-pages
-            title: "Remove duplicated /it/ page files"
-            description: >
-              Once dynamic routing is confirmed working, remove the
-              src/pages/it/ directory and all its contents.
-            status: backlog
-            completion: 0
-            difficulty: trivial
-            priority: medium
-            depends_on:
-              - "i18n-dynamic-routing"
-            effort: "PT30M"
-            started_at: null
-            ended_at: null
-            constraints:
-              - "Only after dynamic routing is fully tested"
-            forbidden: []
-            references: []
-            notes: []
-            subtasks: []
-
-      - id: i18n-language-switcher-upgrade
-        title: "Upgrade language switcher for reliable page jumping"
-        description: >
-          Improve LanguageDropdown.vue so it can reliably jump between
-          language versions of the same page/post. Currently it uses
-          fetch HEAD to check if the target URL exists, which is fragile.
-          The new system should have a build-time map of page-to-translation
-          correspondences.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on:
-          - "i18n-design-new-architecture"
-        effort: "PT4H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must handle pages that exist in some languages but not others (graceful fallback)"
-          - "Must not require runtime API calls to check page existence"
-        forbidden:
-          - "Do not use fetch HEAD for existence checks in production"
-        references:
-          - "src/components/LanguageDropdown.vue"
-        notes: []
-        subtasks: []
-
-      - id: i18n-content-collection-refactor
-        title: "Refactor content collections for multilingual support"
-        description: >
-          Restructure src/content/blog/ and src/content/pages/ so that
-          translations are explicitly linked (e.g. via a shared slug or
-          translation_of field in frontmatter) rather than relying on
-          parallel directory structures.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on:
-          - "i18n-design-new-architecture"
-        effort: "PT6H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must update content collection schema in src/content/config.ts"
-          - "Must migrate all existing content to new structure"
-        forbidden: []
-        references:
-          - "src/content/config.ts"
-          - "src/content/blog/"
-          - "src/content/blog/it/"
-        notes: []
-        subtasks: []
-
-      - id: i18n-migration-testing
-        title: "Full regression testing after migration"
-        description: >
-          Run a complete build and verify every page renders correctly in
-          all languages. Check RSS feeds, sitemap, hreflang tags, OG meta,
-          and all navigation paths. Compare old and new URL structures.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on:
-          - "i18n-shared-resources"
-          - "i18n-eliminate-folder-duplication"
-          - "i18n-language-switcher-upgrade"
-          - "i18n-content-collection-refactor"
-        effort: "PT4H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must verify no 404s for previously working URLs"
-          - "Must verify SEO metadata is preserved"
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-
-      - id: i18n-series-navigation
-        title: "Translate SeriesNavigation.astro strings"
-        description: >
-          SeriesNavigation.astro has all user-visible strings hardcoded
-          in English: "Series", "Part X of Y", "All parts in this series",
-          "Previous:", "Next:", and "(current)". These must be replaced
-          with translation keys from ui.ts and rendered via the i18n
-          utilities so they display correctly for Italian (and future
-          language) users.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: medium
-        depends_on: []
-        effort: "PT30M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must add all new translation keys to ui.ts for en, it, and nl"
-        forbidden: []
-        references:
-          - "src/components/SeriesNavigation.astro"
-          - "src/i18n/ui.ts"
-        notes: []
-        subtasks: []
-
-      - id: i18n-it-page-meta
-        title: "Translate Italian page meta descriptions and titles"
-        description: >
-          Several Italian pages have English meta descriptions and titles
-          that were never translated: (1) tags index page — title "All Tags"
-          and description "A list of all the topics...", (2) tags by tag
-          page — English description and pagination text "Previous Tags"/
-          "Next Tags", (3) blog listing page — description "List of all
-          the blog posts." These must be replaced with Italian translations.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: medium
-        depends_on: []
-        effort: "PT30M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/it/tags/index.astro"
-          - "src/pages/it/tags/[tag]/[...page].astro"
-          - "src/pages/it/blog/[...path].astro"
-        notes: []
-        subtasks: []
-
-      - id: i18n-it-projects-page
-        title: "Translate Italian projects page chrome"
-        description: >
-          The Italian projects page (src/pages/it/projects/index.astro)
-          has its title ("Projects") and description in English. The page
-          chrome is identical to the English version with no translation.
-          Must translate the page title, description, and any hardcoded
-          strings.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/pages/it/projects/index.astro"
-        notes: []
-        subtasks: []
-
-      - id: i18n-date-locale
-        title: "Make date formatting language-aware"
-        description: >
-          The date locale in src/site-config.ts is hardcoded to "en-GB"
-          via siteConfig.date.locale. This means Italian pages render
-          dates in English format (e.g., "27 November 2024" instead of
-          "27 novembre 2024"). The getFormattedDate() utility in
-          src/utils/date.ts should accept a language parameter and use
-          the appropriate locale ("en-GB" for English, "it-IT" for
-          Italian).
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: "PT30M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must update all callers to pass the page language"
-          - "Must maintain the existing date format style, just change locale"
-        forbidden: []
-        references:
-          - "src/site-config.ts"
-          - "src/utils/date.ts"
-        notes: []
-        subtasks: []
-
-      - id: i18n-related-posts
-        title: "Replace RelatedPosts.astro hardcoded language check"
-        description: >
-          In src/components/RelatedPosts.astro, the "Related Posts" heading
-          uses an if/else check on lang === 'it' instead of using the i18n
-          translation system. Replace with a proper useTranslate() call
-          and add translation keys to ui.ts.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: low
-        depends_on: []
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/components/RelatedPosts.astro"
-          - "src/i18n/ui.ts"
-        notes: []
-        subtasks: []
-
-      - id: i18n-scroll-to-top
-        title: "Translate ScrollToTop.vue aria-label"
-        description: >
-          ScrollToTop.vue has its aria-label hardcoded as "Scroll to top"
-          in English. This should use the i18n system to provide the
-          correct translation for the current page language. Add a
-          translation key to ui.ts and pass the translated string as
-          the aria-label.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: low
-        depends_on: []
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "src/components/ScrollToTop.vue"
-          - "src/i18n/ui.ts"
         notes: []
         subtasks: []
 
@@ -4432,3 +3997,89 @@ archive:
         notes:
           - "2026-03-10: Fixed — added isNonNavigableProtocol() function checking mailto:, tel:, sms:, geo:, data: before regex check. Note: existing regex /^[a-z0-9-]+:\\/\\//i already excludes mailto/tel since they lack ://, but guard added for robustness."
         subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 7: i18n architecture overhaul (DONE 2026-03-11)
+  # ---------------------------------------------------------------------------
+  - id: i18n-overhaul
+    title: "Redo i18n for easier language management"
+    description: >
+      Redesigned the internationalization system to solve three pain points:
+      language switching, shared resources across translations, and page folder
+      duplication. Enabled Astro built-in i18n, converted pubDate to Date objects,
+      translated hardcoded strings, shared images across language versions (32
+      duplicate images eliminated), added lang/translationOf to content schema,
+      eliminated page folder duplication via dynamic [...lang] routing (11 page
+      pairs to 9 parameterized pages), upgraded language switcher to build-time
+      translation map, and fixed sitemap hreflang codes.
+    status: done
+    completion: 100
+    difficulty: very_hard
+    priority: high
+    started_at: "2026-03-10"
+    ended_at: "2026-03-11"
+    notes:
+      - "2026-03-11: All 15 subtasks completed. 10 commits merged (102 files changed, 1117 insertions, 1294 deletions, 32 image files deleted). ADR-001 written. Full regression testing passed (6 PASS, 0 FAIL)."
+      - "2026-03-10: Astro built-in i18n re-enabled — old config had buggy array indexing. Works with prefixDefaultLocale: false."
+      - "2026-03-10: SplatImage approach uses background-image CSS on <img> — no wrapper div, no client-side JS."
+    subtasks:
+      - id: i18n-audit-current
+        title: "Audit current i18n implementation"
+        status: done
+        completion: 100
+      - id: i18n-investigate-astro-builtin
+        title: "Investigate Astro built-in i18n"
+        status: done
+        completion: 100
+      - id: i18n-design-new-architecture
+        title: "Design new i18n architecture (ADR-001)"
+        status: done
+        completion: 100
+      - id: i18n-shared-resources
+        title: "Shared static resources across languages"
+        status: done
+        completion: 100
+      - id: i18n-eliminate-folder-duplication
+        title: "Eliminate /it/ page folder duplication"
+        status: done
+        completion: 100
+      - id: i18n-language-switcher-upgrade
+        title: "Upgrade language switcher (build-time map)"
+        status: done
+        completion: 100
+      - id: i18n-content-collection-refactor
+        title: "Refactor content collections (lang/translationOf)"
+        status: done
+        completion: 100
+      - id: i18n-migration-testing
+        title: "Full regression testing"
+        status: done
+        completion: 100
+      - id: i18n-series-navigation
+        title: "Translate SeriesNavigation.astro strings"
+        status: done
+        completion: 100
+      - id: i18n-it-page-meta
+        title: "Translate Italian page meta descriptions"
+        status: done
+        completion: 100
+      - id: i18n-it-projects-page
+        title: "Translate Italian projects page chrome"
+        status: done
+        completion: 100
+      - id: i18n-date-locale
+        title: "Language-aware date formatting"
+        status: done
+        completion: 100
+      - id: i18n-related-posts
+        title: "Replace RelatedPosts hardcoded language check"
+        status: done
+        completion: 100
+      - id: i18n-scroll-to-top
+        title: "Translate ScrollToTop.vue aria-label"
+        status: done
+        completion: 100
+      - id: i18n-dynamic-routing
+        title: "Dynamic [...lang] routing"
+        status: done
+        completion: 100
