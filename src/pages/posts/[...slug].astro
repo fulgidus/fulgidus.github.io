@@ -3,6 +3,7 @@ import GoBackToBlog from "@/components/GoBackToBlog.vue";
 import GiscusComments from "@/components/GiscusComments.vue";
 import LanguageFlag from "@/components/LanguageFlags.vue";
 import ReadingProgress from "@/components/ReadingProgress.vue";
+import RelatedPosts from "@/components/RelatedPosts.astro";
 import SeriesNavigation from "@/components/SeriesNavigation.astro";
 import SharePost from "@/components/SharePost.vue";
 import TagsList from "@/components/TagsList.vue";
@@ -49,7 +50,13 @@ const {
 } = post.data;
 const { slug } = post;
 
-const { Content } = await post.render();
+const { Content, remarkPluginFrontmatter } = await post.render();
+
+// Use remark-computed reading time, with manual duration as fallback/override
+const readingTime = duration || remarkPluginFrontmatter?.duration;
+
+// Fetch all EN posts for related posts component
+const allEnPosts = await getPosts({ lang: "en" }) as CollectionPost[];
 
 function getDate(date: string) {
   return new Date(date).toISOString();
@@ -103,6 +110,10 @@ const t = useTranslate(currentLang as Languages);
   pageType="article"
   imageSize={imageSize}
   noindex={unlisted}
+  postSlug={slug}
+  pubDate={pubDate}
+  tags={tags}
+  readingTime={readingTime}
 >
   <ReadingProgress client:only="vue" />
   <!-- <a
@@ -115,7 +126,7 @@ const t = useTranslate(currentLang as Languages);
   >
     <i aria-label="Go back" i-ri-arrow-go-back-line></i>
   </a> -->
-  <article class="prose">
+  <article class="prose" data-pagefind-body>
     <div class="max-w-4xl mx-auto relative">
       <h1 transition:name={`post-title-${slug.replace(/\//g, '-')}`}>
         {title}
@@ -144,7 +155,7 @@ const t = useTranslate(currentLang as Languages);
             <time datetime={getDate(pubDate)}>{pubDate.split(",")}</time>
           )
         }
-        {duration && <span>· {duration}</span>}
+        {readingTime && <span>· {readingTime}</span>}
         {"· "}
         <LanguageFlag lang={getLangFromSlug(slug)} client:only="vue" verbose />
         <SharePost shareTitle={title} client:only="vue" />
@@ -174,6 +185,10 @@ const t = useTranslate(currentLang as Languages);
       }
     </div>
   </article>
+
+  {!draft && !unlisted && (
+    <RelatedPosts currentPost={post} allPosts={allEnPosts} lang="en" />
+  )}
 
   {!draft && !unlisted && <GiscusComments client:only="vue" />}
 

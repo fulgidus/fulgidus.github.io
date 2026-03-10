@@ -1,0 +1,46 @@
+---
+import type { CollectionPost } from '@/types'
+import { getRelatedPosts, getHref, getDate } from '@/utils/posts'
+import { translatePath } from '@/i18n/utils'
+import { type Languages } from '@/i18n/ui'
+import TagsList from '@/components/TagsList.vue'
+
+interface Props {
+  currentPost: CollectionPost
+  allPosts: CollectionPost[]
+  lang: Languages
+  maxResults?: number
+}
+
+const { currentPost, allPosts, lang, maxResults = 3 } = Astro.props
+const relatedPosts = getRelatedPosts(currentPost, allPosts, maxResults)
+---
+
+{relatedPosts.length > 0 && (
+  <aside class="related-posts !mt-12 !mb-4">
+    <h2 class="!text-lg !mb-4 opacity-70 font-semibold">
+      {lang === 'it' ? 'Articoli correlati' : 'Related Posts'}
+    </h2>
+    <ul class="!list-none !p-0 !m-0 flex flex-col gap-3">
+      {relatedPosts.map((post) => (
+        <li class="!p-0 !m-0">
+          <a
+            href={translatePath(getHref(post), lang)}
+            class="nav-link !no-underline flex flex-col gap-1 p-3 b-rd-2"
+            data-astro-prefetch
+          >
+            <span class="font-medium">{post.data.title}</span>
+            <span class="opacity-50 text-sm flex flex-gap-1 flex-wrap">
+              {post.data.pubDate && (
+                <time datetime={getDate(post.data.pubDate)}>
+                  {`${post.data.pubDate}`.split(',')[0]}
+                </time>
+              )}
+              <TagsList tags={post.data.tags} link={false} verbose={false} noDot={false} />
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}

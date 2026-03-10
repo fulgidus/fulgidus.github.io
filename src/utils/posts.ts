@@ -154,3 +154,36 @@ export function getTarget(post: CollectionPost) {
     }
     return "_self";
 }
+
+/**
+ * Find related posts based on tag overlap.
+ * Returns posts sorted by number of shared tags (descending), then by date (descending).
+ * Excludes the current post, drafts (in production), and unlisted posts.
+ */
+export function getRelatedPosts(
+    currentPost: CollectionPost,
+    allPosts: CollectionPost[],
+    maxResults: number = 3,
+): CollectionPost[] {
+    const currentTags = new Set(currentPost.data.tags ?? [])
+    if (currentTags.size === 0) return []
+
+    const scored = allPosts
+        .filter(post =>
+            post.slug !== currentPost.slug
+            && !post.data.unlisted
+            && !(import.meta.env.PROD && post.data.draft)
+        )
+        .map(post => {
+            const postTags = post.data.tags ?? []
+            const overlap = postTags.filter(t => currentTags.has(t)).length
+            return { post, overlap }
+        })
+        .filter(({ overlap }) => overlap > 0)
+        .sort((a, b) => {
+            if (b.overlap !== a.overlap) return b.overlap - a.overlap
+            return new Date(b.post.data.pubDate).getTime() - new Date(a.post.data.pubDate).getTime()
+        })
+
+    return scored.slice(0, maxResults).map(({ post }) => post)
+}
