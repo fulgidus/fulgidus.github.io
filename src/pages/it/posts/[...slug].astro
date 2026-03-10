@@ -29,10 +29,6 @@ export async function getStaticPaths() {
       post,
     },
   }));
-  console.log(
-    "\n=======================\nPOSTS IT \n\n" +
-      returnedPosts.map((p) => p.params.slug + "\n").join("")
-  );
   return returnedPosts;
 }
 
@@ -49,6 +45,7 @@ const {
   duration,
   tags,
   draft,
+  unlisted,
   series,
 } = post.data;
 const { slug } = post;
@@ -92,6 +89,7 @@ const t = useTranslate(currentLang as Languages);
   ogImage={ogImage}
   pageType="article"
   imageSize={imageSize}
+  noindex={unlisted}
   postSlug={slug}
   pubDate={pubDate}
   tags={tags}
@@ -171,7 +169,9 @@ const t = useTranslate(currentLang as Languages);
     </ul>
   </article>
 
-  <RelatedPosts currentPost={post} allPosts={allItPosts} lang="it" />
+  {!draft && !unlisted && (
+    <RelatedPosts currentPost={post} allPosts={allItPosts} lang="it" />
+  )}
 
-  {!draft && <GiscusComments client:only="vue" />}
+  {!draft && !unlisted && <GiscusComments client:only="vue" />}
 </BaseLayout>
