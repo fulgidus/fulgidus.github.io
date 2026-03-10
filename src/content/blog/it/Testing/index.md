@@ -17,6 +17,7 @@ tags:
   - tutorial
 draft: false
 lang: it
+translationOf: "Testing"
 redirect: ""
 video: false
 unlisted: false

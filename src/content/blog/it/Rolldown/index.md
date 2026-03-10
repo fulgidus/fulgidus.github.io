@@ -14,7 +14,8 @@ tags:
   - tree-shaking
   - vite
 draft: false
-lang: en
+lang: it
+translationOf: "Rolldown"
 redirect: ""
 unlisted: false
 video: false

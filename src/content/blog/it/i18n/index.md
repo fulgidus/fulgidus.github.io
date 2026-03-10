@@ -22,6 +22,7 @@ tags:
   - best-practices 
 draft: false
 lang: it
+translationOf: "i18n"
 redirect: ""
 unlisted: false
 video: false

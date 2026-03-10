@@ -22,6 +22,7 @@ tags:
     - organizational-development
 draft: false
 lang: it
+translationOf: "Project Management"
 unlisted: false
 ---
 

@@ -26,6 +26,7 @@ tags:
   - machine-learning
 draft: false
 lang: it
+translationOf: "Auto-Dino"
 redirect: ""
 unlisted: false
 video: false

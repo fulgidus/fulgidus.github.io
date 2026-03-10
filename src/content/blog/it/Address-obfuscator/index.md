@@ -13,6 +13,8 @@ tags:
 imageAlt: Email address protection with Vue.js and Astro
 imageSize: md
 draft: false
+lang: it
+translationOf: "Address-obfuscator"
 ---
 
 # Costruire un Componente Email Obfuscator Sicuro con Vue.js e Astro

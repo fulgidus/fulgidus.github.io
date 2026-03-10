@@ -12,6 +12,8 @@ tags:
   - tutorial
   - tech-culture
   - team-building 
+lang: it
+translationOf: "Advent 2024"
 ---
 
 Dicembre è arrivato, e per i programmatori di tutto il mondo questo significa una cosa sola: è tornato l'Advent of Code! Creato da Eric Wastl, questo amato evento annuale trasforma il periodo natalizio in un'entusiasmante avventura di programmazione che attrae partecipanti da ogni angolo del mondo dello sviluppo software.

@@ -19,6 +19,7 @@ tags:
   - writing-tips
 draft: false
 lang: it
+translationOf: "Prompt Engineering"
 redirect: ""
 unlisted: false
 video: false

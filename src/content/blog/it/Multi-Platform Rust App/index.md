@@ -14,6 +14,7 @@ tags:
   - shamir-secret-sharing
 draft: false
 lang: it
+translationOf: "Multi-Platform Rust App"
 redirect: ""
 video: false
 ---

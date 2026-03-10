@@ -23,6 +23,7 @@ tags:
 - developer-tools
 draft: false
 lang: it
+translationOf: "ZigNet"
 redirect: ""
 unlisted: false
 video: false
