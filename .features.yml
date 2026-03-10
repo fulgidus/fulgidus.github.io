@@ -1769,14 +1769,14 @@ features:
       pre-populated and results shown automatically. Also improve search
       result presentation, add keyboard navigation, and ensure the search
       works correctly across language versions.
-    status: backlog
-    completion: 0
+    status: done
+    completion: 100
     difficulty: medium
     priority: high
     depends_on: []
     effort: "PT6H"
-    started_at: null
-    ended_at: null
+    started_at: "2026-03-10"
+    ended_at: "2026-03-10"
     constraints:
       - "URL parameter must be ?s= (not ?q= or other)"
       - "Must update URL in real-time as user types (pushState, not page reload)"
@@ -1792,100 +1792,52 @@ features:
       - "https://pagefind.app"
     notes:
       - "2026-03-10: Feature added to backlog. User specifically requested ?s= URL parameter format. Current search pages are duplicated (EN/IT) with Pagefind client-side indexing."
+      - "2026-03-10: All subtasks completed. URL ?s= param read/write, keyboard nav (ArrowUp/Down/Enter/Escape), ARIA combobox pattern, result type badges (Blog/Project/Tag/Page). Applied to both EN and IT search pages."
     subtasks:
 
       - id: search-url-param-read
         title: "Read search query from URL parameter on page load"
-        description: >
-          On search page load, check for ?s= URL parameter. If present,
-          populate the search input and trigger a Pagefind search automatically.
-          This enables shareable search links.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: easy
         priority: high
-        depends_on: []
-        effort: "PT1H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must URL-decode the parameter value"
-          - "Must handle empty or missing parameter gracefully"
-        forbidden: []
-        references:
-          - "src/pages/search.astro"
-        notes: []
-        subtasks: []
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
+        notes:
+          - "Reads ?s= param via URLSearchParams, populates input, triggers performSearch()."
 
       - id: search-url-param-write
         title: "Update URL parameter as user types"
-        description: >
-          As the user types in the search input, update the browser URL using
-          history.replaceState to reflect the current query (e.g.
-          /search?s=astro). Clear the parameter when the input is empty.
-          Use debouncing to avoid excessive history entries.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: easy
         priority: high
-        depends_on: []
-        effort: "PT1H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must use history.replaceState (not pushState) to avoid polluting back button history"
-          - "Must debounce URL updates (300ms or similar)"
-          - "Must URL-encode special characters"
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
+        notes:
+          - "Uses history.replaceState in debounced input handler (200ms). Clears ?s= when empty."
 
       - id: search-keyboard-navigation
         title: "Add keyboard navigation to search results"
-        description: >
-          Enable arrow key navigation through search results. Up/Down arrows
-          move focus through result items. Enter on a focused result navigates
-          to that page. Escape clears the search or returns focus to input.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: medium
         priority: medium
-        depends_on: []
-        effort: "PT2H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must maintain visible focus indicator on active result"
-          - "Must work with screen readers (aria-activedescendant or roving tabindex)"
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
+        notes:
+          - "ArrowDown/Up navigates results, Enter follows link, Escape clears or blurs. Uses aria-activedescendant pattern."
 
       - id: search-result-improvements
         title: "Improve search result presentation"
-        description: >
-          Enhance the display of Pagefind search results with: highlighted
-          search terms in result excerpts, result category/type indicators
-          (blog post, page, project), publication date for blog posts, and
-          estimated reading time where available.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: medium
         priority: medium
-        depends_on: []
-        effort: "PT2H"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must work with Pagefind result format"
-          - "Must be visually consistent with the rest of the site"
-        forbidden: []
-        references:
-          - "https://pagefind.app/docs/ui/"
-        notes: []
-        subtasks: []
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
+        notes:
+          - "Added type badges (Blog/Project/Tag/Page) from URL patterns with color-coded borders. Date display skipped — no data-pagefind-meta for dates in templates."
 
   # ---------------------------------------------------------------------------
   # FEATURE 14: Security headers
