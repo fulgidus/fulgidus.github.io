@@ -1,0 +1,13 @@
+{
+  "name": "introduction-to-marp",
+  "title": "Slides with Markdown: An Introduction to Marp",
+  "slideCount": 13,
+  "theme": "default",
+  "aspectRatio": "16:9",
+  "hasHtml": true,
+  "hasPdf": false,
+  "hasPptx": false,
+  "hasMd": true,
+  "mdSize": 3224,
+  "buildTime": "2026-03-10T19:29:13.750Z"
+}

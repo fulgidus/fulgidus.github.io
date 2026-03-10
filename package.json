@@ -31,6 +31,7 @@
     "@astrojs/sitemap": "^3.2.1",
     "@astrojs/vue": "^4.5.3",
     "@lottiefiles/dotlottie-vue": "^0.5.1",
+    "@marp-team/marp-core": "^4.3.0",
     "@mdx-js/vue": "^3.1.0",
     "@unocss/reset": "^0.61.9",
     "astro": "^4.16.16",
@@ -50,6 +51,7 @@
   },
   "devDependencies": {
     "@iconify/json": "^2.2.278",
+    "@marp-team/marp-cli": "^4.2.3",
     "@types/lodash-es": "^4.17.12",
     "@types/mdast": "^4.0.4",
     "@types/nprogress": "^0.2.3",

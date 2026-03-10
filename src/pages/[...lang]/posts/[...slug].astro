@@ -2,6 +2,8 @@
 import GoBackToBlog from "@/components/GoBackToBlog.vue";
 import GiscusComments from "@/components/GiscusComments.vue";
 import LanguageFlag from "@/components/LanguageFlags.vue";
+import MarpViewer from "@/components/MarpViewer.vue";
+import MarpDownloads from "@/components/MarpDownloads.vue";
 import ReadingProgress from "@/components/ReadingProgress.vue";
 import RelatedPosts from "@/components/RelatedPosts.astro";
 import SeriesNavigation from "@/components/SeriesNavigation.astro";
@@ -58,6 +60,8 @@ const {
   draft,
   unlisted,
   series,
+  marp,
+  marpAspectRatio,
 } = post.data;
 const { slug } = post;
 
@@ -85,6 +89,10 @@ const ogImage = await getOgImagePath(slug, {
 });
 
 const t = useTranslate(lang);
+
+// For marp posts, derive the marp file name from the slug
+// e.g. slug "talks/introduction-to-marp" → name "introduction-to-marp"
+const marpName = marp ? slug.split('/').pop() || slug : '';
 ---
 
 <!-- ACTUAL POST RENDERER -->
@@ -101,7 +109,7 @@ const t = useTranslate(lang);
   tags={tags}
   readingTime={readingTime}
 >
-  <ReadingProgress client:only="vue" />
+  {!marp && <ReadingProgress client:only="vue" />}
   <article class="prose" data-pagefind-body>
     <div class="max-w-4xl mx-auto relative">
       <h1 transition:name={`post-title-${slug.replace(/\//g, '-')}`}>
@@ -122,23 +130,40 @@ const t = useTranslate(lang);
             <time datetime={getDate(pubDate)}>{getFormattedDate(pubDate, lang)}</time>
           )
         }
-        {readingTime && <span>· {readingTime}</span>}
+        {readingTime && !marp && <span>· {readingTime}</span>}
         {"· "}
         <LanguageFlag lang={getLangFromSlug(slug)} client:only="vue" verbose />
         <SharePost shareTitle={title} client:only="vue" />
       </p>
     </div>
     {
-      image && (
-        <SplatImage
-          src={image}
-          alt={imageAlt || ""}
-          loading="lazy"
-          class={composeImageSizeClasses(imageSize)}
-        />
+      marp ? (
+        <Fragment>
+          {/* Marp slide viewer */}
+          <MarpViewer
+            name={marpName}
+            aspectRatio={marpAspectRatio}
+            client:load
+          />
+          {/* Download buttons */}
+          <MarpDownloads name={marpName} client:load />
+          {/* Additional MDX content below the viewer */}
+          <Content />
+        </Fragment>
+      ) : (
+        <Fragment>
+          {image && (
+            <SplatImage
+              src={image}
+              alt={imageAlt || ""}
+              loading="lazy"
+              class={composeImageSizeClasses(imageSize)}
+            />
+          )}
+          <Content />
+        </Fragment>
       )
     }
-    <Content />
     {series && <SeriesNavigation currentSlug={slug} series={series} lang={lang} />}
     <div class="!mt-10 !mb--10" data-pagefind-ignore>
       <SharePost shareTitle={title} client:only="vue" />

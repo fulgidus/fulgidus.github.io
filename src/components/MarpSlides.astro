@@ -1,0 +1,43 @@
+---
+/**
+ * MarpSlides — Embeddable Marp slide deck component for MDX articles.
+ *
+ * Usage in MDX:
+ *   import MarpSlides from '@/components/MarpSlides.astro'
+ *   <MarpSlides src="introduction-to-marp" />
+ *
+ * The `src` prop is the name of the Marp file (without extension) in src/marp/.
+ * The build pipeline must have already compiled it to public/marp/{name}.html.
+ */
+import MarpViewer from '@/components/MarpViewer.vue'
+import MarpDownloads from '@/components/MarpDownloads.vue'
+
+interface Props {
+    /** Name of the marp file (without extension), e.g. "introduction-to-marp" */
+    src: string
+    /** Aspect ratio for the slide container */
+    aspectRatio?: '16:9' | '4:3'
+    /** Whether to show download buttons */
+    showDownloads?: boolean
+}
+
+const { src, aspectRatio = '16:9', showDownloads = true } = Astro.props
+---
+
+<div class="marp-embed not-prose">
+    <MarpViewer
+        name={src}
+        aspectRatio={aspectRatio}
+        embedded={true}
+        client:visible
+    />
+    {showDownloads && (
+        <MarpDownloads name={src} client:visible />
+    )}
+</div>
+
+<style>
+    .marp-embed {
+        margin: 2rem 0;
+    }
+</style>

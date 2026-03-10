@@ -53,6 +53,9 @@ const blog = defineCollection({
         video: z.boolean().default(false),
         series: z.string().optional(),
         seriesOrder: z.number().optional(),
+        marp: z.boolean().default(false),
+        marpTheme: z.string().optional(),
+        marpAspectRatio: z.enum(['16:9', '4:3']).default('16:9'),
     }),
 })
 
