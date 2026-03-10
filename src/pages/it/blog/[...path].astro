@@ -3,7 +3,9 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import ListPosts from "@/components/ListPosts.astro";
 import siteConfig from "@/site-config";
 import { getPosts } from "@/utils/posts";
-import { getLangFromUrl } from "@/i18n/utils";
+import { getLangFromUrl, useTranslate } from "@/i18n/utils";
+
+const t = useTranslate('it');
 
 export async function getStaticPaths() {
   const paths = siteConfig.page.blogLinks.it.map((nav) => {
@@ -29,8 +31,8 @@ function activeLink(pathname: string) {
 ---
 
 <BaseLayout
-  title="Blog"
-  description="List of all the blog posts."
+  title={t('blog.title')}
+  description={t('blog.description')}
   pageNav={true}
   pageOperate={true}
 >

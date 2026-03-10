@@ -1,13 +1,15 @@
 ---
 import PageLayout from "@/layouts/BaseLayout.astro";
 import { getPosts, getUniqueTagsWithCount } from "@/utils/posts";
+import { useTranslate } from "@/i18n/utils";
 
 const allPosts = await getPosts();
 const allTags = getUniqueTagsWithCount(allPosts);
+const t = useTranslate('en');
 
 const meta = {
-  description: "A list of all the topics I've written about in my posts",
-  title: "All Tags",
+  description: t('tags.allDescription'),
+  title: t('tags.allTitle'),
 };
 ---
 
@@ -18,7 +20,7 @@ const meta = {
     </a>
 
     <h1 class="mb-6 mt-5 text-2xl font-bold">Tags</h1>
-    {allTags.length === 0 && <p>No posts yet.</p>}
+    {allTags.length === 0 && <p>{t('tags.noPosts')}</p>}
 
     {
       allTags.length > 0 && (
@@ -28,7 +30,7 @@ const meta = {
               <a
                 data-astro-prefetch
                 href={`/tags/${tag}/`}
-                title={`View posts with the tag: ${tag}`}
+                title={t('tags.viewPosts').replace('{tag}', tag)}
                 class="text-base b-rd prose-link bg-hex-38054110 dark:bg-hex-e8b5f105 dark:hover:bg-hex-e8b5f130 border-0 p-x-3 p-b-2"
               >
                 <div class="flex flex-row items-start justify-start">

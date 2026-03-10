@@ -7,6 +7,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getPosts, getUniqueTags, sortPostsByDate } from "@/utils/posts";
 import PostPreview from "@/components/PostPreview.astro";
 import Paginator from "@/components/Paginator.astro";
+import { useTranslate } from "@/i18n/utils";
 
 export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
   const allPosts = await getPosts();
@@ -30,22 +31,24 @@ interface Props {
 
 const { page } = Astro.props;
 const { tag } = Astro.params;
+const t = useTranslate('en');
+const tagName: string = String(tag ?? '');
 
 const meta = {
-  description: `View all posts with the tag - ${tag}`,
-  title: `Tag: ${tag}`,
+  description: t('tags.tagDescription').replace('{tag}', tagName),
+  title: t('tags.tagTitle').replace('{tag}', tagName),
 };
 
 const paginationProps = {
   ...(page.url.prev && {
     prevUrl: {
-      text: `← Previous Tags`,
+      text: t('tags.previous'),
       url: page.url.prev,
     },
   }),
   ...(page.url.next && {
     nextUrl: {
-      text: `Next Tags →`,
+      text: t('tags.next'),
       url: page.url.next,
     },
   }),
