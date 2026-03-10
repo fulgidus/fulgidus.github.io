@@ -1,47 +1,339 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import dark from "../../public/img/404-dark.gif";
-import light from "../../public/img/404-light.gif";
-import { Image } from "astro:assets";
-import Trans from "@/components/Trans.astro";
-import { getLangFromUrl, translatePath } from "@/i18n/utils";
+import { getLangFromUrl, translateFrom, translatePath } from "@/i18n/utils";
+import { getLastTenPosts, getHref, removeLangFromSlug } from "@/utils/posts";
+
 const currentLang = getLangFromUrl(Astro.url);
+const t = (key: Parameters<typeof translateFrom>[1]) => translateFrom(currentLang, key);
+
+const recentPosts = await getLastTenPosts({ lang: currentLang });
+const postsToShow = recentPosts.slice(0, 5);
 ---
 
 <BaseLayout
-  title="Not Found"
-  description="Sorry, we couldn't find what you were looking for."
+  title={t('404.title')}
+  description={t('404.description')}
 >
-  <article class="prose">
-    <Image
-      src={dark}
-      alt="404 Error animation"
-      format={"webp"}
-      loading="lazy"
-      class="m-auto hidden dark:block"
-    />
-    <Image
-      src={light}
-      alt="404 Error animation"
-      format={"webp"}
-      loading="lazy"
-      class="m-auto block dark:hidden"
-    />
-    <h2>
-      <Trans key="404.title" />
-    </h2>
-    <div class="flex flex-wrap items-center justify-between">
-      <p>
-        <Trans key="404.description" />
-      </p>
-      <a
-        href={translatePath("/", currentLang)}
-        class="flex flex-nowrap items-center justify-center gap-3 b-rd-2 p-1 b-2 b-color-hex-380541"
-        role="button"
-      >
-        <i aria-label="Go back" i-ri-home-line></i>
-        <Trans key="404.backButtonLabel" /></a
-      >
+  <div class="terminal-wrapper">
+    <div class="terminal-titlebar">
+      <div class="terminal-controls">
+        <span class="terminal-dot dot-close"></span>
+        <span class="terminal-dot dot-minimize"></span>
+        <span class="terminal-dot dot-maximize"></span>
+      </div>
+      <span class="terminal-title">bash - 404</span>
+      <div class="terminal-controls-spacer"></div>
     </div>
-  </article>
+    <div class="terminal-body">
+      <div class="terminal-line">
+        <span class="terminal-prompt">
+          <span class="prompt-user">visitor</span><span class="prompt-at">@</span><span class="prompt-host">fulgidus.github.io</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-dollar">$</span>
+        </span>
+        <span class="terminal-command" id="typed-path"></span>
+        <span class="terminal-cursor">_</span>
+      </div>
+
+      <div class="terminal-line terminal-error">
+        {t('404.terminalError')}
+      </div>
+
+      <div class="terminal-line terminal-empty"></div>
+
+      <div class="terminal-line">
+        <span class="terminal-prompt">
+          <span class="prompt-user">visitor</span><span class="prompt-at">@</span><span class="prompt-host">fulgidus.github.io</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-dollar">$</span>
+        </span>
+        <span class="terminal-command">ls ./posts/</span>
+      </div>
+
+      <div class="terminal-line terminal-hint">
+        # {t('404.terminalHint')}
+      </div>
+
+      <div class="terminal-ls">
+        {postsToShow.map((post) => {
+          const date = new Date(post.data.pubDate);
+          const dateStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+          const slug = removeLangFromSlug(post.slug);
+          const href = translatePath(getHref(post), currentLang);
+          return (
+            <a href={href} class="terminal-file" data-astro-prefetch>
+              <span class="file-permissions">-rw-r--r--</span>
+              <span class="file-date">{dateStr}</span>
+              <span class="file-name">{slug}/</span>
+            </a>
+          );
+        })}
+      </div>
+
+      <div class="terminal-line terminal-empty"></div>
+
+      <div class="terminal-line">
+        <span class="terminal-prompt">
+          <span class="prompt-user">visitor</span><span class="prompt-at">@</span><span class="prompt-host">fulgidus.github.io</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-dollar">$</span>
+        </span>
+        <span class="terminal-command">cd <a href={translatePath('/', currentLang)} class="terminal-link" data-astro-prefetch>~/{t('404.backButtonLabel')}</a></span>
+      </div>
+
+      <div class="terminal-line terminal-help">
+        # {t('404.terminalHelp')}
+      </div>
+
+      <div class="terminal-line">
+        <span class="terminal-prompt">
+          <span class="prompt-user">visitor</span><span class="prompt-at">@</span><span class="prompt-host">fulgidus.github.io</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-dollar">$</span>
+        </span>
+        <span class="terminal-cursor blink">_</span>
+      </div>
+    </div>
+  </div>
 </BaseLayout>
+
+<script is:inline>
+  // Show the attempted path in the first command
+  var pathEl = document.getElementById('typed-path');
+  if (pathEl) {
+    pathEl.textContent = 'open ' + window.location.pathname;
+  }
+</script>
+
+<style>
+  .terminal-wrapper {
+    max-width: 52rem;
+    margin: 2rem auto;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'SF Mono', 'Consolas', 'Liberation Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  /* Title bar */
+  .terminal-titlebar {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: #2d2d2d;
+    user-select: none;
+  }
+
+  :global(.dark) .terminal-titlebar {
+    background: #1e1e1e;
+  }
+
+  .terminal-controls {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .terminal-controls-spacer {
+    width: 52px;
+  }
+
+  .terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .dot-close { background: #ff5f57; }
+  .dot-minimize { background: #febc2e; }
+  .dot-maximize { background: #28c840; }
+
+  .terminal-title {
+    flex: 1;
+    text-align: center;
+    color: #999;
+    font-size: 0.8rem;
+  }
+
+  /* Body */
+  .terminal-body {
+    padding: 1rem 1.25rem;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    min-height: 20rem;
+  }
+
+  :global(:not(.dark)) .terminal-body {
+    background: #f5f5f5;
+    color: #333;
+  }
+
+  /* Lines */
+  .terminal-line {
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin-bottom: 0.25rem;
+  }
+
+  .terminal-empty {
+    height: 1.2rem;
+  }
+
+  /* Prompt */
+  .terminal-prompt {
+    margin-right: 0.5rem;
+  }
+
+  .prompt-user { color: #4ec9b0; }
+  .prompt-at { color: #d4d4d4; }
+  .prompt-host { color: #9cdcfe; }
+  .prompt-colon { color: #d4d4d4; }
+  .prompt-path { color: #569cd6; }
+  .prompt-dollar { color: #d4d4d4; margin-left: 0.15rem; }
+
+  :global(:not(.dark)) .prompt-user { color: #098658; }
+  :global(:not(.dark)) .prompt-at { color: #333; }
+  :global(:not(.dark)) .prompt-host { color: #0451a5; }
+  :global(:not(.dark)) .prompt-colon { color: #333; }
+  :global(:not(.dark)) .prompt-path { color: #0000ff; }
+  :global(:not(.dark)) .prompt-dollar { color: #333; }
+
+  /* Command text */
+  .terminal-command {
+    color: #ce9178;
+  }
+
+  :global(:not(.dark)) .terminal-command {
+    color: #a31515;
+  }
+
+  /* Error */
+  .terminal-error {
+    color: #f44747;
+    font-weight: 500;
+  }
+
+  :global(:not(.dark)) .terminal-error {
+    color: #cd3131;
+  }
+
+  /* Hint/comment lines */
+  .terminal-hint,
+  .terminal-help {
+    color: #6a9955;
+    font-style: italic;
+  }
+
+  :global(:not(.dark)) .terminal-hint,
+  :global(:not(.dark)) .terminal-help {
+    color: #008000;
+  }
+
+  /* ls file listing */
+  .terminal-ls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    margin-left: 0;
+  }
+
+  .terminal-file {
+    display: flex;
+    gap: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.15s;
+  }
+
+  .terminal-file:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  :global(:not(.dark)) .terminal-file:hover {
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  .file-permissions {
+    color: #858585;
+    flex-shrink: 0;
+  }
+
+  :global(:not(.dark)) .file-permissions {
+    color: #999;
+  }
+
+  .file-date {
+    color: #858585;
+    min-width: 7.5rem;
+    flex-shrink: 0;
+  }
+
+  :global(:not(.dark)) .file-date {
+    color: #999;
+  }
+
+  .file-name {
+    color: #569cd6;
+    font-weight: 500;
+  }
+
+  :global(:not(.dark)) .file-name {
+    color: #0451a5;
+  }
+
+  .terminal-file:hover .file-name {
+    text-decoration: underline;
+  }
+
+  /* Links inside terminal */
+  .terminal-link {
+    color: #569cd6;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .terminal-link:hover {
+    text-decoration: underline;
+  }
+
+  :global(:not(.dark)) .terminal-link {
+    color: #0451a5;
+  }
+
+  /* Cursor */
+  .terminal-cursor {
+    color: #d4d4d4;
+  }
+
+  :global(:not(.dark)) .terminal-cursor {
+    color: #333;
+  }
+
+  .terminal-cursor.blink {
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .terminal-wrapper {
+      margin: 1rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .terminal-body {
+      padding: 0.75rem;
+    }
+
+    .terminal-file {
+      gap: 0.75rem;
+    }
+
+    .file-permissions {
+      display: none;
+    }
+
+    .file-date {
+      min-width: 5.5rem;
+    }
+  }
+</style>
