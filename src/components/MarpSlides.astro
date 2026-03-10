@@ -1,43 +1,223 @@
 ---
 /**
- * MarpSlides — Embeddable Marp slide deck component for MDX articles.
+ * MarpSlides — Universal embeddable slide deck component for any MDX article.
+ *
+ * Supports multiple source formats:
+ *   - `md` prop: Raw Marp markdown string (imported via `?raw`), compiled at build time
+ *   - `src` prop: URL to a pre-built file (HTML, PDF, PPTX), auto-detected by extension
  *
  * Usage in MDX:
+ *   // Marp markdown slides:
  *   import MarpSlides from '@/components/MarpSlides.astro'
- *   <MarpSlides src="introduction-to-marp" />
+ *   import slides from './_my-deck.slides.md?raw'
+ *   <MarpSlides md={slides} />
  *
- * The `src` prop is the name of the Marp file (without extension) in src/marp/.
- * The build pipeline must have already compiled it to public/marp/{name}.html.
+ *   // Pre-built HTML:
+ *   <MarpSlides src="/presentations/my-deck.html" />
+ *
+ *   // PDF presentation:
+ *   import deckUrl from './conference-talk.pdf?url'
+ *   <MarpSlides src={deckUrl} />
+ *
+ * Build-time compilation:
+ *   When `md` is provided, marp-core compiles the markdown to self-contained HTML.
+ *   The output is written to `public/marp/_compiled-{contentHash}.html` (gitignored,
+ *   content-hashed for deduplication). The viewer loads this file via its URL.
  */
 import MarpViewer from '@/components/MarpViewer.vue'
 import MarpDownloads from '@/components/MarpDownloads.vue'
+import PdfViewer from '@/components/PdfViewer.vue'
+import { createHash } from 'node:crypto'
+import fs from 'node:fs'
+import path from 'node:path'
+
+interface DownloadItem {
+    label: string
+    href: string
+    type: string
+}
 
 interface Props {
-    /** Name of the marp file (without extension), e.g. "introduction-to-marp" */
-    src: string
+    /** Raw Marp markdown content (via `?raw` import) — compiled at build time */
+    md?: string
+    /** URL to a pre-built file (HTML, PDF, PPTX) — auto-detected by extension */
+    src?: string
     /** Aspect ratio for the slide container */
     aspectRatio?: '16:9' | '4:3'
     /** Whether to show download buttons */
     showDownloads?: boolean
+    /** Custom download items (overrides auto-generated ones) */
+    downloads?: DownloadItem[]
 }
 
-const { src, aspectRatio = '16:9', showDownloads = true } = Astro.props
+const { md, src, aspectRatio = '16:9', showDownloads = true, downloads } = Astro.props
+
+// Determine the source URL and format
+let viewerSrc = ''
+let format: 'html' | 'pdf' | 'pptx' = 'html'
+let autoDownloads: DownloadItem[] = []
+
+if (md) {
+    // ── Build-time Marp compilation ─────────────────────────────────
+    const contentHash = createHash('sha256').update(md).digest('hex').slice(0, 12)
+    const fileName = `_compiled-${contentHash}.html`
+    const pdfFileName = `_compiled-${contentHash}.pdf`
+    const outDir = path.join(process.cwd(), 'public', 'marp')
+    const outPath = path.join(outDir, fileName)
+    const pdfOutPath = path.join(outDir, pdfFileName)
+
+    // Only compile if the content-hashed file doesn't exist (deduplication)
+    if (!fs.existsSync(outPath)) {
+        fs.mkdirSync(outDir, { recursive: true })
+
+        const { Marp } = await import('@marp-team/marp-core')
+        const marp = new Marp({ html: true, math: true })
+        const { html, css } = marp.render(md)
+
+        // Extract title from Marp frontmatter
+        const titleMatch = md.match(/^title:\s*["']?(.+?)["']?\s*$/m)
+        const title = titleMatch?.[1] || 'Presentation'
+
+        // Build self-contained HTML document
+        const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+${css}
+</style>
+</head>
+<body>
+${html}
+</body>
+</html>`
+
+        fs.writeFileSync(outPath, fullHtml, 'utf-8')
+    }
+
+    viewerSrc = `/marp/${fileName}`
+    format = 'html'
+
+    // ── PDF export via Playwright (build-time) ──────────────────────
+    // Only generate if the PDF doesn't already exist (content-hash dedup)
+    let pdfAvailable = fs.existsSync(pdfOutPath)
+    if (!pdfAvailable) {
+        try {
+            const { chromium } = await import('playwright')
+            const browser = await chromium.launch({ headless: true })
+            const page = await browser.newPage()
+
+            // Load the compiled HTML file
+            const htmlAbsPath = path.resolve(outPath)
+            await page.goto(`file://${htmlAbsPath}`, { waitUntil: 'networkidle' })
+
+            // Extract slide dimensions from the Marp SVG
+            const dimensions = await page.evaluate(() => {
+                const svg = document.querySelector('svg[data-marpit-svg]')
+                if (!svg) return null
+                const viewBox = svg.getAttribute('viewBox')
+                if (viewBox) {
+                    const parts = viewBox.split(/\s+/)
+                    return { width: parseFloat(parts[2]), height: parseFloat(parts[3]) }
+                }
+                return null
+            })
+
+            const width = dimensions?.width ?? 1280
+            const height = dimensions?.height ?? 720
+
+            await page.pdf({
+                path: pdfOutPath,
+                width: `${width}px`,
+                height: `${height}px`,
+                printBackground: true,
+                margin: { top: '0', right: '0', bottom: '0', left: '0' },
+            })
+
+            await browser.close()
+            pdfAvailable = true
+            console.log(`[MarpSlides] PDF exported: ${pdfFileName}`)
+        } catch (e: any) {
+            // Graceful fallback: playwright or chromium not available
+            console.warn(`[MarpSlides] PDF export skipped (${e.message?.split('\n')[0] || 'unknown error'}). Install playwright chromium: bunx playwright install chromium`)
+        }
+    }
+
+    // Also write the raw markdown source for download
+    const mdFileName = `_source-${contentHash}.md`
+    const mdOutPath = path.join(outDir, mdFileName)
+    if (!fs.existsSync(mdOutPath)) {
+        fs.writeFileSync(mdOutPath, md, 'utf-8')
+    }
+
+    // Offer compiled HTML, PDF (if available), and raw MD source
+    autoDownloads = [
+        { label: 'HTML', href: viewerSrc, type: 'html' },
+    ]
+    if (pdfAvailable) {
+        autoDownloads.push({ label: 'PDF', href: `/marp/${pdfFileName}`, type: 'pdf' })
+    }
+    autoDownloads.push({ label: 'MD', href: `/marp/${mdFileName}`, type: 'md' })
+} else if (src) {
+    // ── Pre-built file ──────────────────────────────────────────────
+    viewerSrc = src
+    const ext = src.split('.').pop()?.toLowerCase() || ''
+    if (ext === 'pdf') {
+        format = 'pdf'
+        autoDownloads = [{ label: 'PDF', href: src, type: 'pdf' }]
+    } else if (ext === 'pptx') {
+        format = 'pptx'
+        autoDownloads = [{ label: 'PPTX', href: src, type: 'pptx' }]
+    } else {
+        format = 'html'
+        autoDownloads = [{ label: 'HTML', href: src, type: 'html' }]
+    }
+}
+
+const finalDownloads = downloads || autoDownloads
 ---
 
-<div class="marp-embed not-prose">
-    <MarpViewer
-        name={src}
-        aspectRatio={aspectRatio}
-        embedded={true}
-        client:visible
-    />
-    {showDownloads && (
-        <MarpDownloads name={src} client:visible />
-    )}
-</div>
+{viewerSrc && (
+    <div class="marp-embed not-prose">
+        {format === 'pdf' ? (
+            <PdfViewer
+                src={viewerSrc}
+                client:visible
+            />
+        ) : format === 'pptx' ? (
+            <!-- PPTX: download fallback until Phase 2 build-time conversion -->
+            <div class="marp-embed__pptx-fallback">
+                <p>PPTX viewer coming soon. Please download the file below.</p>
+            </div>
+        ) : (
+            <MarpViewer
+                src={viewerSrc}
+                aspectRatio={aspectRatio}
+                embedded={true}
+                client:visible
+            />
+        )}
+        {showDownloads && finalDownloads.length > 0 && (
+            <MarpDownloads items={finalDownloads} client:visible />
+        )}
+    </div>
+)}
 
 <style>
     .marp-embed {
         margin: 2rem 0;
+    }
+    .marp-embed__pptx-fallback {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+        border: 1px solid var(--c-border, #e5e7eb);
+        border-radius: 8px;
+        background: var(--c-bg-mute, #f3f4f6);
+        color: var(--c-text-muted, #6b7280);
     }
 </style>

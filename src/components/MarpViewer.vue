@@ -20,8 +20,8 @@ import { defaultLang, type Languages } from '@/i18n/ui'
 import { getLangFromUrl, useTranslate } from '@/i18n/utils'
 
 interface Props {
-    /** Name of the marp file (without extension), e.g. "introduction-to-marp" */
-    name: string
+    /** URL to the compiled Marp HTML file */
+    src: string
     /** Aspect ratio for the slide container */
     aspectRatio?: '16:9' | '4:3'
     /** Whether to show in embedded (inline) mode vs standalone */
@@ -82,7 +82,7 @@ async function loadPresentation() {
     iframeReady.value = false
 
     try {
-        const response = await fetch(`/marp/${props.name}.html`)
+        const response = await fetch(props.src)
         if (!response.ok) {
             throw new Error(`Failed to load presentation: ${response.status}`)
         }
@@ -124,12 +124,20 @@ async function loadPresentation() {
             '      else s.classList.remove("invert");',
             '    });',
             '  }',
+            '  // Force all links to open in a new tab so they don\'t hijack the presentation',
+            '  function fixLinks() {',
+            '    document.querySelectorAll("a[href]").forEach(function(a) {',
+            '      a.setAttribute("target", "_blank");',
+            '      a.setAttribute("rel", "noopener noreferrer");',
+            '    });',
+            '  }',
             '  window.addEventListener("message", function(e) {',
             '    if (!e.data) return;',
             '    if (e.data.type === "marp-goto") showSlide(e.data.slide);',
             '    if (e.data.type === "marp-theme") setDarkMode(e.data.dark);',
             '  });',
             '  showSlide(0);',
+            '  fixLinks();',
             '})();',
             closeScriptTag,
         ].join('\n')
@@ -252,18 +260,10 @@ function handleTouchEnd(e: TouchEvent) {
 }
 
 /**
- * Click on the slide overlay: left 25% = previous, right 75% = next.
+ * Click on the slide overlay is disabled — it was intercepting links
+ * inside the Marp slides. Navigation is handled by the prev/next buttons
+ * in the control bar and by keyboard shortcuts.
  */
-function handleOverlayClick(e: MouseEvent) {
-    const target = e.currentTarget as HTMLElement
-    const rect = target.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    if (x < rect.width * 0.25) {
-        prevSlide()
-    } else {
-        nextSlide()
-    }
-}
 
 // ── Fullscreen ──────────────────────────────────────────────
 
@@ -303,8 +303,8 @@ watch(isDark, (dark) => {
     postToIframe({ type: 'marp-theme', dark })
 })
 
-// Reload when presentation name changes
-watch(() => props.name, () => {
+// Reload when presentation src changes
+watch(() => props.src, () => {
     loadPresentation()
 })
 
@@ -371,17 +371,19 @@ onUnmounted(() => {
                     ref="iframeRef"
                     class="marp-viewer__iframe"
                     :srcdoc="iframeSrcdoc"
-                    sandbox="allow-scripts"
+                    sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
                     frameborder="0"
                     title="Slide presentation"
                     @load="onIframeLoad"
                 />
-                <!-- Transparent overlay captures touch/click for navigation -->
+                <!-- Transparent overlay captures touch swipes for navigation.
+                     pointer-events: none lets clicks pass through to the iframe
+                     so links inside Marp slides remain clickable. Touch events
+                     are re-enabled via touch-action CSS. -->
                 <div
                     class="marp-viewer__overlay"
                     @touchstart.passive="handleTouchStart"
                     @touchend.passive="handleTouchEnd"
-                    @click="handleOverlayClick"
                 />
             </div>
 
@@ -517,7 +519,18 @@ onUnmounted(() => {
     position: absolute;
     inset: 0;
     z-index: 1;
-    cursor: pointer;
+    /* Let mouse clicks pass through to the iframe (links stay clickable) */
+    pointer-events: none;
+    /* Re-enable pointer events for touch so swipe navigation works */
+    touch-action: pan-y;
+}
+
+/* On touch-capable devices, enable pointer events on the overlay for swipe */
+@media (pointer: coarse) {
+    .marp-viewer__overlay {
+        pointer-events: auto;
+        cursor: default;
+    }
 }
 
 .marp-viewer__controls {

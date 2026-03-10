@@ -7,7 +7,7 @@ import UnoCSS from 'unocss/astro'
 import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import { remarkReadingTime } from './src/plugins/remark-reading-time'
-import marpBuild from './src/integrations/marp-build'
+
 
 const languages: Record<string, string> = Object.fromEntries(
     availableLanguages.map((lang) => [lang, lang])
@@ -26,7 +26,6 @@ export default defineConfig({
         },
     },
     integrations: [
-        marpBuild(),
         mdx(), 
         vue(), 
         sitemap({

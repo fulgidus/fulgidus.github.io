@@ -1,94 +1,32 @@
 <script setup lang="ts">
 /**
- * MarpDownloads — Download buttons for Marp presentation exports.
+ * MarpDownloads — Download buttons for presentation files.
  *
- * Fetches the metadata JSON to determine available formats and file sizes,
- * then renders download buttons for each available format.
+ * Accepts download items as props (no JSON fetch). Each item specifies
+ * a label, href, and file type for badge coloring.
  */
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { defaultLang, type Languages } from '@/i18n/ui'
 import { getLangFromUrl, useTranslate } from '@/i18n/utils'
 
+interface DownloadItem {
+    /** Display label (e.g. "PDF", "PPTX", "MD") */
+    label: string
+    /** Download URL */
+    href: string
+    /** File type for badge styling (e.g. "pdf", "pptx", "md", "html") */
+    type: string
+}
+
 interface Props {
-    /** Name of the marp file (without extension) */
-    name: string
+    /** Download items to display */
+    items: DownloadItem[]
 }
 
 const props = defineProps<Props>()
 
 const currentLang = ref<Languages>(defaultLang)
 const t = computed(() => useTranslate(currentLang.value))
-
-interface MarpMeta {
-    hasPdf: boolean
-    hasPptx: boolean
-    hasMd: boolean
-    pdfSize?: number
-    pptxSize?: number
-    mdSize?: number
-}
-
-const meta = ref<MarpMeta | null>(null)
-const isLoading = ref(true)
-
-function formatBytes(bytes: number): string {
-    if (bytes < 1024) return `${bytes} B`
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
-
-async function loadMeta() {
-    try {
-        const res = await fetch(`/marp/${props.name}.json`)
-        if (res.ok) {
-            meta.value = await res.json()
-        }
-    } catch {
-        // Metadata not available
-    }
-    isLoading.value = false
-}
-
-interface DownloadItem {
-    label: string
-    href: string
-    size: string | null
-    icon: string
-}
-
-const downloads = computed<DownloadItem[]>(() => {
-    const items: DownloadItem[] = []
-    if (!meta.value) return items
-
-    if (meta.value.hasMd) {
-        items.push({
-            label: t.value('marp.downloadMd'),
-            href: `/marp/${props.name}.md`,
-            size: meta.value.mdSize ? formatBytes(meta.value.mdSize) : null,
-            icon: 'md',
-        })
-    }
-
-    if (meta.value.hasPdf) {
-        items.push({
-            label: t.value('marp.downloadPdf'),
-            href: `/marp/${props.name}.pdf`,
-            size: meta.value.pdfSize ? formatBytes(meta.value.pdfSize) : null,
-            icon: 'pdf',
-        })
-    }
-
-    if (meta.value.hasPptx) {
-        items.push({
-            label: t.value('marp.downloadPptx'),
-            href: `/marp/${props.name}.pptx`,
-            size: meta.value.pptxSize ? formatBytes(meta.value.pptxSize) : null,
-            icon: 'pptx',
-        })
-    }
-
-    return items
-})
 
 function updateLangFromUrl() {
     currentLang.value = getLangFromUrl(window.location.pathname) as Languages
@@ -97,7 +35,6 @@ function updateLangFromUrl() {
 onMounted(() => {
     updateLangFromUrl()
     document.addEventListener('astro:page-load', updateLangFromUrl)
-    loadMeta()
 })
 
 onUnmounted(() => {
@@ -106,24 +43,20 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div v-if="!isLoading && downloads.length > 0" class="marp-downloads">
+    <div v-if="props.items.length > 0" class="marp-downloads">
         <span class="marp-downloads__label">{{ t('marp.downloads') }}:</span>
         <div class="marp-downloads__buttons">
             <a
-                v-for="dl in downloads"
-                :key="dl.icon"
+                v-for="dl in props.items"
+                :key="dl.type + dl.href"
                 :href="dl.href"
                 :download="true"
                 class="marp-downloads__btn"
                 :title="dl.label"
             >
                 <!-- File type badge -->
-                <span class="marp-downloads__badge" :data-type="dl.icon">
-                    {{ dl.icon.toUpperCase() }}
-                </span>
-                <span class="marp-downloads__info">
-                    <span class="marp-downloads__text">{{ dl.label }}</span>
-                    <span v-if="dl.size" class="marp-downloads__size">{{ dl.size }}</span>
+                <span class="marp-downloads__badge" :data-type="dl.type">
+                    {{ dl.label }}
                 </span>
                 <!-- Download icon -->
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="marp-downloads__icon">
@@ -203,15 +136,8 @@ onUnmounted(() => {
     background: #3b82f6;
 }
 
-.marp-downloads__info {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.2;
-}
-
-.marp-downloads__size {
-    font-size: 0.6875rem;
-    color: var(--c-text-muted, #9ca3af);
+.marp-downloads__badge[data-type="html"] {
+    background: #10b981;
 }
 
 .marp-downloads__icon {

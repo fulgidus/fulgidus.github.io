@@ -5,12 +5,12 @@ duration: "15min"
 pubDate: 2026-03-10
 lang: en
 tags: ["marp", "presentations", "markdown", "talks"]
-marp: true
-marpTheme: "default"
-marpAspectRatio: "16:9"
 ---
 
-{/* The marp slide content below is rendered by the Marp build pipeline */}
+import MarpSlides from '@/components/MarpSlides.astro'
+import slides from './_introduction-to-marp.slides.md?raw'
+
+<MarpSlides md={slides} />
 
 This talk introduces [Marp](https://marp.app) — the Markdown Presentation Ecosystem.
 Use the slide viewer above to navigate through the presentation, or download it in your preferred format.

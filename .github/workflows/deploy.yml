@@ -22,32 +22,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up pnpm and Node.js for testing
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+      # Step 2: Set up Bun
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: latest
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
+          bun-version: latest
 
       - name: Install dependencies
-        run: pnpm install
+        run: bun install --frozen-lockfile
 
-      # Step 3: Run tests before building
+      # Step 3: Install Playwright Chromium for Marp PDF export
+      - name: Install Playwright Chromium
+        run: bunx playwright install chromium --with-deps
+
+      # Step 4: Run tests before building
       - name: Testing
-        run: pnpm run test
+        run: bun run test
 
-      # Step 4: Build and upload the site for deployment
-      - name: Build and upload your site
-        uses: withastro/action@v3
+      # Step 5: Build the site
+      - name: Build site
+        run: bun run build
+
+      # Step 6: Upload build artifact for Pages deployment
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: .
-          node-version: 20
-          package-manager: pnpm@latest
+          path: dist/
 
   Deploy:
     # Deploy job depends on the build job

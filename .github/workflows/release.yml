@@ -11,14 +11,14 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v3
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: lts/*
+          bun-version: latest
 
-      - run: npx changelogen gh release
+      - run: bunx changelogen gh release
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
