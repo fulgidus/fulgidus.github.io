@@ -1,4 +1,4 @@
-import { availableLanguages, ui } from './src/i18n/ui'
+import { availableLanguages } from './src/i18n/ui'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import vue from '@astrojs/vue'
@@ -9,7 +9,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import { remarkReadingTime } from './src/plugins/remark-reading-time'
 
 const languages: Record<string, string> = Object.fromEntries(
-    availableLanguages.map((lang) => [lang, ui[lang].language])
+    availableLanguages.map((lang) => [lang, lang])
 );
 export default defineConfig({
     site: 'https://fulgidus.github.io', // This is your full site URL
