@@ -4,6 +4,9 @@ import sitemap from '@astrojs/sitemap'
 import vue from '@astrojs/vue'
 import { defineConfig } from 'astro/config'
 import UnoCSS from 'unocss/astro'
+import rehypeSlug from 'rehype-slug'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+import { remarkReadingTime } from './src/plugins/remark-reading-time'
 
 const languages: Record<string, string> = Object.fromEntries(
     availableLanguages.map((lang) => [lang, ui[lang].language])
@@ -36,6 +39,24 @@ export default defineConfig({
         })
     ],
     markdown: {
+        remarkPlugins: [remarkReadingTime],
+        rehypePlugins: [
+            rehypeSlug,
+            [rehypeAutolinkHeadings, {
+                behavior: 'append',
+                properties: {
+                    className: ['anchor-link'],
+                    ariaHidden: true,
+                    tabIndex: -1,
+                },
+                content: {
+                    type: 'element',
+                    tagName: 'span',
+                    properties: { className: ['anchor-icon'] },
+                    children: [{ type: 'text', value: '#' }],
+                },
+            }],
+        ],
         shikiConfig: {
             themes: {
                 light: 'github-light-default',

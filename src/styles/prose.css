@@ -325,6 +325,34 @@
 .prose > :last-child {
   margin-bottom: 0;
 }
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  position: relative;
+}
+.prose .anchor-link {
+  opacity: 0;
+  margin-left: 0.35em;
+  text-decoration: none;
+  color: rgba(125, 125, 125, 0.5);
+  font-weight: 400;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+.prose h1:hover .anchor-link,
+.prose h2:hover .anchor-link,
+.prose h3:hover .anchor-link,
+.prose h4:hover .anchor-link,
+.prose h5:hover .anchor-link,
+.prose h6:hover .anchor-link,
+.prose .anchor-link:focus {
+  opacity: 1;
+}
+.prose .anchor-link:hover {
+  color: rgba(125, 125, 125, 0.9);
+}
 .prose em {
   color: inherit;
 }
