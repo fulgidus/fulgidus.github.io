@@ -28,13 +28,19 @@ import MarpViewer from '@/components/MarpViewer.vue'
 import MarpDownloads from '@/components/MarpDownloads.vue'
 import PdfViewer from '@/components/PdfViewer.vue'
 import { createHash } from 'node:crypto'
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import fs from 'node:fs'
 import path from 'node:path'
+
+const execFileAsync = promisify(execFile)
 
 interface DownloadItem {
     label: string
     href: string
     type: string
+    /** Theme variant: 'light' or 'dark'. Used by MarpDownloads to show the right PDF. */
+    variant?: 'light' | 'dark'
 }
 
 interface Props {
@@ -61,10 +67,8 @@ if (md) {
     // ── Build-time Marp compilation ─────────────────────────────────
     const contentHash = createHash('sha256').update(md).digest('hex').slice(0, 12)
     const fileName = `_compiled-${contentHash}.html`
-    const pdfFileName = `_compiled-${contentHash}.pdf`
     const outDir = path.join(process.cwd(), 'public', 'marp')
     const outPath = path.join(outDir, fileName)
-    const pdfOutPath = path.join(outDir, pdfFileName)
 
     // Only compile if the content-hashed file doesn't exist (deduplication)
     if (!fs.existsSync(outPath)) {
@@ -72,6 +76,14 @@ if (md) {
 
         const { Marp } = await import('@marp-team/marp-core')
         const marp = new Marp({ html: true, math: true })
+
+        // Register custom site theme
+        const themePath = path.join(process.cwd(), 'src', 'styles', 'marp-theme.css')
+        if (fs.existsSync(themePath)) {
+            const themeCss = fs.readFileSync(themePath, 'utf-8')
+            marp.themeSet.add(themeCss)
+        }
+
         const { html, css } = marp.render(md)
 
         // Extract title from Marp frontmatter
@@ -102,9 +114,19 @@ ${html}
     format = 'html'
 
     // ── PDF export via Playwright (build-time) ──────────────────────
-    // Only generate if the PDF doesn't already exist (content-hash dedup)
-    let pdfAvailable = fs.existsSync(pdfOutPath)
-    if (!pdfAvailable) {
+    // Generate BOTH light and dark PDF variants so the download component
+    // can serve the one matching the user's current site theme.
+    // Light variant: sections rendered as-is (Marp default / frontmatter).
+    // Dark variant: `.invert` class added to ALL <section> elements.
+    const pdfLightFileName = `_compiled-${contentHash}-light.pdf`
+    const pdfDarkFileName = `_compiled-${contentHash}-dark.pdf`
+    const pdfLightOutPath = path.join(outDir, pdfLightFileName)
+    const pdfDarkOutPath = path.join(outDir, pdfDarkFileName)
+
+    let pdfLightAvailable = fs.existsSync(pdfLightOutPath)
+    let pdfDarkAvailable = fs.existsSync(pdfDarkOutPath)
+
+    if (!pdfLightAvailable || !pdfDarkAvailable) {
         try {
             const { chromium } = await import('playwright')
             const browser = await chromium.launch({ headless: true })
@@ -129,17 +151,46 @@ ${html}
             const width = dimensions?.width ?? 1280
             const height = dimensions?.height ?? 720
 
-            await page.pdf({
-                path: pdfOutPath,
+            const pdfOpts = {
                 width: `${width}px`,
                 height: `${height}px`,
                 printBackground: true,
                 margin: { top: '0', right: '0', bottom: '0', left: '0' },
-            })
+            } as const
+
+            // ── Light variant: render as-is ──
+            if (!pdfLightAvailable) {
+                // Ensure sections are in their original state (no forced .invert)
+                await page.evaluate(() => {
+                    document.querySelectorAll('section').forEach(s => {
+                        s.classList.remove('invert')
+                    })
+                })
+                // Re-add .invert only to sections that originally had it via Marp directives
+                // We detect this from data attributes set by Marpit (data-marpit-fragment, etc.)
+                // Actually, Marp encodes the class in the HTML directly, so after removing .invert
+                // we need to restore the original state. Simpler: reload the page for clean state.
+                await page.goto(`file://${htmlAbsPath}`, { waitUntil: 'networkidle' })
+                await page.pdf({ ...pdfOpts, path: pdfLightOutPath })
+                pdfLightAvailable = true
+                console.log(`[MarpSlides] PDF exported (light): ${pdfLightFileName}`)
+            }
+
+            // ── Dark variant: add .invert to ALL sections ──
+            if (!pdfDarkAvailable) {
+                // Reload to clean state, then add .invert everywhere
+                await page.goto(`file://${htmlAbsPath}`, { waitUntil: 'networkidle' })
+                await page.evaluate(() => {
+                    document.querySelectorAll('section').forEach(s => {
+                        s.classList.add('invert')
+                    })
+                })
+                await page.pdf({ ...pdfOpts, path: pdfDarkOutPath })
+                pdfDarkAvailable = true
+                console.log(`[MarpSlides] PDF exported (dark): ${pdfDarkFileName}`)
+            }
 
             await browser.close()
-            pdfAvailable = true
-            console.log(`[MarpSlides] PDF exported: ${pdfFileName}`)
         } catch (e: any) {
             // Graceful fallback: playwright or chromium not available
             console.warn(`[MarpSlides] PDF export skipped (${e.message?.split('\n')[0] || 'unknown error'}). Install playwright chromium: bunx playwright install chromium`)
@@ -153,12 +204,15 @@ ${html}
         fs.writeFileSync(mdOutPath, md, 'utf-8')
     }
 
-    // Offer compiled HTML, PDF (if available), and raw MD source
+    // Offer compiled HTML, PDF (if available in both variants), and raw MD source
     autoDownloads = [
         { label: 'HTML', href: viewerSrc, type: 'html' },
     ]
-    if (pdfAvailable) {
-        autoDownloads.push({ label: 'PDF', href: `/marp/${pdfFileName}`, type: 'pdf' })
+    if (pdfLightAvailable) {
+        autoDownloads.push({ label: 'PDF', href: `/marp/${pdfLightFileName}`, type: 'pdf', variant: 'light' })
+    }
+    if (pdfDarkAvailable) {
+        autoDownloads.push({ label: 'PDF', href: `/marp/${pdfDarkFileName}`, type: 'pdf', variant: 'dark' })
     }
     autoDownloads.push({ label: 'MD', href: `/marp/${mdFileName}`, type: 'md' })
 } else if (src) {
@@ -169,8 +223,107 @@ ${html}
         format = 'pdf'
         autoDownloads = [{ label: 'PDF', href: src, type: 'pdf' }]
     } else if (ext === 'pptx') {
-        format = 'pptx'
-        autoDownloads = [{ label: 'PPTX', href: src, type: 'pptx' }]
+        // ── PPTX → PDF conversion via LibreOffice CLI ───────────────
+        // Convert at build time using soffice --headless --convert-to pdf.
+        // If LibreOffice is not installed, gracefully fall back to a
+        // download-only view (no viewer, just a download button).
+        const outDir = path.join(process.cwd(), 'public', 'marp')
+        fs.mkdirSync(outDir, { recursive: true })
+
+        // Resolve the PPTX source file from the Vite-processed URL.
+        // The `src` prop is a URL (e.g., `/_astro/deck.abc123.pptx`
+        // from `import url from './deck.pptx?url'`). We need to find
+        // the original file to pass it to LibreOffice.
+        // Strategy: look in the project root or content directories.
+        let pptxSourcePath = ''
+
+        // If it starts with a slash, try resolving from the public dir or dist
+        if (src.startsWith('/')) {
+            const fromPublic = path.join(process.cwd(), 'public', src)
+            if (fs.existsSync(fromPublic)) pptxSourcePath = fromPublic
+        }
+
+        // Also try resolving relative to the project root
+        if (!pptxSourcePath) {
+            const fromRoot = path.join(process.cwd(), src)
+            if (fs.existsSync(fromRoot)) pptxSourcePath = fromRoot
+        }
+
+        // Content-hash the PPTX file for deduplication
+        let pptxConverted = false
+        let pdfUrl = ''
+
+        if (pptxSourcePath && fs.existsSync(pptxSourcePath)) {
+            const pptxContent = new Uint8Array(fs.readFileSync(pptxSourcePath))
+            const contentHash = createHash('sha256').update(pptxContent).digest('hex').slice(0, 12)
+            const pdfFileName = `_pptx-${contentHash}.pdf`
+            const pdfOutPath = path.join(outDir, pdfFileName)
+
+            if (fs.existsSync(pdfOutPath)) {
+                // Already converted (deduplication)
+                pptxConverted = true
+                pdfUrl = `/marp/${pdfFileName}`
+            } else {
+                try {
+                    // Detect LibreOffice binary
+                    const soffice = await (async () => {
+                        for (const bin of ['soffice', 'libreoffice']) {
+                            try {
+                                await execFileAsync('which', [bin])
+                                return bin
+                            } catch { /* not found, try next */ }
+                        }
+                        return null
+                    })()
+
+                    if (soffice) {
+                        await execFileAsync(soffice, [
+                            '--headless',
+                            '--convert-to', 'pdf',
+                            '--outdir', outDir,
+                            pptxSourcePath,
+                        ], { timeout: 60_000 })
+
+                        // LibreOffice outputs PDF with the same base name as the input file
+                        const baseName = path.basename(pptxSourcePath, path.extname(pptxSourcePath))
+                        const loOutput = path.join(outDir, `${baseName}.pdf`)
+
+                        if (fs.existsSync(loOutput)) {
+                            // Rename to content-hashed name for deduplication
+                            fs.renameSync(loOutput, pdfOutPath)
+                            pptxConverted = true
+                            pdfUrl = `/marp/${pdfFileName}`
+                            console.log(`[MarpSlides] PPTX → PDF converted: ${pdfFileName}`)
+                        } else {
+                            console.warn(`[MarpSlides] LibreOffice conversion produced no output for ${pptxSourcePath}`)
+                        }
+                    } else {
+                        console.warn('[MarpSlides] PPTX → PDF skipped: LibreOffice (soffice) not found. Install LibreOffice for automatic conversion.')
+                    }
+                } catch (e: any) {
+                    console.warn(`[MarpSlides] PPTX → PDF conversion failed: ${e.message?.split('\n')[0] || 'unknown error'}`)
+                }
+            }
+        } else {
+            // The PPTX file URL can't be resolved to a local path at build time.
+            // This happens when Vite hashes the filename. The PPTX download button
+            // will still work (the URL is valid at runtime).
+            console.warn(`[MarpSlides] PPTX source file not found at build time for conversion: ${src}`)
+        }
+
+        if (pptxConverted && pdfUrl) {
+            // Conversion succeeded — show PdfViewer
+            format = 'pdf'
+            viewerSrc = pdfUrl
+            autoDownloads = [
+                { label: 'PDF', href: pdfUrl, type: 'pdf' },
+                { label: 'PPTX', href: src, type: 'pptx' },
+            ]
+        } else {
+            // Conversion failed or LibreOffice not available — download-only fallback
+            format = 'pptx'
+            autoDownloads = [{ label: 'PPTX', href: src, type: 'pptx' }]
+        }
     } else {
         format = 'html'
         autoDownloads = [{ label: 'HTML', href: src, type: 'html' }]
@@ -188,9 +341,15 @@ const finalDownloads = downloads || autoDownloads
                 client:visible
             />
         ) : format === 'pptx' ? (
-            <!-- PPTX: download fallback until Phase 2 build-time conversion -->
             <div class="marp-embed__pptx-fallback">
-                <p>PPTX viewer coming soon. Please download the file below.</p>
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="12" y1="18" x2="12" y2="12" />
+                    <polyline points="9 15 12 12 15 15" />
+                </svg>
+                <p>PowerPoint viewer requires LibreOffice for build-time conversion.</p>
+                <p class="marp-embed__pptx-hint">Download the file below to view it.</p>
             </div>
         ) : (
             <MarpViewer
@@ -212,12 +371,22 @@ const finalDownloads = downloads || autoDownloads
     }
     .marp-embed__pptx-fallback {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
+        gap: 0.75rem;
         padding: 3rem;
         border: 1px solid var(--c-border, #e5e7eb);
         border-radius: 8px;
         background: var(--c-bg-mute, #f3f4f6);
         color: var(--c-text-muted, #6b7280);
+        text-align: center;
+    }
+    .marp-embed__pptx-fallback svg {
+        opacity: 0.5;
+    }
+    .marp-embed__pptx-hint {
+        font-size: 0.875rem;
+        opacity: 0.7;
     }
 </style>

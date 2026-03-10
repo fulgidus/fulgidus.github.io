@@ -1,9 +1,15 @@
 <script setup lang="ts">
 /**
- * MarpDownloads — Download buttons for presentation files.
+ * MarpDownloads — Theme-aware download buttons for presentation files.
  *
  * Accepts download items as props (no JSON fetch). Each item specifies
- * a label, href, and file type for badge coloring.
+ * a label, href, file type for badge coloring, and an optional theme
+ * variant ('light' | 'dark') for PDF files.
+ *
+ * When both light and dark PDF variants are provided, only the one
+ * matching the current site theme is shown. A MutationObserver watches
+ * the root element's class list and swaps the PDF link in real time
+ * when the user toggles dark mode.
  */
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { defaultLang, type Languages } from '@/i18n/ui'
@@ -16,6 +22,8 @@ interface DownloadItem {
     href: string
     /** File type for badge styling (e.g. "pdf", "pptx", "md", "html") */
     type: string
+    /** Theme variant for PDFs: 'light' or 'dark'. Omit for non-variant items. */
+    variant?: 'light' | 'dark'
 }
 
 interface Props {
@@ -28,27 +36,77 @@ const props = defineProps<Props>()
 const currentLang = ref<Languages>(defaultLang)
 const t = computed(() => useTranslate(currentLang.value))
 
+// Track the site's current dark mode state
+const isDark = ref(false)
+
+// Dark mode observer
+let darkModeObserver: MutationObserver | null = null
+
+function detectDarkMode() {
+    isDark.value = document.documentElement.classList.contains('dark')
+}
+
+/**
+ * Filter items to show only the PDF variant matching the current theme.
+ * Non-PDF items and PDFs without a variant are always shown.
+ * When both light and dark PDF variants exist, only the matching one is shown.
+ */
+const visibleItems = computed(() => {
+    const currentVariant = isDark.value ? 'dark' : 'light'
+
+    // Check if we have variant-specific PDFs
+    const hasLightPdf = props.items.some(i => i.type === 'pdf' && i.variant === 'light')
+    const hasDarkPdf = props.items.some(i => i.type === 'pdf' && i.variant === 'dark')
+    const hasBothVariants = hasLightPdf && hasDarkPdf
+
+    return props.items.filter(item => {
+        // Non-PDF items: always show
+        if (item.type !== 'pdf') return true
+
+        // PDF without variant: always show (e.g. pre-built PDFs from src prop)
+        if (!item.variant) return true
+
+        // If we have both variants, show only the matching one
+        if (hasBothVariants) {
+            return item.variant === currentVariant
+        }
+
+        // Only one variant available: show it regardless
+        return true
+    })
+})
+
 function updateLangFromUrl() {
     currentLang.value = getLangFromUrl(window.location.pathname) as Languages
 }
 
 onMounted(() => {
     updateLangFromUrl()
+    detectDarkMode()
+
+    // Watch for dark mode changes on <html> class
+    darkModeObserver = new MutationObserver(() => detectDarkMode())
+    darkModeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class'],
+    })
+
     document.addEventListener('astro:page-load', updateLangFromUrl)
 })
 
 onUnmounted(() => {
+    darkModeObserver?.disconnect()
     document.removeEventListener('astro:page-load', updateLangFromUrl)
 })
 </script>
 
 <template>
-    <div v-if="props.items.length > 0" class="marp-downloads">
+    <div v-if="visibleItems.length > 0" class="marp-downloads">
         <span class="marp-downloads__label">{{ t('marp.downloads') }}:</span>
         <div class="marp-downloads__buttons">
             <a
-                v-for="dl in props.items"
-                :key="dl.type + dl.href"
+                v-for="dl in visibleItems"
+                :key="dl.type + (dl.variant || '') + dl.href"
                 :href="dl.href"
                 :download="true"
                 class="marp-downloads__btn"

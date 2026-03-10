@@ -1,6 +1,6 @@
 ---
 marp: true
-theme: default
+theme: site
 paginate: true
 size: 16:9
 title: "Slides with Markdown: An Introduction to Marp"
@@ -97,15 +97,14 @@ or without prefix for **global** (all subsequent slides).
 
 ---
 
-<!-- _backgroundColor: #2d2d2d -->
-<!-- _color: #e0e0e0 -->
+<!-- _class: invert -->
 
 ## Dark Slide Example
 
-This slide uses local directives to override the theme:
+This slide uses the `.invert` class from our custom theme:
 
-- Background: `#2d2d2d`
-- Text color: `#e0e0e0`
+- Matches the site's dark mode palette
+- Background: `#0d1117`, Text: `#bbbbbb`
 
 Directives give you per-slide customization without leaving Markdown.
 
@@ -165,6 +164,20 @@ Marp can export to multiple formats:
 - 📝 **Markdown** — the original source
 
 All built at compile time, no runtime dependencies.
+
+---
+
+<!-- _class: highlight -->
+
+## Custom Theme Classes
+
+The **site** theme includes special slide classes:
+
+- `lead` — centered title slides
+- `invert` — dark mode palette
+- `highlight` — brand accent background (like this slide!)
+
+Use `<!-- _class: className -->` to apply.
 
 ---
 

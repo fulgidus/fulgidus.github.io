@@ -1,0 +1,414 @@
+/*!
+ * Custom Marp theme matching fulgidus.github.io design system.
+ *
+ * Light mode (default): bg #eef5fc, text #555555, brand #380541
+ * Dark mode (.invert):  bg #0d1117, text #bbbbbb, brand #9b7ba3
+ *
+ * Fonts: Inter (titles), Roboto (body), Fira Code (code)
+ * Registered with marp-core via themeSet.add() in MarpSlides.astro.
+ */
+
+/* @theme site */
+/* @auto-scaling true */
+/* @size 16:9 1280px 720px */
+/* @size 4:3 960px 720px */
+
+/* ── Import Google Fonts ────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&family=Fira+Code:wght@400;700&display=swap');
+
+/* ── Base slide ─────────────────────────────────────────────── */
+
+section {
+    /* Layout */
+    padding: 50px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    /* Light mode colors */
+    background-color: #eef5fc;
+    color: #555555;
+
+    /* Typography */
+    font-family: 'Roboto', system-ui, -apple-system, sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+}
+
+/* ── Dark mode (.invert) ────────────────────────────────────── */
+
+section.invert {
+    background-color: #0d1117;
+    color: #bbbbbb;
+}
+
+/* ── Pagination ─────────────────────────────────────────────── */
+
+section::after {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    color: #999999;
+    padding: 24px 36px;
+}
+
+section.invert::after {
+    color: #666666;
+}
+
+/* ── Headings ───────────────────────────────────────────────── */
+
+section h1 {
+    font-family: 'Inter', 'Roboto', sans-serif;
+    font-weight: 800;
+    font-size: 2.2em;
+    color: #380541;
+    margin-bottom: 0.4em;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+}
+
+section h2 {
+    font-family: 'Inter', 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 1.6em;
+    color: #380541;
+    margin-bottom: 0.5em;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    border-bottom: 2px solid rgba(56, 5, 65, 0.15);
+    padding-bottom: 0.3em;
+}
+
+section h3 {
+    font-family: 'Inter', 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 1.3em;
+    color: #555555;
+    margin-bottom: 0.4em;
+    line-height: 1.35;
+    opacity: 0.85;
+}
+
+section h4 {
+    font-family: 'Inter', 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 1.1em;
+    color: #555555;
+    margin-bottom: 0.3em;
+    line-height: 1.4;
+}
+
+section h5,
+section h6 {
+    font-family: 'Inter', 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 0.95em;
+    color: #777777;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3em;
+}
+
+/* Dark mode headings */
+section.invert h1,
+section.invert h2 {
+    color: #9b7ba3;
+}
+
+section.invert h2 {
+    border-bottom-color: rgba(155, 123, 163, 0.25);
+}
+
+section.invert h3,
+section.invert h4 {
+    color: #cccccc;
+}
+
+section.invert h5,
+section.invert h6 {
+    color: #888888;
+}
+
+/* ── Links ──────────────────────────────────────────────────── */
+
+section a {
+    color: #380541;
+    text-decoration: none;
+    border-bottom: 2px solid rgba(56, 5, 65, 0.5);
+    transition: border-color 0.2s ease;
+}
+
+section a:hover {
+    border-bottom-color: #380541;
+}
+
+section.invert a {
+    color: #9b7ba3;
+    border-bottom-color: rgba(155, 123, 163, 0.5);
+}
+
+section.invert a:hover {
+    border-bottom-color: #9b7ba3;
+}
+
+/* ── Lists ──────────────────────────────────────────────────── */
+
+section ul,
+section ol {
+    margin: 0.5em 0;
+    padding-left: 1.5em;
+}
+
+section li {
+    margin: 0.3em 0;
+    line-height: 1.5;
+}
+
+section ul > li::marker {
+    color: #380541;
+}
+
+section ol > li::marker {
+    color: #380541;
+    font-weight: 500;
+}
+
+section.invert ul > li::marker {
+    color: #9b7ba3;
+}
+
+section.invert ol > li::marker {
+    color: #9b7ba3;
+}
+
+/* ── Code ───────────────────────────────────────────────────── */
+
+section code {
+    font-family: 'Fira Code', 'Fira Mono', 'Consolas', monospace;
+    font-size: 0.85em;
+    background-color: rgba(56, 5, 65, 0.08);
+    color: #380541;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-variant-ligatures: contextual;
+}
+
+section.invert code {
+    background-color: rgba(155, 123, 163, 0.15);
+    color: #c9a0d0;
+}
+
+section pre {
+    margin: 0.8em 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+section pre code {
+    display: block;
+    background-color: #1e1e2e;
+    color: #cdd6f4;
+    padding: 1em 1.2em;
+    font-size: 0.75em;
+    line-height: 1.65;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+section.invert pre code {
+    background-color: #161b22;
+    color: #e6edf3;
+}
+
+/* ── Blockquotes ────────────────────────────────────────────── */
+
+section blockquote {
+    border-left: 4px solid #380541;
+    margin: 0.8em 0;
+    padding: 0.5em 0 0.5em 1.2em;
+    color: #666666;
+    font-style: italic;
+}
+
+section.invert blockquote {
+    border-left-color: #9b7ba3;
+    color: #999999;
+}
+
+/* ── Tables ─────────────────────────────────────────────────── */
+
+section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.8em 0;
+    font-size: 0.9em;
+}
+
+section table th {
+    background-color: rgba(56, 5, 65, 0.08);
+    color: #380541;
+    font-weight: 600;
+    text-align: left;
+    padding: 0.6em 0.8em;
+    border-bottom: 2px solid rgba(56, 5, 65, 0.2);
+}
+
+section table td {
+    padding: 0.5em 0.8em;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+section table tr:last-child td {
+    border-bottom: none;
+}
+
+section.invert table th {
+    background-color: rgba(155, 123, 163, 0.12);
+    color: #9b7ba3;
+    border-bottom-color: rgba(155, 123, 163, 0.3);
+}
+
+section.invert table td {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Images ─────────────────────────────────────────────────── */
+
+section img {
+    border-radius: 6px;
+}
+
+/* ── Horizontal rules ───────────────────────────────────────── */
+
+section hr {
+    border: none;
+    border-top: 2px solid rgba(125, 125, 125, 0.2);
+    margin: 1.5em auto;
+    width: 50%;
+}
+
+/* ── Strong / Emphasis ──────────────────────────────────────── */
+
+section strong {
+    color: #333333;
+    font-weight: 700;
+}
+
+section.invert strong {
+    color: #e0e0e0;
+}
+
+section em {
+    color: inherit;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+
+section footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 60px;
+    font-size: 14px;
+    color: #999999;
+    background: rgba(0, 0, 0, 0.03);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+section.invert footer {
+    color: #666666;
+    background: rgba(255, 255, 255, 0.03);
+    border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Lead class (centered title slides) ─────────────────────── */
+
+section.lead {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+section.lead h1 {
+    font-size: 2.6em;
+    margin-bottom: 0.3em;
+}
+
+section.lead h2 {
+    font-size: 1.4em;
+    font-weight: 400;
+    border-bottom: none;
+    padding-bottom: 0;
+    color: #777777;
+}
+
+section.lead.invert h2 {
+    color: #999999;
+}
+
+/* ── Highlight class (accent background) ────────────────────── */
+
+section.highlight {
+    background-color: #380541;
+    color: #f0e8f2;
+}
+
+section.highlight h1,
+section.highlight h2 {
+    color: #ffffff;
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+section.highlight a {
+    color: #c9a0d0;
+    border-bottom-color: rgba(201, 160, 208, 0.5);
+}
+
+section.highlight code {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #e8d5ed;
+}
+
+section.highlight ul > li::marker,
+section.highlight ol > li::marker {
+    color: #c9a0d0;
+}
+
+section.highlight strong {
+    color: #ffffff;
+}
+
+section.highlight blockquote {
+    border-left-color: #c9a0d0;
+    color: #d0c0d5;
+}
+
+section.highlight footer {
+    color: #c0a0c8;
+    background: rgba(0, 0, 0, 0.15);
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Math (KaTeX) ───────────────────────────────────────────── */
+
+section .katex {
+    font-size: 1em;
+}
+
+/* ── Selection ──────────────────────────────────────────────── */
+
+section ::selection {
+    background-color: rgba(56, 5, 65, 0.2);
+    color: inherit;
+}
+
+section.invert ::selection {
+    background-color: rgba(155, 123, 163, 0.3);
+    color: inherit;
+}
