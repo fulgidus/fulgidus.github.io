@@ -2,6 +2,7 @@
 import LanguageFlag from "./LanguageFlags.vue";
 import TagsList from "./TagsList.vue";
 import SplatImage from "./SplatImage.astro";
+import { getFormattedDate } from "@/utils/date";
 import {
   getDate,
   getHref,
@@ -142,7 +143,7 @@ const currentLang = getLangFromUrl(Astro.url.pathname);
               {post.data.video && <i text-base i-ri:film-line />}
               {post.data.pubDate && (
                 <time datetime={getDate(post.data.pubDate)}>
-                  {`${post.data.pubDate}`.split(",")[0]}
+                  {getFormattedDate(post.data.pubDate, currentLang)}
                 </time>
               )}
               {readingTimes.get(post.slug) && <span>· {readingTimes.get(post.slug)}</span>}

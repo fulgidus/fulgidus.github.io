@@ -1,17 +1,33 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { PAGE_KEY, type CollectionPages } from "@/types";
-import { getPosts } from "@/utils/posts";
+import { getPosts, removeLangFromSlug } from "@/utils/posts";
+import { defaultLang } from "@/i18n/ui";
+import { getActiveLanguages } from "@/i18n/utils";
 
 export async function getStaticPaths() {
-  const pages = await getPosts({collection: PAGE_KEY, withDrafts: true, withUnlisted: true});
-  const returnedPages = pages.map((page: any) => {
-    return {
-      params: { slug: page.slug },
-      props: { page },
-    };
-  });
-  return returnedPages;
+  const languages = getActiveLanguages();
+  const paths: any[] = [];
+
+  for (const lang of languages) {
+    const pages = await getPosts({
+      collection: PAGE_KEY,
+      lang,
+      withDrafts: true,
+      withUnlisted: true,
+    });
+
+    for (const page of pages) {
+      const baseSlug = lang === defaultLang ? page.slug : removeLangFromSlug(page.slug);
+      const slug = lang === defaultLang ? baseSlug : `${lang}/${baseSlug}`;
+      paths.push({
+        params: { slug },
+        props: { page },
+      });
+    }
+  }
+
+  return paths;
 }
 
 type Props = { page: CollectionPages };

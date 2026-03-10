@@ -1,30 +1,28 @@
-<script setup>
+<script setup lang="ts">
+    import { ui, type Languages } from '@/i18n/ui'
+
     const props = defineProps({
         lang: {
-            src: String,
+            type: String,
             required: true,
         },
         verbose: {
-            src: Boolean,
+            type: Boolean,
             required: false,
             default: false,
         },
     })
+
+    const langData = ui[props.lang as Languages]
 </script>
----
+
 <template>
-    <template v-if="props.lang">
+    <template v-if="langData">
         <span v-if="props.verbose">
-            <span v-if="props.lang.includes('pirate')">Language: Pirate 🏴‍☠️</span>
-            <span v-else-if="props.lang.includes('en')">Language: English 🇬🇧</span>
-            <span v-else-if="props.lang.includes('it')">Lingua: Italiano 🇮🇹</span>
-            <span v-else-if="props.lang.includes('zh')">语言：中文 🇨🇳</span>
+            {{ langData.language }} {{ langData.flag }}
         </span>
         <span v-else>
-            <span v-if="props.lang.includes('pirate')" important-o100 dark:c-blueGray>🏴‍☠️</span>
-            <span v-else-if="props.lang.includes('en')">🇬🇧</span>
-            <span v-else-if="props.lang.includes('it')">🇮🇹</span>
-            <span v-else-if="props.lang.includes('zh')">🇨🇳</span>
+            {{ langData.flag }}
         </span>
     </template>
     <span v-else>#NO-LANG#</span>

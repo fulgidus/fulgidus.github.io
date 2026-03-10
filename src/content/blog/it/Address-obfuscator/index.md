@@ -2,7 +2,7 @@
 title: Building a Secure Email Obfuscator Component with Vue.js and Astro
 description: Un componente Vue.js 3 per Astro che protegge gli indirizzi e-mail dagli scraping bot automatizzati
 pubDate: 2024-11-19T22:26:47
-image: ./hero-2.png
+image: "../../Address-obfuscator/hero-2.png"
 tags:
   - made-with-obsidian
   - astro
@@ -13,6 +13,8 @@ tags:
 imageAlt: Email address protection with Vue.js and Astro
 imageSize: md
 draft: false
+lang: it
+translationOf: "Address-obfuscator"
 ---
 
 # Costruire un Componente Email Obfuscator Sicuro con Vue.js e Astro

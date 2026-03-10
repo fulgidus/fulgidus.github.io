@@ -1,0 +1,163 @@
+---
+import GoBackToBlog from "@/components/GoBackToBlog.vue";
+import GiscusComments from "@/components/GiscusComments.vue";
+import LanguageFlag from "@/components/LanguageFlags.vue";
+import ReadingProgress from "@/components/ReadingProgress.vue";
+import RelatedPosts from "@/components/RelatedPosts.astro";
+import SeriesNavigation from "@/components/SeriesNavigation.astro";
+import SharePost from "@/components/SharePost.vue";
+import TagsList from "@/components/TagsList.vue";
+import { defaultLang, type Languages } from "@/i18n/ui";
+import { getLangFromSlug, getActiveLanguages, useTranslate } from "@/i18n/utils";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { type CollectionPost } from "@/types";
+import { getPosts, removeLangFromSlug } from "@/utils/posts";
+import { getOgImagePath } from "@/utils/og";
+import { getFormattedDate } from "@/utils/date";
+import { composeImageSizeClasses } from "@/utils/image";
+import SplatImage from "@/components/SplatImage.astro";
+
+export async function getStaticPaths() {
+  const languages = getActiveLanguages();
+  const paths: any[] = [];
+
+  for (const lang of languages) {
+    const posts = await getPosts({
+      lang,
+      withUnlisted: true,
+      withDrafts: true,
+    });
+
+    for (const post of posts) {
+      const slugParam = lang === defaultLang ? post.slug : removeLangFromSlug(post.slug);
+      paths.push({
+        params: {
+          lang: lang === defaultLang ? undefined : lang,
+          slug: slugParam,
+        },
+        props: { post, lang },
+      });
+    }
+  }
+
+  return paths;
+}
+
+type Props = { post: CollectionPost; lang: Languages };
+
+const { post, lang }: Props = Astro.props;
+const {
+  title,
+  image,
+  imageAlt,
+  imageSize,
+  description,
+  pubDate,
+  duration,
+  tags,
+  draft,
+  unlisted,
+  series,
+} = post.data;
+const { slug } = post;
+
+const { Content, remarkPluginFrontmatter } = await post.render();
+
+// Use remark-computed reading time, with manual duration as fallback/override
+const readingTime = duration || remarkPluginFrontmatter?.duration;
+
+// Fetch all posts in current language for related posts component
+const allLangPosts = await getPosts({ lang }) as CollectionPost[];
+
+function getDate(date: Date | string) {
+  return new Date(date).toISOString();
+}
+
+const articleImage = {
+  src: image?.src ?? "",
+  alt: imageAlt,
+};
+
+const ogImage = await getOgImagePath(slug, {
+  title,
+  description,
+  pubDate,
+});
+
+const t = useTranslate(lang);
+---
+
+<!-- ACTUAL POST RENDERER -->
+<BaseLayout
+  title={title}
+  description={description}
+  image={articleImage}
+  ogImage={ogImage}
+  pageType="article"
+  imageSize={imageSize}
+  noindex={unlisted}
+  postSlug={slug}
+  pubDate={pubDate}
+  tags={tags}
+  readingTime={readingTime}
+>
+  <ReadingProgress client:only="vue" />
+  <article class="prose" data-pagefind-body>
+    <div class="max-w-4xl mx-auto relative">
+      <h1 transition:name={`post-title-${slug.replace(/\//g, '-')}`}>
+        {title}
+      </h1>
+      {
+        draft && (
+          <div h-initial class="flex flex-wrap flex-gap-1 important-m-0">
+            <span class="important-m-0 important-p-0 underline text-red">
+              {t("slug.draft")}
+            </span>
+          </div>
+        )
+      }
+      <p h-initial class="flex flex-wrap flex-gap-1" data-pagefind-ignore>
+        {
+          pubDate && (
+            <time datetime={getDate(pubDate)}>{getFormattedDate(pubDate, lang)}</time>
+          )
+        }
+        {readingTime && <span>· {readingTime}</span>}
+        {"· "}
+        <LanguageFlag lang={getLangFromSlug(slug)} client:only="vue" verbose />
+        <SharePost shareTitle={title} client:only="vue" />
+      </p>
+    </div>
+    {
+      image && (
+        <SplatImage
+          src={image}
+          alt={imageAlt || ""}
+          loading="lazy"
+          class={composeImageSizeClasses(imageSize)}
+          format="webp"
+        />
+      )
+    }
+    <Content />
+    {series && <SeriesNavigation currentSlug={slug} series={series} lang={lang} />}
+    <div class="!mt-10 !mb--10" data-pagefind-ignore>
+      <SharePost shareTitle={title} client:only="vue" />
+      {
+        tags && tags.length > 0 && (
+          <span class="flex flex-wrap flex-gap-1 py1rem !mt-10 !mb--10">
+            <TagsList tags={tags} link={true} verbose noDot />
+          </span>
+        )
+      }
+    </div>
+  </article>
+
+  {!draft && !unlisted && (
+    <RelatedPosts currentPost={post} allPosts={allLangPosts} lang={lang} />
+  )}
+
+  {!draft && !unlisted && <GiscusComments client:only="vue" />}
+
+  <GoBackToBlog client:only="vue" />
+</BaseLayout>

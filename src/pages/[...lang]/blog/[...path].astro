@@ -1,0 +1,60 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import ListPosts from '@/components/ListPosts.astro'
+import siteConfig from '@/site-config'
+import { getPosts } from '@/utils/posts'
+import { useTranslate, getActiveLanguages } from '@/i18n/utils'
+import { defaultLang, type Languages } from '@/i18n/ui'
+
+export async function getStaticPaths() {
+  const languages = getActiveLanguages()
+  const paths: any[] = []
+
+  for (const lang of languages) {
+    const blogLinks = siteConfig.page.blogLinks[lang as keyof typeof siteConfig.page.blogLinks]
+    if (!blogLinks) continue
+
+    const basePath = lang === defaultLang ? '/blog' : `/${lang}/blog`
+    for (const nav of blogLinks) {
+      const href = nav.href.replace(basePath, '')
+      paths.push({
+        params: {
+          lang: lang === defaultLang ? undefined : lang,
+          path: href === '' ? undefined : href.replace(/^\/+|\/+$/g, ''),
+        },
+        props: { lang },
+      })
+    }
+  }
+
+  return paths
+}
+
+const { lang } = Astro.props as { lang: Languages }
+const { path } = Astro.params
+const t = useTranslate(lang)
+const posts = await getPosts({ path, lang })
+const blogLinks = siteConfig.page.blogLinks[lang as keyof typeof siteConfig.page.blogLinks]
+
+function activeLink(pathname: string) {
+  return Astro.url.pathname.replace(/\/+/g, '/').replace(/\/$/, '') === pathname
+}
+---
+
+<BaseLayout title={t('blog.title')} description={t('blog.description')} pageNav={true} pageOperate={true}>
+  <h1 class="sr-only">Blog</h1>
+  <div class="flex flex-col gap-2 sm:flex-row sm:gap-4 flex-wrap mb-8">
+    {
+      blogLinks.map((nav) => (
+        <a
+          aria-label={nav.text}
+          class={`nav-link text-3xl font-bold ${activeLink(nav.href) ? 'opacity-80' : 'opacity-30 hover:opacity-50'}`}
+          href={nav.href}
+        >
+          {nav.text}
+        </a>
+      ))
+    }
+  </div>
+  <ListPosts list={posts} lang={lang} />
+</BaseLayout>

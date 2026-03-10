@@ -1,7 +1,7 @@
 ---
 title: "Guida al Project Management: Un'Analisi di Principi e Pratiche"
 description: Un'esplorazione approfondita dei fondamenti e delle metodologie avanzate del project management, che copre l'intero ciclo di vita del progetto dall'avvio alla chiusura. Questa guida completa combina framework teorici con strategie di implementazione pratica, presentando analisi dettagliate di PESTLE, Work Breakdown Structure (WBS), framework di gestione del rischio e fattori critici di successo che guidano la realizzazione del progetto. Che tu sia un project manager esperto o desideri rafforzare le tue capacità di gestione dei progetti, questa guida fornisce un approccio strutturato per padroneggiare l'arte e la scienza dell'esecuzione efficace dei progetti.
-image: cover.png
+image: "../../Project Management/cover.png"
 imageAlt: Un project manager seduto alla scrivania che gestisce un progetto
 imageSize: md
 pubDate: 2024-12-09T21:20:01
@@ -22,6 +22,7 @@ tags:
     - organizational-development
 draft: false
 lang: it
+translationOf: "Project Management"
 unlisted: false
 ---
 
@@ -31,7 +32,7 @@ Il project management è una disciplina sofisticata che richiede un'attenta cons
 
 ## La Fase Critica di Avvio
 
-![](Initiation_template_large.png)
+![](../../Project%20Management/Initiation_template_large.png)
 
 La fase di avvio stabilisce le fondamenta per il successo del progetto attraverso un'attenta considerazione degli elementi fondamentali.
 
@@ -68,7 +69,7 @@ La fase di avvio stabilisce le fondamenta per il successo del progetto attravers
 
 ## Fase di Pianificazione Completa
 
-![Planning](Planning.jpg)
+![Planning](../../Project%20Management/Planning.jpg)
 
 La fase di pianificazione rappresenta un punto critico dove il successo del progetto è largamente determinato attraverso un'attenta considerazione di molteplici elementi.
 
@@ -94,7 +95,7 @@ La fase di pianificazione rappresenta un punto critico dove il successo del prog
 
 ### Work Breakdown Structure (WBS)
 
-![](Pasted%20image%2020241209223405.png)
+![](../../Project%20Management/Pasted%20image%2020241209223405.png)
 
 La WBS serve come pietra angolare della pianificazione del progetto, fornendo:
 
@@ -126,7 +127,7 @@ La WBS serve come pietra angolare della pianificazione del progetto, fornendo:
 
 ## Sviluppo della Programmazione e Gestione del Tempo
 
-![](Pasted%20image%2020241209224144.png)
+![](../../Project%20Management/Pasted%20image%2020241209224144.png)
 
 ### Le Cinque Fasi dello Sviluppo della Programmazione
 
@@ -162,7 +163,7 @@ La WBS serve come pietra angolare della pianificazione del progetto, fornendo:
 
 ## Framework di Gestione dei Costi
 
-![](Pasted%20image%2020241209231657.png)
+![](../../Project%20Management/Pasted%20image%2020241209231657.png)
 
 ### Gestione del Vincolo Triplo
 
@@ -208,7 +209,7 @@ La WBS serve come pietra angolare della pianificazione del progetto, fornendo:
 
 ### Framework di Analisi PESTLE
 
-![](image-2.png)
+![](../../Project%20Management/image-2.png)
 
 1. **Fattori Politici**
    - Politiche governative
@@ -248,7 +249,7 @@ La WBS serve come pietra angolare della pianificazione del progetto, fornendo:
 
 ### Processo di Gestione Continua del Rischio
 
-![](image-3.png)
+![](../../Project%20Management/image-3.png)
 
 1. **Identificazione dei Rischi**
    - Analisi sistematica
@@ -296,7 +297,7 @@ La WBS serve come pietra angolare della pianificazione del progetto, fornendo:
 
 ## Framework di Chiusura del Progetto
 
-![Closure](Closure.jpg)
+![Closure](../../Project%20Management/Closure.jpg)
 
 ### Componenti di Chiusura
 

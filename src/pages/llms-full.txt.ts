@@ -13,7 +13,7 @@ export async function GET(context: APIContext) {
         const frontmatter = [
             `title: ${post.data.title}`,
             post.data.description ? `description: ${post.data.description}` : null,
-            post.data.pubDate ? `date: ${post.data.pubDate}` : null,
+            post.data.pubDate ? `date: ${post.data.pubDate instanceof Date ? post.data.pubDate.toISOString() : post.data.pubDate}` : null,
             post.data.tags?.length ? `tags: ${post.data.tags.join(', ')}` : null,
         ].filter(Boolean).join('\n')
 
@@ -33,7 +33,7 @@ ${post.body?.trim() ?? ''}
         const frontmatter = [
             `title: ${post.data.title}`,
             post.data.description ? `description: ${post.data.description}` : null,
-            post.data.pubDate ? `date: ${post.data.pubDate}` : null,
+            post.data.pubDate ? `date: ${post.data.pubDate instanceof Date ? post.data.pubDate.toISOString() : post.data.pubDate}` : null,
             post.data.tags?.length ? `tags: ${post.data.tags.join(', ')}` : null,
         ].filter(Boolean).join('\n')
 

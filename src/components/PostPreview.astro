@@ -19,7 +19,7 @@ const postHref = `${langPrefix}/posts/${removeLangFromSlug(post.slug)}/`;
 ---
 
 <li class="flex flex-col gap-2 sm:flex-row sm:gap-x-4 [&_q]:basis-full">
-  <FormattedDate class="min-w-[120px]" date={postDate} />
+  <FormattedDate class="min-w-[120px]" date={postDate} lang={lang} />
   <Tag>
     {
       post.data.draft && (

@@ -4,6 +4,7 @@ description: The Google Data Analytics Certificate Module 1 course material is a
 pubDate: 2024-12-04T06:38:22
 unlisted: false
 draft: true
+lang: en
 ---
 
 ## Program Introduction 🚀

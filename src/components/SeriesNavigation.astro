@@ -1,6 +1,7 @@
 ---
 import type { CollectionPost } from "@/types";
 import type { Languages } from "@/i18n/ui";
+import { useTranslate } from "@/i18n/utils";
 import { getPosts } from "@/utils/posts";
 
 interface Props {
@@ -10,6 +11,7 @@ interface Props {
 }
 
 const { currentSlug, series, lang = "en" } = Astro.props;
+const t = useTranslate(lang);
 
 // Fetch all posts in this series for the current language
 const allPosts = await getPosts({ lang, withDrafts: false });
@@ -39,20 +41,20 @@ function getPostHref(post: CollectionPost): string {
 {seriesPosts.length > 1 && (
   <nav class="series-nav my-8 border border-solid border-gray-300 dark:border-gray-700 rounded-lg p-4" aria-label="Post series navigation">
     <div class="series-header mb-3">
-      <span class="text-sm opacity-60 uppercase tracking-wider font-semibold">Series</span>
+      <span class="text-sm opacity-60 uppercase tracking-wider font-semibold">{t('series.label')}</span>
       <h3 class="text-lg font-bold mt-1 mb-0 !opacity-100">{series}</h3>
-      <span class="text-sm opacity-50">Part {currentPart} of {totalParts}</span>
+      <span class="text-sm opacity-50">{t('series.partOf').replace('{current}', String(currentPart)).replace('{total}', String(totalParts))}</span>
     </div>
 
     <details class="mb-3">
       <summary class="cursor-pointer text-sm opacity-70 hover:opacity-100 transition-opacity select-none">
-        All parts in this series
+        {t('series.allParts')}
       </summary>
       <ol class="mt-2 !list-decimal !pl-6">
         {seriesPosts.map((post: CollectionPost, i: number) => (
           <li class={`text-sm my-1 ${i === currentIndex ? 'font-bold' : ''}`}>
             {i === currentIndex ? (
-              <span>{post.data.title} (current)</span>
+              <span>{post.data.title} {t('series.current')}</span>
             ) : (
               <a href={getPostHref(post)} class="prose-link">{post.data.title}</a>
             )}
@@ -64,14 +66,14 @@ function getPostHref(post: CollectionPost): string {
     <div class="flex justify-between items-center gap-4 flex-wrap">
       {prevPost ? (
         <a href={getPostHref(prevPost)} class="prose-link text-sm flex items-center gap-1">
-          <i class="i-ri-arrow-left-line" /> Previous: {prevPost.data.title}
+          <i class="i-ri-arrow-left-line" /> {t('series.previous')} {prevPost.data.title}
         </a>
       ) : (
         <span />
       )}
       {nextPost ? (
         <a href={getPostHref(nextPost)} class="prose-link text-sm flex items-center gap-1 text-right">
-          Next: {nextPost.data.title} <i class="i-ri-arrow-right-line" />
+          {t('series.next')} {nextPost.data.title} <i class="i-ri-arrow-right-line" />
         </a>
       ) : (
         <span />

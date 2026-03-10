@@ -1,4 +1,3 @@
-import siteConfig from '@/site-config'
 import { defineCollection, z } from 'astro:content'
 
 const imageSizeSchema = z.union([
@@ -44,10 +43,11 @@ const blog = defineCollection({
         pubDate: z
             .string()
             .or(z.date())
-            .transform((val: string | number | Date) => new Date(val).toLocaleDateString(siteConfig.date.locale, siteConfig.date.options)),
+            .transform((val: string | number | Date) => new Date(val)),
         draft: z.boolean().default(false),
         unlisted: z.boolean().default(false),
-        // lang: supportedLanguagesSchema,
+        lang: z.enum(['en', 'it']).default('en'),
+        translationOf: z.string().optional(),
         tags: z.array(z.string()).default([]),
         redirect: z.string().optional(),
         video: z.boolean().default(false),

@@ -6,8 +6,9 @@ import Header from "@/components/Header.vue";
 import HeaderAstro from "@/components/Header.astro";
 import Footer from "@/components/FooterComponent.vue";
 import ScrollToTop from "@/components/ScrollToTop.vue";
-import { getLangFromUrl } from "@/i18n/utils";
+import { getLangFromUrl, useTranslate } from "@/i18n/utils";
 import { HONEYPOT_ENTRY } from "@/lib/tarpit";
+import { getPageTranslations } from "@/utils/translations";
 interface Props {
   title?: string;
   description?: string;
@@ -19,14 +20,16 @@ interface Props {
   pageOperate?: boolean;
   noindex?: boolean;
   postSlug?: string;
-  pubDate?: string;
+  pubDate?: string | Date;
   tags?: string[];
   readingTime?: string;
 }
 const { ...head } = Astro.props;
-const { imageSize } = Astro.props;
+const { imageSize, postSlug } = Astro.props;
 
 const lang = getLangFromUrl(Astro.url);
+const t = useTranslate(lang);
+const pageTranslations = await getPageTranslations(Astro.url, postSlug);
 ---
 
 <!doctype html>
@@ -36,6 +39,9 @@ const lang = getLangFromUrl(Astro.url);
     <ViewTransitions />
   </head>
   <body class="bg-main text-main min-h-screen font-sans w-full bg-dot">
+    <script is:inline define:vars={{ pageTranslationsJson: JSON.stringify(pageTranslations) }}>
+      window.__pageTranslations__ = JSON.parse(pageTranslationsJson);
+    </script>
     <a href="#main-content" class="skip-to-content">Skip to content</a>
     <Header client:only="vue" />
     <HeaderAstro />
@@ -45,7 +51,7 @@ const lang = getLangFromUrl(Astro.url);
       transition:animate={fade({ duration: "0.4s" })}
     >
       <slot />
-      <ScrollToTop client:only="vue" />
+      <ScrollToTop ariaLabel={t('scrollToTop.ariaLabel')} client:only="vue" />
     </main>
     <div class="max-w-4xl mx-auto sm:pt-18 pt-12 pb-16 px-6 relative">
       <Footer client:only="vue" />
