@@ -35,6 +35,7 @@ export const ui = {
         'downloadButton.cv':'my CV',
         'sharePost.button':'Share this post',
         'sharePost.copy':'Copy post link',
+        'sharePost.mastodon':'Share on Mastodon',
         'og.cta': 'Read more →',
     },
     it: {
@@ -73,6 +74,7 @@ export const ui = {
         'downloadButton.cv':'il mio CV',
         'sharePost.button':'Condividi questo post',
         'sharePost.copy':'Copia il link',
+        'sharePost.mastodon':'Condividi su Mastodon',
         'og.cta': 'Leggi di più →',
     },
     nl: {
@@ -106,6 +108,7 @@ export const ui = {
         'downloadButton.cv':'mijn CV',
         'sharePost.button':'Deel dit bericht',
         'sharePost.copy':'Kopieer link',
+        'sharePost.mastodon':'Deel op Mastodon',
         'og.cta': 'Lees meer →',
     },
     
