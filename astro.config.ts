@@ -17,12 +17,13 @@ export default defineConfig({
     server: {
         port: 1987,
     },
-    // i18n: { // This breaks the site for some reason, it's not needed anyway
-    //     defaultLocale: 'en',
-    //     locales: availableLanguages,
-    //     routing: 'manual',
-    //     fallback: availableLanguages['en'],
-    // },
+    i18n: {
+        defaultLocale: 'en',
+        locales: ['en', 'it'],
+        routing: {
+            prefixDefaultLocale: false,
+        },
+    },
     integrations: [
         mdx(), 
         vue(), 
