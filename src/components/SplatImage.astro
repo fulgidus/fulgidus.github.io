@@ -2,11 +2,10 @@
 /**
  * SplatImage — Drop-in replacement for Astro's <Image> with SplatHash blur placeholder.
  *
- * Generates a 32x32 blurry preview at build time and applies it as a CSS background
- * directly on the <img> element. The image's own width/height attributes (set by Astro)
- * ensure correct sizing, and the background shows through until the real image loads.
- * No wrapper div — all classes apply directly to the <img>, so layout classes like
- * float, object-cover, aspect-ratio, max-width all work exactly as with plain <Image>.
+ * At build time, encodes the image into a 16-byte SplatHash stored in `data-splat`.
+ * A CSS background-color (average color from the hash) provides an immediate
+ * no-JS fallback. A client-side decoder (splat-decode.ts) reads `data-splat`,
+ * decodes it to a 32x32 blur, and sets it as a canvas-rendered background-image.
  *
  * Usage:
  *   <SplatImage src={image} alt="description" format="webp" class="my-class" />
@@ -31,26 +30,27 @@ interface Props {
 const { src, alt, style, ...rest } = Astro.props;
 
 // Generate the blur placeholder at build time
-let placeholderStyle: string | undefined;
+let splatHash: string | undefined;
+let avgColorStyle: string | undefined;
 try {
-  // fsPath is available on ImageMetadata from content collections
   if ((src as any).fsPath) {
-    const uri = await generatePlaceholder((src as any).fsPath);
-    placeholderStyle = `background-image:url(${uri});background-size:cover;background-repeat:no-repeat;`;
+    const { hash, avgColor } = await generatePlaceholder((src as any).fsPath);
+    splatHash = hash;
+    avgColorStyle = `background-color:${avgColor};`;
   }
 } catch (e) {
   // Silently fall back to no placeholder if encoding fails
   console.warn(`[SplatImage] Failed to generate placeholder for ${alt}:`, e);
 }
 
-// Merge placeholder background with any user-provided inline style
-const mergedStyle = [placeholderStyle, style].filter(Boolean).join('') || undefined;
+// Merge avg-color background with any user-provided inline style
+const mergedStyle = [avgColorStyle, style].filter(Boolean).join('') || undefined;
 ---
 
 <Image
   src={src}
   alt={alt}
   style={mergedStyle}
-  data-splat={placeholderStyle ? '' : undefined}
+  data-splat={splatHash || undefined}
   {...rest}
 />

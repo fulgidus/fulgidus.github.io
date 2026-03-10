@@ -42,6 +42,7 @@ const pageTranslations = await getPageTranslations(Astro.url, postSlug);
     <script is:inline define:vars={{ pageTranslationsJson: JSON.stringify(pageTranslations) }}>
       window.__pageTranslations__ = JSON.parse(pageTranslationsJson);
     </script>
+    <script src="@/scripts/splat-decode.ts"></script>
     <a href="#main-content" class="skip-to-content">Skip to content</a>
     <Header client:only="vue" />
     <HeaderAstro />
