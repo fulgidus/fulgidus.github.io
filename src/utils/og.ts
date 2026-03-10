@@ -199,7 +199,7 @@ async function renderOgPng(post: { title: string; description?: string; pubDate?
 }
 
 function computeShortHash(data: Buffer): string {
-    return createHash('sha256').update(data).digest('hex').slice(0, 8)
+    return createHash('sha256').update(new Uint8Array(data)).digest('hex').slice(0, 8)
 }
 
 /**
