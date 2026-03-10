@@ -22,17 +22,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Install, build, and prepare the site for deployment
-      - name: Install, build, and upload your site
-        uses: withastro/action@v3
+      # Step 2: Set up pnpm and Node.js for testing
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
         with:
-          # Adjust if your project root is different
-          path: .
-          node-version: 20 # Default version of Node.js to use
-          package-manager: pnpm@latest # Use pnpm as the package manager
-          
+          version: latest
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      # Step 3: Run tests before building
       - name: Testing
         run: pnpm run test
+
+      # Step 4: Build and upload the site for deployment
+      - name: Build and upload your site
+        uses: withastro/action@v3
+        with:
+          path: .
+          node-version: 20
+          package-manager: pnpm@latest
 
   Deploy:
     # Deploy job depends on the build job

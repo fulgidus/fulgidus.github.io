@@ -30,7 +30,7 @@ export async function GET(context: Context) {
         }),
         customData: [
             '<language>it-IT</language>',
-            `<atom:link href="${new URL('rss.xml', context.site)}" rel="self" type="application/rss+xml" />`
+            `<atom:link href="${new URL('it/rss.xml', context.site)}" rel="self" type="application/rss+xml" />`
         ].join(''),
         stylesheet: '/pretty-feed-v3-it.xsl',
     })

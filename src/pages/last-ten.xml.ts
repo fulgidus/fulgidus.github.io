@@ -30,5 +30,9 @@ export async function GET(context: Context) {
                 categories: item.data.tags,
             }
         }),
+        customData: [
+            `<atom:link href="${new URL('last-ten.xml', context.site)}" rel="self" type="application/rss+xml" />`
+        ].join(''),
+        stylesheet: '/pretty-feed-v3.xsl',
     })
 }
