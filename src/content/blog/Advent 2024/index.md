@@ -5,7 +5,6 @@ image: advent.png
 imageAlt: Screenshot of the 2024 advent calendar
 imageSize: lg
 pubDate: 2024-12-01T12:00:00
-duration: 15m
 tags:
   - made-with-obsidian
   - programming-challenges

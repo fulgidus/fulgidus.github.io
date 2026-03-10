@@ -5,7 +5,6 @@ image: image.png
 imageAlt: Data viz
 imageSize: md
 pubDate: 2024-12-10T13:06:01
-duration: 0m
 tags:
     - professional-development
 draft: true

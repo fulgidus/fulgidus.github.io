@@ -5,7 +5,6 @@ image: ./zignet-cover.png
 imageAlt: "Architettura ibrida di ZigNet che combina compilatore Zig e LLM"
 imageSize: md
 pubDate: 2025-11-01T10:30:00
-duration: 12m
 tags:
 - zig
 - mcp

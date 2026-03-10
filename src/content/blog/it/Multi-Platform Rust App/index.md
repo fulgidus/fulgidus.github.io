@@ -5,7 +5,6 @@ image: "1.png"
 imageAlt: "Un'illustrazione vettoriale pulita e minimalista che rappresenta lo sviluppo software multi-piattaforma utilizzando Rust"
 imageSize: "md"
 pubDate: 2024-03-29
-duration: 13m
 tags:
   - made-with-obsidian
   - rust

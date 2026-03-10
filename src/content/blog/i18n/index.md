@@ -5,7 +5,6 @@ image: i18n.png
 imageAlt: Astro and VueJS logos surrounded by a circle of random national flags
 imageSize: md
 pubDate: 2024-11-27T09:52:49
-duration: 15m
 tags:
   - astro
   - vuejs

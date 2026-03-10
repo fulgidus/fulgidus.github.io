@@ -5,7 +5,6 @@ image: ./cover.png
 imageAlt: Una stilizzazione di un Dino che salta un ostacolo
 imageSize: md
 pubDate: 2025-04-12T08:50:33
-duration: 13m
 tags:
   - rust
   - typescript

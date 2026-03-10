@@ -5,7 +5,6 @@ image: cover.png
 imageAlt: Un project manager seduto alla scrivania che gestisce un progetto
 imageSize: md
 pubDate: 2024-12-09T21:20:01
-duration: 25m
 tags:
     - made-with-obsidian
     - best-practices

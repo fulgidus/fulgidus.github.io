@@ -5,7 +5,6 @@ image: rolldown.jpeg
 imageAlt: "A futuristic cityscape at night with neon lights, symbolizing innovation and technology. In the foreground, code appears in floating holographic screens, with lines of JavaScript and Rust code highlighting the cutting-edge nature of Rolldown."
 imageSize: md
 pubDate: 2024-11-22T19:08:13
-duration: 8m
 tags:
   - made-with-obsidian
   - bundler

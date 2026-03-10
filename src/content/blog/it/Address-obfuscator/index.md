@@ -12,7 +12,6 @@ tags:
   - tutorial
 imageAlt: Email address protection with Vue.js and Astro
 imageSize: md
-duration: 8m
 draft: false
 ---
 

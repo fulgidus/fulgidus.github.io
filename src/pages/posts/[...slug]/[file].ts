@@ -12,6 +12,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export async function GET(_context: APIContext) {
     const { post } = _context.props as { post: CollectionPost }
+    const { remarkPluginFrontmatter } = await post.render()
+    const duration = post.data.duration || remarkPluginFrontmatter?.duration
 
     const esc = (s: string) => s.replace(/"/g, '\\"')
     const frontmatter = [
@@ -19,7 +21,7 @@ export async function GET(_context: APIContext) {
         `title: "${esc(post.data.title)}"`,
         post.data.description ? `description: "${esc(post.data.description)}"` : null,
         post.data.pubDate ? `date: "${post.data.pubDate}"` : null,
-        post.data.duration ? `duration: "${esc(post.data.duration)}"` : null,
+        duration ? `duration: "${esc(duration)}"` : null,
         post.data.tags?.length ? `tags: [${post.data.tags.map(t => `"${esc(t)}"`).join(', ')}]` : null,
         `---`,
     ].filter(Boolean).join('\n')

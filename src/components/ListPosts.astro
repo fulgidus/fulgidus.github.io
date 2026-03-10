@@ -25,6 +25,19 @@ export interface Props {
 
 const { list = [], lang } = Astro.props;
 
+// Pre-compute reading times for all posts via remark plugin
+const readingTimes = new Map<string, string>();
+for (const post of list) {
+  if (post.data.duration) {
+    readingTimes.set(post.slug, post.data.duration);
+  } else {
+    const { remarkPluginFrontmatter } = await post.render();
+    if (remarkPluginFrontmatter?.duration) {
+      readingTimes.set(post.slug, remarkPluginFrontmatter.duration);
+    }
+  }
+}
+
 function purgePostsFromUnlisted(l: CollectionPost[]) {
   const sorted = l.reduce((acc, element) => {
     if (element.data.unlisted) {
@@ -132,7 +145,7 @@ const currentLang = getLangFromUrl(Astro.url.pathname);
                   {`${post.data.pubDate}`.split(",")[0]}
                 </time>
               )}
-              {post.data.duration && <span>· {post.data.duration}</span>}
+              {readingTimes.get(post.slug) && <span>· {readingTimes.get(post.slug)}</span>}
               <TagsList tags={post.data.tags} link={false} verbose={false} noDot={false} />
               {"· "}
               <LanguageFlag lang={getLangFromSlug(post.slug)} verbose={false} />

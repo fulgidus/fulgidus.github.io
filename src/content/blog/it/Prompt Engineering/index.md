@@ -5,7 +5,6 @@ image: ./cover.jpg
 imageAlt: Un'illustrazione stilizzata di una persona che digita su una tastiera con una lampadina che si accende sopra la sua testa, circondata da frammenti di codice ed elementi relativi all'IA
 imageSize: md
 pubDate: 2024-12-17T22:50:33
-duration: 5m
 tags:
   - made-with-obsidian
   - best-practices

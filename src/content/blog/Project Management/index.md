@@ -5,7 +5,6 @@ image: cover.png
 imageAlt: A project manager sitting at a desk managing a project
 imageSize: md
 pubDate: 2024-12-09T21:20:01
-duration: 25m
 tags:
     - made-with-obsidian
     - best-practices

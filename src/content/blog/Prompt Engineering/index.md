@@ -5,7 +5,6 @@ image: ./cover.jpg
 imageAlt: A stylized illustration of a person typing on a keyboard with a lightbulb turning on above their head, surrounded by code snippets and AI-related elements
 imageSize: md
 pubDate: 2024-12-17T22:50:33
-duration: 5m
 tags:
   - made-with-obsidian
   - best-practices
