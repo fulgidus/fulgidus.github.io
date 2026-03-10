@@ -2,17 +2,20 @@
 /**
  * MarpViewer — Vue slide viewer for pre-compiled Marp presentations.
  *
- * Loads self-contained Marp HTML from /marp/{name}.html and displays
- * slides one-at-a-time with navigation controls.
+ * Renders the compiled Marp HTML inside an <iframe> for complete CSS
+ * isolation (Marp's universal CSS reset and theme styles must not leak
+ * into the host page). Navigation is controlled via postMessage.
  *
  * Features:
- * - Keyboard navigation (Left/Right arrows, Home/End)
- * - Touch swipe navigation
+ * - iframe-isolated rendering (no CSS leaks)
+ * - Keyboard navigation (Left/Right, Home/End, Space, F for fullscreen)
+ * - Touch swipe navigation (via transparent overlay)
+ * - Click navigation (left 25% = prev, right 75% = next)
  * - Fullscreen toggle
+ * - Dark mode sync (site theme → Marp .invert class)
  * - Slide counter
- * - Responsive sizing
  */
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { defaultLang, type Languages } from '@/i18n/ui'
 import { getLangFromUrl, useTranslate } from '@/i18n/utils'
 
@@ -36,20 +39,26 @@ const t = computed(() => useTranslate(currentLang.value))
 // Slide state
 const currentSlide = ref(0)
 const totalSlides = ref(0)
-const slideHtmlParts = ref<string[]>([])
-const slideCss = ref('')
 const isLoading = ref(true)
 const loadError = ref<string | null>(null)
 const isFullscreen = ref(false)
+const isDark = ref(false)
+const iframeReady = ref(false)
 
 // DOM refs
 const viewerRef = ref<HTMLElement | null>(null)
-const slideContainerRef = ref<HTMLElement | null>(null)
+const iframeRef = ref<HTMLIFrameElement | null>(null)
+
+// The complete HTML to load in the iframe
+const iframeSrcdoc = ref('')
 
 // Touch handling
 const touchStartX = ref(0)
 const touchStartY = ref(0)
 const SWIPE_THRESHOLD = 50
+
+// Dark mode observer
+let darkModeObserver: MutationObserver | null = null
 
 // Aspect ratio computed
 const paddingBottom = computed(() => {
@@ -57,12 +66,20 @@ const paddingBottom = computed(() => {
 })
 
 /**
- * Load and parse the compiled Marp HTML.
- * Splits it into individual slide sections.
+ * Detect the site's current dark mode state from the root element class.
+ */
+function detectDarkMode() {
+    isDark.value = document.documentElement.classList.contains('dark')
+}
+
+/**
+ * Load the compiled Marp HTML file, inject slide navigation
+ * CSS/JS, and set it as the iframe's srcdoc.
  */
 async function loadPresentation() {
     isLoading.value = true
     loadError.value = null
+    iframeReady.value = false
 
     try {
         const response = await fetch(`/marp/${props.name}.html`)
@@ -70,31 +87,58 @@ async function loadPresentation() {
             throw new Error(`Failed to load presentation: ${response.status}`)
         }
 
-        const html = await response.text()
+        let html = await response.text()
 
-        // Extract CSS from <style> tags
-        const styleMatches = html.match(/<style[^>]*>([\s\S]*?)<\/style>/gi)
-        if (styleMatches) {
-            slideCss.value = styleMatches
-                .map(s => s.replace(/<\/?style[^>]*>/gi, ''))
-                .join('\n')
-        }
+        // Count slides from the source HTML
+        const svgMatches = html.match(/<svg[^>]*data-marpit-svg/g)
+        totalSlides.value = svgMatches ? svgMatches.length : 0
 
-        // Extract individual slides from the Marp HTML
-        // Marp renders slides as <svg data-marpit-svg viewBox="..."><foreignObject><section>...</section></foreignObject></svg>
-        const parser = new DOMParser()
-        const doc = parser.parseFromString(html, 'text/html')
-        const svgSlides = doc.querySelectorAll('svg[data-marpit-svg]')
+        // Inject slide navigation CSS — hide all slides except the active one
+        const navCss = [
+            '<style id="marp-nav">',
+            'body { margin: 0; overflow: hidden; }',
+            'div.marpit > svg[data-marpit-svg] { display: none !important; }',
+            'div.marpit > svg[data-marpit-svg].marp-active {',
+            '  display: block !important;',
+            '  width: 100vw !important;',
+            '  height: 100vh !important;',
+            '}',
+            '</style>',
+        ].join('\n')
 
-        if (svgSlides.length > 0) {
-            slideHtmlParts.value = Array.from(svgSlides).map(svg => svg.outerHTML)
-        } else {
-            // Fallback: try to find <section> elements
-            const sections = doc.querySelectorAll('section')
-            slideHtmlParts.value = Array.from(sections).map(s => s.outerHTML)
-        }
+        // Inject navigation script — listens for postMessage commands
+        // Note: closing script tag is split to avoid breaking the Vue SFC parser
+        const closeScriptTag = '<' + '/script>'
+        const navScript = [
+            '<script>',
+            '(function() {',
+            '  function showSlide(n) {',
+            '    document.querySelectorAll("svg[data-marpit-svg]").forEach(function(s, i) {',
+            '      if (i === n) s.classList.add("marp-active");',
+            '      else s.classList.remove("marp-active");',
+            '    });',
+            '  }',
+            '  function setDarkMode(dark) {',
+            '    document.querySelectorAll("section").forEach(function(s) {',
+            '      if (dark) s.classList.add("invert");',
+            '      else s.classList.remove("invert");',
+            '    });',
+            '  }',
+            '  window.addEventListener("message", function(e) {',
+            '    if (!e.data) return;',
+            '    if (e.data.type === "marp-goto") showSlide(e.data.slide);',
+            '    if (e.data.type === "marp-theme") setDarkMode(e.data.dark);',
+            '  });',
+            '  showSlide(0);',
+            '})();',
+            closeScriptTag,
+        ].join('\n')
 
-        totalSlides.value = slideHtmlParts.value.length
+        // Inject into the HTML document
+        html = html.replace('</head>', navCss + '\n</head>')
+        html = html.replace('</body>', navScript + '\n</body>')
+
+        iframeSrcdoc.value = html
         currentSlide.value = 0
         isLoading.value = false
     } catch (e: unknown) {
@@ -103,26 +147,53 @@ async function loadPresentation() {
     }
 }
 
-// Navigation
+/**
+ * Send a message to the iframe's content window.
+ */
+function postToIframe(message: Record<string, unknown>) {
+    iframeRef.value?.contentWindow?.postMessage(message, '*')
+}
+
+/**
+ * Sync current slide index and dark mode state to the iframe.
+ */
+function syncState() {
+    postToIframe({ type: 'marp-goto', slide: currentSlide.value })
+    postToIframe({ type: 'marp-theme', dark: isDark.value })
+}
+
+/**
+ * Called when the iframe finishes loading its srcdoc content.
+ */
+function onIframeLoad() {
+    iframeReady.value = true
+    // Give the iframe a moment to initialize its script
+    setTimeout(syncState, 50)
+}
+
+// ── Navigation ──────────────────────────────────────────────
+
+function goToSlide(n: number) {
+    if (n >= 0 && n < totalSlides.value) {
+        currentSlide.value = n
+        postToIframe({ type: 'marp-goto', slide: n })
+    }
+}
+
 function nextSlide() {
     if (currentSlide.value < totalSlides.value - 1) {
-        currentSlide.value++
+        goToSlide(currentSlide.value + 1)
     }
 }
 
 function prevSlide() {
     if (currentSlide.value > 0) {
-        currentSlide.value--
+        goToSlide(currentSlide.value - 1)
     }
 }
 
-function goToSlide(n: number) {
-    if (n >= 0 && n < totalSlides.value) {
-        currentSlide.value = n
-    }
-}
+// ── Keyboard ────────────────────────────────────────────────
 
-// Keyboard handling
 function handleKeydown(e: KeyboardEvent) {
     // Only handle if viewer is focused or in fullscreen
     if (!isFullscreen.value && !viewerRef.value?.contains(document.activeElement)) {
@@ -162,7 +233,8 @@ function handleKeydown(e: KeyboardEvent) {
     }
 }
 
-// Touch handling
+// ── Touch / Click ───────────────────────────────────────────
+
 function handleTouchStart(e: TouchEvent) {
     touchStartX.value = e.touches[0].clientX
     touchStartY.value = e.touches[0].clientY
@@ -179,7 +251,22 @@ function handleTouchEnd(e: TouchEvent) {
     }
 }
 
-// Fullscreen
+/**
+ * Click on the slide overlay: left 25% = previous, right 75% = next.
+ */
+function handleOverlayClick(e: MouseEvent) {
+    const target = e.currentTarget as HTMLElement
+    const rect = target.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    if (x < rect.width * 0.25) {
+        prevSlide()
+    } else {
+        nextSlide()
+    }
+}
+
+// ── Fullscreen ──────────────────────────────────────────────
+
 async function toggleFullscreen() {
     if (!viewerRef.value) return
 
@@ -200,12 +287,8 @@ function handleFullscreenChange() {
     isFullscreen.value = !!document.fullscreenElement
 }
 
-// Current slide HTML
-const currentSlideHtml = computed(() => {
-    return slideHtmlParts.value[currentSlide.value] || ''
-})
+// ── Computed ────────────────────────────────────────────────
 
-// Slide counter text
 const slideCounterText = computed(() => {
     const template = t.value('marp.slideOf')
     return template
@@ -213,13 +296,35 @@ const slideCounterText = computed(() => {
         .replace('{total}', String(totalSlides.value))
 })
 
-// Lifecycle
+// ── Watchers ────────────────────────────────────────────────
+
+// Sync dark mode changes to iframe
+watch(isDark, (dark) => {
+    postToIframe({ type: 'marp-theme', dark })
+})
+
+// Reload when presentation name changes
+watch(() => props.name, () => {
+    loadPresentation()
+})
+
+// ── Lifecycle ───────────────────────────────────────────────
+
 function updateLangFromUrl() {
     currentLang.value = getLangFromUrl(window.location.pathname) as Languages
 }
 
 onMounted(() => {
     updateLangFromUrl()
+    detectDarkMode()
+
+    // Watch for dark mode changes on <html> class
+    darkModeObserver = new MutationObserver(() => detectDarkMode())
+    darkModeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class'],
+    })
+
     document.addEventListener('astro:page-load', updateLangFromUrl)
     document.addEventListener('keydown', handleKeydown)
     document.addEventListener('fullscreenchange', handleFullscreenChange)
@@ -227,14 +332,10 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+    darkModeObserver?.disconnect()
     document.removeEventListener('astro:page-load', updateLangFromUrl)
     document.removeEventListener('keydown', handleKeydown)
     document.removeEventListener('fullscreenchange', handleFullscreenChange)
-})
-
-// Reload when name changes
-watch(() => props.name, () => {
-    loadPresentation()
 })
 </script>
 
@@ -262,16 +363,26 @@ watch(() => props.name, () => {
         <template v-else>
             <!-- Slide container with aspect ratio -->
             <div
-                ref="slideContainerRef"
                 class="marp-viewer__slide-wrapper"
                 :style="{ paddingBottom: isFullscreen ? '0' : paddingBottom }"
-                @touchstart="handleTouchStart"
-                @touchend="handleTouchEnd"
-                @click.self="nextSlide"
             >
-                <div class="marp-viewer__slide" v-html="currentSlideHtml" />
-                <!-- Inject Marp CSS via a scoped style element -->
-                <component :is="'style'" v-if="slideCss">{{ slideCss }}</component>
+                <!-- Isolated iframe for Marp content -->
+                <iframe
+                    ref="iframeRef"
+                    class="marp-viewer__iframe"
+                    :srcdoc="iframeSrcdoc"
+                    sandbox="allow-scripts"
+                    frameborder="0"
+                    title="Slide presentation"
+                    @load="onIframeLoad"
+                />
+                <!-- Transparent overlay captures touch/click for navigation -->
+                <div
+                    class="marp-viewer__overlay"
+                    @touchstart.passive="handleTouchStart"
+                    @touchend.passive="handleTouchEnd"
+                    @click="handleOverlayClick"
+                />
             </div>
 
             <!-- Controls bar -->
@@ -351,17 +462,12 @@ watch(() => props.name, () => {
     border: none;
     display: flex;
     flex-direction: column;
+    background: #000;
 }
 
 .marp-viewer--fullscreen .marp-viewer__slide-wrapper {
     flex: 1;
     padding-bottom: 0 !important;
-}
-
-.marp-viewer--fullscreen .marp-viewer__slide {
-    position: relative;
-    width: 100%;
-    height: 100%;
 }
 
 .marp-viewer__loading,
@@ -399,24 +505,19 @@ watch(() => props.name, () => {
     background: #000;
 }
 
-.marp-viewer__slide {
+.marp-viewer__iframe {
     position: absolute;
     inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Make Marp SVG slides fill the container */
-.marp-viewer__slide :deep(svg[data-marpit-svg]) {
     width: 100%;
     height: 100%;
+    border: none;
 }
 
-/* Make section elements in Marp fill their foreignObject */
-.marp-viewer__slide :deep(section) {
-    width: 100%;
-    height: 100%;
+.marp-viewer__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    cursor: pointer;
 }
 
 .marp-viewer__controls {
