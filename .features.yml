@@ -1487,14 +1487,14 @@ features:
       technologies in Torino. The entry should link to https://torino.js.org
       and describe the community and the organizer role. Should also be
       reflected in the Italian projects data (src/pages/it/projects/data.ts).
-    status: backlog
-    completion: 0
+    status: done
+    completion: 100
     difficulty: trivial
     priority: high
     depends_on: []
     effort: "PT30M"
-    started_at: null
-    ended_at: null
+    started_at: "2026-03-10"
+    ended_at: "2026-03-10"
     constraints:
       - "Must appear in both EN and IT project data files"
       - "Must use an appropriate icon from the Remix Icon set (i-ri-*)"
@@ -1515,14 +1515,14 @@ features:
         description: >
           Add a new group (e.g. 'Community') or entry in src/pages/projects/data.ts
           with TorinoJS details, link, and icon.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: trivial
         priority: high
         depends_on: []
         effort: "PT15M"
-        started_at: null
-        ended_at: null
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
         constraints: []
         forbidden: []
         references:
@@ -1535,14 +1535,14 @@ features:
         description: >
           Mirror the TorinoJS entry in src/pages/it/projects/data.ts with
           Italian description text.
-        status: backlog
-        completion: 0
+        status: done
+        completion: 100
         difficulty: trivial
         priority: high
         depends_on: []
         effort: "PT15M"
-        started_at: null
-        ended_at: null
+        started_at: "2026-03-10"
+        ended_at: "2026-03-10"
         constraints: []
         forbidden: []
         references:

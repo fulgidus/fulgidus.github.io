@@ -49,6 +49,18 @@ export const projectData: ProjectData = [
 
         ],
     },
+    {
+        title: 'Community',
+        projects: [
+            {
+                text: 'TorinoJS',
+                description: 'Co-organizer of TorinoJS, a local community in Torino hosting async events about JavaScript, Node.js, IoT, and open source web technologies. We bring developers together to share knowledge, learn from each other, and grow the local tech scene.',
+                icon: 'i-ri-team-line',
+                href: 'https://torino.js.org',
+            },
+
+        ],
+    },
     // {
     //     title: 'Test Group',
     //     projects: [
