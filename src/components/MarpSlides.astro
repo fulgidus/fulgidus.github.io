@@ -1,0 +1,539 @@
+---
+/**
+ * MarpSlides — Universal embeddable slide deck component for any MDX article.
+ *
+ * Supports multiple source formats:
+ *   - `md` prop: Raw Marp markdown string (imported via `?raw`), compiled at build time
+ *   - `src` prop: URL to a pre-built file (HTML, PDF, PPTX), auto-detected by extension
+ *
+ * Usage in MDX:
+ *   // Marp markdown slides:
+ *   import MarpSlides from '@/components/MarpSlides.astro'
+ *   import slides from './_my-deck.slides.md?raw'
+ *   <MarpSlides md={slides} />
+ *
+ *   // Pre-built HTML:
+ *   <MarpSlides src="/presentations/my-deck.html" />
+ *
+ *   // PDF presentation:
+ *   import deckUrl from './conference-talk.pdf?url'
+ *   <MarpSlides src={deckUrl} />
+ *
+ *   // PPTX (with build-time conversion — use ?with-path for filesystem access):
+ *   import deck from './legacy-deck.pptx?with-path'
+ *   <MarpSlides src={deck} />
+ *
+ * Build-time compilation:
+ *   When `md` is provided, marp-core compiles the markdown to self-contained HTML.
+ *   The output is written to `public/marp/_compiled-{contentHash}.html` (gitignored,
+ *   content-hashed for deduplication). The viewer loads this file via its URL.
+ *   PDF (light+dark), PPTX, and source MD downloads are also generated.
+ */
+import MarpViewer from '@/components/MarpViewer.vue'
+import MarpDownloads from '@/components/MarpDownloads.vue'
+import PdfViewer from '@/components/PdfViewer.vue'
+import { createHash } from 'node:crypto'
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
+import fs from 'node:fs'
+import path from 'node:path'
+
+const execFileAsync = promisify(execFile)
+
+/** Format a byte count as a human-readable string (e.g. "103 KB", "2.1 MB"). */
+function formatFileSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
+/** Get formatted file size for a path, or undefined if it doesn't exist. */
+function getFileSize(filePath: string): string | undefined {
+    try {
+        const stat = fs.statSync(filePath)
+        return formatFileSize(stat.size)
+    } catch {
+        return undefined
+    }
+}
+
+interface DownloadItem {
+    label: string
+    href: string
+    type: string
+    /** Theme variant: 'light' or 'dark'. Used by MarpDownloads to show the matching variant. */
+    variant?: 'light' | 'dark'
+    /** Human-readable file size (e.g. "103 KB"). Computed at build time. */
+    size?: string
+}
+
+/** Object shape returned by the `?with-path` Vite plugin. */
+interface AssetWithPath {
+    url: string
+    fsPath: string
+}
+
+interface Props {
+    /** Raw Marp markdown content (via `?raw` import) — compiled at build time */
+    md?: string
+    /**
+     * URL to a pre-built file (HTML, PDF, PPTX) — auto-detected by extension.
+     * Accepts a plain URL string (from `?url` import) or an `{ url, fsPath }`
+     * object (from `?with-path` import for PPTX files needing build-time conversion).
+     */
+    src?: string | AssetWithPath
+    /** Aspect ratio for the slide container */
+    aspectRatio?: '16:9' | '4:3'
+    /** Whether to show download buttons */
+    showDownloads?: boolean
+    /** Custom download items (overrides auto-generated ones) */
+    downloads?: DownloadItem[]
+}
+
+const { md, src: srcProp, aspectRatio = '16:9', showDownloads = true, downloads } = Astro.props
+
+// Normalize the src prop: extract URL and optional filesystem path
+let src: string | undefined
+let srcFsPath: string | undefined
+
+if (srcProp) {
+    if (typeof srcProp === 'string') {
+        src = srcProp
+    } else {
+        // AssetWithPath object from ?with-path import
+        src = srcProp.url
+        srcFsPath = srcProp.fsPath
+    }
+}
+
+// Determine the source URL and format
+let viewerSrc = ''
+let format: 'html' | 'pdf' | 'pptx' = 'html'
+let autoDownloads: DownloadItem[] = []
+
+if (md) {
+    // ── Build-time Marp compilation ─────────────────────────────────
+    const contentHash = createHash('sha256').update(md).digest('hex').slice(0, 12)
+    const fileName = `_compiled-${contentHash}.html`
+    const outDir = path.join(process.cwd(), 'public', 'marp')
+    const outPath = path.join(outDir, fileName)
+
+    // Only compile if the content-hashed file doesn't exist (deduplication)
+    if (!fs.existsSync(outPath)) {
+        fs.mkdirSync(outDir, { recursive: true })
+
+        const { Marp } = await import('@marp-team/marp-core')
+        const marp = new Marp({ html: true, math: true })
+
+        // Register custom site theme
+        const themePath = path.join(process.cwd(), 'src', 'styles', 'marp-theme.css')
+        if (fs.existsSync(themePath)) {
+            const themeCss = fs.readFileSync(themePath, 'utf-8')
+            marp.themeSet.add(themeCss)
+        }
+
+        const { html, css } = marp.render(md)
+
+        // Extract title from Marp frontmatter
+        const titleMatch = md.match(/^title:\s*["']?(.+?)["']?\s*$/m)
+        const title = titleMatch?.[1] || 'Presentation'
+
+        // Build self-contained HTML document
+        const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+${css}
+</style>
+</head>
+<body>
+${html}
+</body>
+</html>`
+
+        fs.writeFileSync(outPath, fullHtml, 'utf-8')
+    }
+
+    viewerSrc = `/marp/${fileName}`
+    format = 'html'
+
+    // ── Dark HTML variant for download ──────────────────────────────
+    // The viewer uses the light HTML and toggles dark mode dynamically
+    // via postMessage. For downloads, we generate a separate dark HTML
+    // with `.invert` pre-applied to all sections.
+    const darkHtmlFileName = `_compiled-${contentHash}-dark.html`
+    const darkHtmlOutPath = path.join(outDir, darkHtmlFileName)
+    if (!fs.existsSync(darkHtmlOutPath)) {
+        const lightHtml = fs.readFileSync(outPath, 'utf-8')
+        const darkHtml = lightHtml.replace(
+            /(<section\b[^>]*?\bclass=")([^"]*?)(")/g,
+            '$1$2 invert$3'
+        )
+        fs.writeFileSync(darkHtmlOutPath, darkHtml, 'utf-8')
+    }
+
+    // ── PDF + PPTX export via Playwright (build-time) ────────────────
+    // Generate BOTH light and dark PDF variants so the download component
+    // can serve the one matching the user's current site theme.
+    // Also generate a PPTX file by screenshotting each slide as PNG and
+    // assembling them into a PPTX via pptxgenjs (light variant only).
+    const pdfLightFileName = `_compiled-${contentHash}-light.pdf`
+    const pdfDarkFileName = `_compiled-${contentHash}-dark.pdf`
+    const pptxLightFileName = `_compiled-${contentHash}-light.pptx`
+    const pptxDarkFileName = `_compiled-${contentHash}-dark.pptx`
+    const pdfLightOutPath = path.join(outDir, pdfLightFileName)
+    const pdfDarkOutPath = path.join(outDir, pdfDarkFileName)
+    const pptxLightOutPath = path.join(outDir, pptxLightFileName)
+    const pptxDarkOutPath = path.join(outDir, pptxDarkFileName)
+
+    let pdfLightAvailable = fs.existsSync(pdfLightOutPath)
+    let pdfDarkAvailable = fs.existsSync(pdfDarkOutPath)
+    let pptxLightAvailable = fs.existsSync(pptxLightOutPath)
+    let pptxDarkAvailable = fs.existsSync(pptxDarkOutPath)
+
+    if (!pdfLightAvailable || !pdfDarkAvailable || !pptxLightAvailable || !pptxDarkAvailable) {
+        try {
+            const { chromium } = await import('playwright')
+            const browser = await chromium.launch({ headless: true })
+            const page = await browser.newPage()
+
+            // Load the compiled HTML file
+            const htmlAbsPath = path.resolve(outPath)
+            await page.goto(`file://${htmlAbsPath}`, { waitUntil: 'networkidle' })
+
+            // Extract slide dimensions from the Marp SVG
+            const dimensions = await page.evaluate(() => {
+                const svg = document.querySelector('svg[data-marpit-svg]')
+                if (!svg) return null
+                const viewBox = svg.getAttribute('viewBox')
+                if (viewBox) {
+                    const parts = viewBox.split(/\s+/)
+                    return { width: parseFloat(parts[2]), height: parseFloat(parts[3]) }
+                }
+                return null
+            })
+
+            const width = dimensions?.width ?? 1280
+            const height = dimensions?.height ?? 720
+
+            const pdfOpts = {
+                width: `${width}px`,
+                height: `${height}px`,
+                printBackground: true,
+                margin: { top: '0', right: '0', bottom: '0', left: '0' },
+            } as const
+
+            // ── Light variant: render as-is ──
+            if (!pdfLightAvailable) {
+                await page.goto(`file://${htmlAbsPath}`, { waitUntil: 'networkidle' })
+                await page.pdf({ ...pdfOpts, path: pdfLightOutPath })
+                pdfLightAvailable = true
+                console.log(`[MarpSlides] PDF exported (light): ${pdfLightFileName}`)
+            }
+
+            // ── Dark variant: add .invert to ALL sections ──
+            if (!pdfDarkAvailable) {
+                await page.goto(`file://${htmlAbsPath}`, { waitUntil: 'networkidle' })
+                await page.evaluate(() => {
+                    document.querySelectorAll('section').forEach(s => {
+                        s.classList.add('invert')
+                    })
+                })
+                await page.pdf({ ...pdfOpts, path: pdfDarkOutPath })
+                pdfDarkAvailable = true
+                console.log(`[MarpSlides] PDF exported (dark): ${pdfDarkFileName}`)
+            }
+
+            // ── PPTX export helper: screenshot each slide → pptxgenjs ──
+            const widthInches = width / 96
+            const heightInches = height / 96
+
+            async function buildPptxFromPage(outputPath: string, label: string): Promise<boolean> {
+                await page.setViewportSize({ width: Math.round(width), height: Math.round(height) })
+
+                const slideCount = await page.evaluate(() =>
+                    document.querySelectorAll('svg[data-marpit-svg]').length
+                )
+                if (slideCount === 0) return false
+
+                const slideImages: Uint8Array[] = []
+                for (let i = 0; i < slideCount; i++) {
+                    await page.evaluate((idx) => {
+                        const svgs = document.querySelectorAll('svg[data-marpit-svg]')
+                        svgs.forEach((svg, j) => {
+                            ;(svg as HTMLElement).style.display = j === idx ? 'block' : 'none'
+                        })
+                    }, i)
+
+                    const slideEl = await page.$(`svg[data-marpit-svg]:nth-of-type(${i + 1})`)
+                    if (slideEl) {
+                        const png = await slideEl.screenshot({ type: 'png' })
+                        slideImages.push(new Uint8Array(png.buffer, png.byteOffset, png.byteLength))
+                    }
+                }
+
+                if (slideImages.length === 0) return false
+
+                const PptxGenJS = (await import('pptxgenjs')).default
+                const pptx = new PptxGenJS()
+                pptx.defineLayout({ name: 'MARP', width: widthInches, height: heightInches })
+                pptx.layout = 'MARP'
+
+                const titleMatch = md!.match(/^title:\s*["']?(.+?)["']?\s*$/m)
+                pptx.title = titleMatch?.[1] || 'Presentation'
+
+                for (const imgBuf of slideImages) {
+                    const slide = pptx.addSlide()
+                    const base64 = Buffer.from(imgBuf).toString('base64')
+                    slide.addImage({
+                        data: `image/png;base64,${base64}`,
+                        x: 0, y: 0, w: widthInches, h: heightInches,
+                    })
+                }
+
+                const pptxBuffer = await pptx.write({ outputType: 'nodebuffer' })
+                fs.writeFileSync(outputPath, new Uint8Array(pptxBuffer as ArrayBuffer))
+                console.log(`[MarpSlides] PPTX exported (${label}): ${path.basename(outputPath)} (${slideImages.length} slides)`)
+                return true
+            }
+
+            // ── Light PPTX ──
+            if (!pptxLightAvailable) {
+                try {
+                    await page.goto(`file://${htmlAbsPath}`, { waitUntil: 'networkidle' })
+                    if (await buildPptxFromPage(pptxLightOutPath, 'light')) {
+                        pptxLightAvailable = true
+                    }
+                } catch (pptxErr: any) {
+                    console.warn(`[MarpSlides] PPTX export skipped (light): ${pptxErr.message?.split('\n')[0] || 'unknown error'}`)
+                }
+            }
+
+            // ── Dark PPTX ──
+            if (!pptxDarkAvailable) {
+                try {
+                    await page.goto(`file://${htmlAbsPath}`, { waitUntil: 'networkidle' })
+                    await page.evaluate(() => {
+                        document.querySelectorAll('section').forEach(s => s.classList.add('invert'))
+                    })
+                    if (await buildPptxFromPage(pptxDarkOutPath, 'dark')) {
+                        pptxDarkAvailable = true
+                    }
+                } catch (pptxErr: any) {
+                    console.warn(`[MarpSlides] PPTX export skipped (dark): ${pptxErr.message?.split('\n')[0] || 'unknown error'}`)
+                }
+            }
+
+            await browser.close()
+        } catch (e: any) {
+            // Graceful fallback: playwright or chromium not available
+            console.warn(`[MarpSlides] PDF/PPTX export skipped (${e.message?.split('\n')[0] || 'unknown error'}). Install playwright chromium: bunx playwright install chromium`)
+        }
+    }
+
+    // Also write the raw markdown source for download
+    const mdFileName = `_source-${contentHash}.md`
+    const mdOutPath = path.join(outDir, mdFileName)
+    if (!fs.existsSync(mdOutPath)) {
+        fs.writeFileSync(mdOutPath, md, 'utf-8')
+    }
+
+    // Offer compiled HTML (light+dark), PDF (light+dark), PPTX (light+dark), and raw MD source
+    autoDownloads = [
+        { label: 'HTML', href: viewerSrc, type: 'html', variant: 'light' as const, size: getFileSize(outPath) },
+        { label: 'HTML', href: `/marp/${darkHtmlFileName}`, type: 'html', variant: 'dark' as const, size: getFileSize(darkHtmlOutPath) },
+    ]
+    if (pdfLightAvailable) {
+        autoDownloads.push({ label: 'PDF', href: `/marp/${pdfLightFileName}`, type: 'pdf', variant: 'light', size: getFileSize(pdfLightOutPath) })
+    }
+    if (pdfDarkAvailable) {
+        autoDownloads.push({ label: 'PDF', href: `/marp/${pdfDarkFileName}`, type: 'pdf', variant: 'dark', size: getFileSize(pdfDarkOutPath) })
+    }
+    if (pptxLightAvailable) {
+        autoDownloads.push({ label: 'PPTX', href: `/marp/${pptxLightFileName}`, type: 'pptx', variant: 'light', size: getFileSize(pptxLightOutPath) })
+    }
+    if (pptxDarkAvailable) {
+        autoDownloads.push({ label: 'PPTX', href: `/marp/${pptxDarkFileName}`, type: 'pptx', variant: 'dark', size: getFileSize(pptxDarkOutPath) })
+    }
+    autoDownloads.push({ label: 'MD', href: `/marp/${mdFileName}`, type: 'md', size: getFileSize(mdOutPath) })
+} else if (src) {
+    // ── Pre-built file ──────────────────────────────────────────────
+    viewerSrc = src
+    const ext = src.split('.').pop()?.toLowerCase() || ''
+    if (ext === 'pdf') {
+        format = 'pdf'
+        autoDownloads = [{ label: 'PDF', href: src, type: 'pdf', size: srcFsPath ? getFileSize(srcFsPath) : undefined }]
+    } else if (ext === 'pptx') {
+        // ── PPTX → PDF conversion via LibreOffice CLI ───────────────
+        // Convert at build time using soffice --headless --convert-to pdf.
+        // If LibreOffice is not installed, gracefully fall back to a
+        // download-only view (no viewer, just a download button).
+        const outDir = path.join(process.cwd(), 'public', 'marp')
+        fs.mkdirSync(outDir, { recursive: true })
+
+        // Resolve the PPTX source file.
+        // Preferred: srcFsPath from the ?with-path Vite plugin gives the
+        // exact absolute path. Fallback: try resolving the URL to a local file.
+        let pptxSourcePath = ''
+
+        if (srcFsPath && fs.existsSync(srcFsPath)) {
+            pptxSourcePath = srcFsPath
+        } else {
+            // Fallback: try resolving from public dir or project root
+            if (src.startsWith('/')) {
+                const fromPublic = path.join(process.cwd(), 'public', src)
+                if (fs.existsSync(fromPublic)) pptxSourcePath = fromPublic
+            }
+            if (!pptxSourcePath) {
+                const fromRoot = path.join(process.cwd(), src)
+                if (fs.existsSync(fromRoot)) pptxSourcePath = fromRoot
+            }
+        }
+
+        // Content-hash the PPTX file for deduplication
+        let pptxConverted = false
+        let pdfUrl = ''
+        let pdfOutPathForSize = ''
+
+        if (pptxSourcePath && fs.existsSync(pptxSourcePath)) {
+            const pptxContent = new Uint8Array(fs.readFileSync(pptxSourcePath))
+            const contentHash = createHash('sha256').update(pptxContent).digest('hex').slice(0, 12)
+            const pdfFileName = `_pptx-${contentHash}.pdf`
+            const pdfOutPath = path.join(outDir, pdfFileName)
+            pdfOutPathForSize = pdfOutPath
+
+            if (fs.existsSync(pdfOutPath)) {
+                // Already converted (deduplication)
+                pptxConverted = true
+                pdfUrl = `/marp/${pdfFileName}`
+            } else {
+                try {
+                    // Detect LibreOffice binary
+                    const soffice = await (async () => {
+                        for (const bin of ['soffice', 'libreoffice']) {
+                            try {
+                                await execFileAsync('which', [bin])
+                                return bin
+                            } catch { /* not found, try next */ }
+                        }
+                        return null
+                    })()
+
+                    if (soffice) {
+                        await execFileAsync(soffice, [
+                            '--headless',
+                            '--convert-to', 'pdf',
+                            '--outdir', outDir,
+                            pptxSourcePath,
+                        ], { timeout: 60_000 })
+
+                        // LibreOffice outputs PDF with the same base name as the input file
+                        const baseName = path.basename(pptxSourcePath, path.extname(pptxSourcePath))
+                        const loOutput = path.join(outDir, `${baseName}.pdf`)
+
+                        if (fs.existsSync(loOutput)) {
+                            // Rename to content-hashed name for deduplication
+                            fs.renameSync(loOutput, pdfOutPath)
+                            pptxConverted = true
+                            pdfUrl = `/marp/${pdfFileName}`
+                            console.log(`[MarpSlides] PPTX → PDF converted: ${pdfFileName}`)
+                        } else {
+                            console.warn(`[MarpSlides] LibreOffice conversion produced no output for ${pptxSourcePath}`)
+                        }
+                    } else {
+                        console.warn('[MarpSlides] PPTX → PDF skipped: LibreOffice (soffice) not found. Install LibreOffice for automatic conversion.')
+                    }
+                } catch (e: any) {
+                    console.warn(`[MarpSlides] PPTX → PDF conversion failed: ${e.message?.split('\n')[0] || 'unknown error'}`)
+                }
+            }
+        } else {
+            // The PPTX file URL can't be resolved to a local path at build time.
+            // This happens when Vite hashes the filename. The PPTX download button
+            // will still work (the URL is valid at runtime).
+            console.warn(`[MarpSlides] PPTX source file not found at build time for conversion: ${src}`)
+        }
+
+        if (pptxConverted && pdfUrl) {
+            // Conversion succeeded — show PdfViewer
+            format = 'pdf'
+            viewerSrc = pdfUrl
+            autoDownloads = [
+                { label: 'PDF', href: pdfUrl, type: 'pdf', size: pdfOutPathForSize ? getFileSize(pdfOutPathForSize) : undefined },
+                { label: 'PPTX', href: src, type: 'pptx', size: pptxSourcePath ? getFileSize(pptxSourcePath) : undefined },
+            ]
+        } else {
+            // Conversion failed or LibreOffice not available — download-only fallback
+            format = 'pptx'
+            autoDownloads = [{ label: 'PPTX', href: src, type: 'pptx', size: pptxSourcePath ? getFileSize(pptxSourcePath) : undefined }]
+        }
+    } else {
+        format = 'html'
+        autoDownloads = [{ label: 'HTML', href: src, type: 'html' }]
+    }
+}
+
+const finalDownloads = downloads || autoDownloads
+---
+
+{viewerSrc && (
+    <div class="marp-embed not-prose">
+        {format === 'pdf' ? (
+            <PdfViewer
+                src={viewerSrc}
+                client:visible
+            />
+        ) : format === 'pptx' ? (
+            <div class="marp-embed__pptx-fallback">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="12" y1="18" x2="12" y2="12" />
+                    <polyline points="9 15 12 12 15 15" />
+                </svg>
+                <p>PowerPoint viewer requires LibreOffice for build-time conversion.</p>
+                <p class="marp-embed__pptx-hint">Download the file below to view it.</p>
+            </div>
+        ) : (
+            <MarpViewer
+                src={viewerSrc}
+                aspectRatio={aspectRatio}
+                embedded={true}
+                client:visible
+            />
+        )}
+        {showDownloads && finalDownloads.length > 0 && (
+            <MarpDownloads items={finalDownloads} client:visible />
+        )}
+    </div>
+)}
+
+<style>
+    .marp-embed {
+        margin: 2rem 0;
+    }
+    .marp-embed__pptx-fallback {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 3rem;
+        border: 1px solid var(--c-border, #e5e7eb);
+        border-radius: 8px;
+        background: var(--c-bg-mute, #f3f4f6);
+        color: var(--c-text-muted, #6b7280);
+        text-align: center;
+    }
+    .marp-embed__pptx-fallback svg {
+        opacity: 0.5;
+    }
+    .marp-embed__pptx-hint {
+        font-size: 0.875rem;
+        opacity: 0.7;
+    }
+</style>
