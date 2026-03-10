@@ -8,6 +8,7 @@ import Footer from "@/components/FooterComponent.vue";
 import ScrollToTop from "@/components/ScrollToTop.vue";
 import { getLangFromUrl, useTranslate } from "@/i18n/utils";
 import { HONEYPOT_ENTRY } from "@/lib/tarpit";
+import { getPageTranslations } from "@/utils/translations";
 interface Props {
   title?: string;
   description?: string;
@@ -24,10 +25,11 @@ interface Props {
   readingTime?: string;
 }
 const { ...head } = Astro.props;
-const { imageSize } = Astro.props;
+const { imageSize, postSlug } = Astro.props;
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslate(lang);
+const pageTranslations = await getPageTranslations(Astro.url, postSlug);
 ---
 
 <!doctype html>
@@ -37,6 +39,9 @@ const t = useTranslate(lang);
     <ViewTransitions />
   </head>
   <body class="bg-main text-main min-h-screen font-sans w-full bg-dot">
+    <script is:inline define:vars={{ pageTranslationsJson: JSON.stringify(pageTranslations) }}>
+      window.__pageTranslations__ = JSON.parse(pageTranslationsJson);
+    </script>
     <a href="#main-content" class="skip-to-content">Skip to content</a>
     <Header client:only="vue" />
     <HeaderAstro />
