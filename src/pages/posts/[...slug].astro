@@ -12,6 +12,7 @@ import { getLangFromSlug, getLangFromUrl, useTranslate } from "@/i18n/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { type CollectionPost } from "@/types";
 import { getPosts } from "@/utils/posts";
+import { getOgImagePath } from "@/utils/og";
 import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
@@ -59,6 +60,12 @@ const articleImage = {
   alt: imageAlt,
 };
 
+const ogImage = await getOgImagePath(slug, {
+  title,
+  description,
+  pubDate,
+});
+
 export function composeImageSizeClasses(size: ImageSize): string {
   const r = Math.random();
   if (size === `xl`) {
@@ -92,7 +99,7 @@ const t = useTranslate(currentLang as Languages);
   title={title}
   description={description}
   image={articleImage}
-  ogImage={`/og/${slug}.png`}
+  ogImage={ogImage}
   pageType="article"
   imageSize={imageSize}
   noindex={unlisted}

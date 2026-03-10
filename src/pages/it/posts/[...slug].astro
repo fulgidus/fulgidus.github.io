@@ -12,6 +12,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import { composeImageSizeClasses } from "@/pages/posts/[...slug].astro";
 import { type CollectionPost } from "@/types";
 import { getPosts, removeLangFromSlug } from "@/utils/posts";
+import { getOgImagePath } from "@/utils/og";
 import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
@@ -61,6 +62,13 @@ const articleImage = {
   src: image?.src ?? "",
   alt: imageAlt,
 };
+
+const ogImage = await getOgImagePath(slug, {
+  title,
+  description,
+  pubDate,
+});
+
 const currentLang = getLangFromUrl(Astro.url.pathname);
 // Dynamically construct languages array based on available translations
 // const availableLanguages = Object.keys(ui) as (Languages)[];
@@ -74,7 +82,7 @@ const t = useTranslate(currentLang as Languages);
   title={title}
   description={description}
   image={articleImage}
-  ogImage={`/og/${slug}.png`}
+  ogImage={ogImage}
   pageType="article"
   imageSize={imageSize}
 >

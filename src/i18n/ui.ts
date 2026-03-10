@@ -31,6 +31,7 @@ export const ui = {
         'downloadButton.cv':'my CV',
         'sharePost.button':'Share this post',
         'sharePost.copy':'Copy post link',
+        'og.cta': 'Read more →',
     },
     it: {
         'flag': '🇮🇹',
@@ -64,6 +65,7 @@ export const ui = {
         'downloadButton.cv':'il mio CV',
         'sharePost.button':'Condividi questo post',
         'sharePost.copy':'Copia il link',
+        'og.cta': 'Leggi di più →',
     },
     nl: {
         'disabled': 'true',
@@ -92,6 +94,7 @@ export const ui = {
         'downloadButton.cv':'mijn CV',
         'sharePost.button':'Deel dit bericht',
         'sharePost.copy':'Kopieer link',
+        'og.cta': 'Lees meer →',
     },
     
 
