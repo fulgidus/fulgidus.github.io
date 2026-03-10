@@ -1,0 +1,1034 @@
+# =============================================================================
+# Feature Tracking File - YAML v1.2
+# =============================================================================
+#
+# PURPOSE:
+#   Track planned features, their progress, subtasks, and metadata for the
+#   Astro-based personal site at fulgidus.github.io.
+#
+# SCHEMA (for LLM and human consumers):
+#
+#   Each top-level item under `features` is a feature object with these fields:
+#
+#   id          : string   - Unique kebab-case identifier for the feature.
+#   title       : string   - Human-readable short name.
+#   description : string   - Detailed explanation of the feature's goal.
+#   status      : enum     - One of: backlog, planned, in_progress, blocked,
+#                             in_review, done, cancelled.
+#   completion  : integer  - Percentage 0–100. Must be 0 when status is
+#                             backlog/planned, 100 when done, and reflect
+#                             actual progress otherwise.
+#   difficulty  : enum     - One of: trivial, easy, medium, hard, very_hard.
+#   priority    : enum     - One of: critical, high, medium, low, wishlist.
+#   effort      : string   - Estimated human effort in ISO 8601 duration
+#                             (e.g. "PT2H" = 2 hours, "P1D" = 1 day,
+#                             "P1DT4H" = 1 day 4 hours).
+#   started_at  : string|null - ISO 8601 datetime with timezone when work
+#                                began, or null if not yet started.
+#   ended_at    : string|null - ISO 8601 datetime with timezone when work
+#                                was completed, or null if not yet finished.
+#   constraints : list[string] - Technical or process constraints.
+#   forbidden   : list[string] - Explicitly forbidden tools, approaches, or
+#                                 features (things NOT to do/use).
+#   references  : list[string] - URLs or file paths for relevant docs/specs.
+#   notes       : list[string] - Free-form status updates, newest first.
+#                                 Each entry should be prefixed with an
+#                                 ISO 8601 date for chronological tracking.
+#   subtasks    : list[subtask] - Ordered breakdown of work. Subtasks use
+#                                  the same schema recursively (all fields
+#                                  apply, including nested subtasks).
+#
+# STATUS UPDATE CONVENTION:
+#   When updating progress, prepend a new entry to the `notes` list with the
+#   current ISO 8601 date and a short description of what changed. Example:
+#     - "2026-03-10: Created feature file with initial backlog items."
+#   This allows chronological tracking while keeping the latest update first.
+#
+# COMPLETION RULES:
+#   - A parent feature's completion should reflect the weighted average of its
+#     subtasks, or be set manually if subtask weights are uneven.
+#   - When all subtasks are done, the parent must also be marked done (100%).
+#   - If any subtask is blocked, consider whether the parent should be blocked.
+#
+# SUBTASK NESTING:
+#   Subtasks can contain their own subtasks to arbitrary depth. The schema is
+#   fully recursive. Deeply nested subtasks should be used sparingly - prefer
+#   2–3 levels maximum for readability.
+#
+# =============================================================================
+
+version: "1.0"
+
+# Metadata about this tracking file
+meta:
+  created_at: "2026-03-10T00:00:00+01:00"
+  updated_at: "2026-03-10T00:00:00+01:00"
+  project: "fulgidus.github.io"
+  generator: "Astro 4.x"
+  maintainer: "fulgidus"
+
+features:
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 1: SplatHash integration for ultrafast TTFF
+  # ---------------------------------------------------------------------------
+  - id: splathash-integration
+    title: "SplatHash integration for ultrafast TTFF"
+    description: >
+      Integrate SplatHash (https://github.com/junevm/splathash) to generate
+      16-byte image hashes that decode in ~0.067ms into 32x32 blurry previews.
+      This replaces or supplements any existing image placeholder strategy to
+      achieve ultrafast Time To First Frame (TTFF) on all images across the
+      site. SplatHash encodes any image into exactly 16 bytes (a 22-char
+      base64url string), supports alpha channels, uses perceptual Oklab color
+      space, and has bit-exact cross-language parity (Go, TypeScript, Python).
+    status: backlog
+    completion: 0
+    difficulty: hard
+    priority: high
+    effort: "P2DT4H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must not increase bundle size by more than 5KB gzipped for the decoder"
+      - "Must work with both light and dark themes"
+      - "Hash generation must happen at build time, not runtime"
+      - "Must not degrade Lighthouse performance score"
+      - "Must handle images with and without alpha channels"
+    forbidden:
+      - "Do not use BlurHash (inferior decode performance)"
+      - "Do not run hash encoding client-side"
+      - "Do not store hashes in separate database - embed in markup or frontmatter"
+    references:
+      - "https://raw.githubusercontent.com/junevm/splathash/refs/heads/main/README.md"
+      - "https://github.com/junevm/splathash"
+      - "https://junevm.github.io/splathash/"
+    notes:
+      - "2026-03-10: Feature added to backlog. SplatHash decodes in 0.067ms vs ThumbHash 0.50ms vs BlurHash 6.55ms. Fixed 16-byte output storable as 128-bit integer."
+    subtasks:
+
+      - id: splathash-research
+        title: "Research and prototype"
+        description: >
+          Evaluate splathash-ts npm package. Build a standalone prototype that
+          encodes a sample image and decodes it in the browser. Measure actual
+          decode time and visual quality.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT3H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Use the TypeScript package (splathash-ts) from npm"
+        forbidden: []
+        references:
+          - "https://www.npmjs.com/package/splathash-ts"
+        notes: []
+        subtasks: []
+
+      - id: splathash-build-pipeline
+        title: "Build-time hash generation pipeline"
+        description: >
+          Create an Astro integration or build script that scans all images
+          used in blog posts and pages, generates SplatHash hashes, and stores
+          them in a lookup map (JSON or injected into frontmatter). Must run
+          during `astro build` and cache results to avoid re-encoding unchanged
+          images.
+        status: backlog
+        completion: 0
+        difficulty: hard
+        priority: high
+        effort: "P1D"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must be incremental - skip unchanged images"
+          - "Must integrate with Astro's build lifecycle"
+          - "Cache hash results between builds"
+        forbidden:
+          - "Do not modify original image files"
+          - "Do not use Go or Python encoders - stick to TypeScript for build consistency"
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: splathash-client-decoder
+        title: "Client-side decoder component"
+        description: >
+          Create a Vue or Astro component that reads the SplatHash hash from
+          markup, decodes it to a 32x32 canvas on page load, and displays it
+          as a placeholder until the full image loads. Must handle the
+          crossfade transition from placeholder to full image.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT6H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Placeholder must render before full image request completes"
+          - "Must support both <img> and CSS background images"
+          - "Transition from placeholder to image must be smooth (CSS fade)"
+          - "Must be SSR-compatible - no hydration flash"
+        forbidden:
+          - "Do not use canvas for the final display - use CSS or inline data URI"
+          - "Do not block the main thread during decode"
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: splathash-post-images
+        title: "Apply to blog post cover images"
+        description: >
+          Integrate the SplatHash placeholder into the blog post template
+          ([...slug].astro) for post cover/hero images.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must work for posts that have cover images and gracefully skip those that don't"
+        forbidden: []
+        references:
+          - "src/pages/posts/[...slug].astro"
+        notes: []
+        subtasks: []
+
+      - id: splathash-all-images
+        title: "Apply to all site images"
+        description: >
+          Extend SplatHash placeholders to all images across the site - post
+          listing thumbnails, project images, profile pictures, page content
+          images.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: low
+        effort: "PT4H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must not apply to SVGs or tiny icons"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 2: Official Mastodon share button
+  # ---------------------------------------------------------------------------
+  - id: mastodon-share-button
+    title: "Official Mastodon share icon among sharing options"
+    description: >
+      Add the official Mastodon share button to the existing SharePost.vue
+      component, using the new share.joinmastodon.org tool announced in March
+      2026. This replaces any ad-hoc Mastodon sharing solution with the
+      official one that handles server discovery (user picks their own
+      instance). The share tool works entirely in the browser with no tracking.
+    status: backlog
+    completion: 0
+    difficulty: easy
+    priority: high
+    effort: "PT3H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must use the official share.joinmastodon.org endpoint"
+      - "Icon must match the visual style of existing share buttons (Remix Icon set via UnoCSS)"
+      - "Must be i18n-aware (share button label translated)"
+    forbidden:
+      - "Do not use a third-party Mastodon share solution"
+      - "Do not self-host the share tool unless joinmastodon.org goes down"
+      - "Do not add tracking or analytics to the share action"
+    references:
+      - "https://blog.joinmastodon.org/2026/03/a-new-share-button/"
+      - "https://share.joinmastodon.org"
+      - "https://github.com/mastodon/share"
+    notes:
+      - "2026-03-10: Feature added to backlog. Official share tool announced 2026-03-02 by Eugen Rochko. Works entirely in-browser, no tracking, supports multiple accounts."
+    subtasks:
+
+      - id: mastodon-icon-sourcing
+        title: "Source or create Mastodon icon"
+        description: >
+          Check if Remix Icons (used via UnoCSS presetIcons) includes an
+          official Mastodon icon. If not, source the official Mastodon logo
+          SVG and integrate it as a custom icon in the UnoCSS safelist or as
+          an inline SVG in the component.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Icon must be consistent in size and style with i-ri-* icons"
+        forbidden:
+          - "Do not use a raster image for the icon"
+        references:
+          - "https://joinmastodon.org/branding"
+        notes: []
+        subtasks: []
+
+      - id: mastodon-share-url
+        title: "Implement share URL logic"
+        description: >
+          Add Mastodon to the SharePost.vue component. The share URL format is:
+          https://share.joinmastodon.org/#text={encoded_url}
+          where {encoded_url} is the URL-encoded page URL (optionally with
+          title text prepended).
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "URL must be properly encoded"
+          - "Must open in a new tab like other share buttons"
+        forbidden: []
+        references:
+          - "src/components/SharePost.vue"
+          - "https://share.joinmastodon.org"
+        notes: []
+        subtasks: []
+
+      - id: mastodon-i18n-labels
+        title: "Add i18n labels for Mastodon share"
+        description: >
+          Add translation keys for the Mastodon share button tooltip/label
+          in src/i18n/ui.ts for all supported languages (en, it).
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "src/i18n/ui.ts"
+        notes: []
+        subtasks: []
+
+      - id: mastodon-button-placement
+        title: "Decide button placement order"
+        description: >
+          Determine where in the sharing icons row the Mastodon button should
+          appear. Consider placing it prominently (first or second position)
+          given it aligns with the site's open-source ethos.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: low
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must not disrupt existing button order without owner approval"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 3: Localized 404 page
+  # ---------------------------------------------------------------------------
+  - id: 404-localized
+    title: "Make 404 page localized"
+    description: >
+      The 404 page is a mock-bash terminal (visitor@fulgidus.github.io:~$)
+      that shows the attempted path, a "command not found" error, an `ls`
+      of recent posts, and a `cd ~/home` link. It calls getLangFromUrl(Astro.url)
+      at build time to resolve the language, but since GitHub Pages serves a
+      single static 404.html for ALL missing paths, Astro.url at build time
+      has no knowledge of the user's actual requested URL. The result is that
+      the page always renders in English regardless of whether the user was
+      navigating under /it/. The i18n keys (404.title, 404.terminalError,
+      404.terminalHint, 404.terminalHelp, 404.backButtonLabel) already exist
+      in en, it, and nl in src/i18n/ui.ts, but they are never activated for
+      non-English visitors. Additionally, hardcoded English strings exist in
+      the template (e.g. the titlebar text "bash - 404", date formatting
+      locale 'en-GB' in toLocaleDateString, the "open" command prefix in the
+      inline script). All terminal text — prompts, commands, comments, error
+      messages, and the home link — must switch to the detected language.
+    status: backlog
+    completion: 0
+    difficulty: medium
+    priority: medium
+    effort: "PT6H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "GitHub Pages serves a single 404.html — language detection MUST happen client-side via window.location.pathname"
+      - "Must work with the existing i18n system (src/i18n/utils.ts, src/i18n/ui.ts)"
+      - "Must support all enabled languages (en, it); extensible to nl"
+      - "The 'cd ~/home' link must point to the correct language root (/it/ for Italian, / for English)"
+      - "The `ls ./posts/` listing must show posts in the detected language"
+      - "Date formatting in the ls listing must use the correct locale (en-GB, it-IT, etc.)"
+    forbidden:
+      - "Do not require server-side routing (static site on GitHub Pages)"
+      - "Do not use JavaScript-based redirects that cause visible page flicker"
+      - "Do not embed all language versions of the post list in the HTML — use a data attribute or JSON blob approach"
+    references:
+      - "src/pages/404.astro"
+      - "src/i18n/ui.ts"
+      - "src/i18n/utils.ts"
+    notes:
+      - "2026-03-10: Feature added to backlog. The page is a mock-bash terminal. All 404.* i18n keys already exist in en/it/nl in ui.ts but are never used for non-English visitors because getLangFromUrl runs at build time against a static URL. Hardcoded English: titlebar 'bash - 404', toLocaleDateString('en-GB'), inline script 'open' prefix."
+    subtasks:
+
+      - id: 404-lang-detection
+        title: "Client-side language detection from URL"
+        description: >
+          Implement client-side logic in the 404 page that parses
+          window.location.pathname to detect the language prefix (e.g. /it/).
+          This must run immediately on page load and determine which language's
+          strings to display. The detection logic should mirror getLangFromUrl
+          from src/i18n/utils.ts but run in the browser.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must not cause layout shift — either hide terminal until language is resolved, or render with data attributes and swap text in place"
+          - "Must handle URLs without a language prefix (default to English)"
+          - "Must match the same language prefix list as src/i18n/ui.ts"
+        forbidden:
+          - "Do not use navigator.language as primary detection — URL path takes precedence"
+        references:
+          - "src/i18n/utils.ts"
+        notes: []
+        subtasks: []
+
+      - id: 404-embed-translations
+        title: "Embed all language strings in the 404 page"
+        description: >
+          Since the 404 page is a single static HTML and language is resolved
+          client-side, all translation variants must be embedded in the page
+          (e.g. as a JSON object in a <script> tag or as data-* attributes on
+          translatable elements). The client-side script then picks the right
+          set based on detected language. This includes: terminal error
+          message, hint text, help text, home link label, and titlebar title.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must include strings for all enabled languages"
+          - "Must be maintainable — ideally generated from the same ui.ts source at build time"
+        forbidden:
+          - "Do not fetch translations via network request"
+        references:
+          - "src/i18n/ui.ts"
+        notes: []
+        subtasks: []
+
+      - id: 404-localized-post-list
+        title: "Show language-appropriate post list"
+        description: >
+          The `ls ./posts/` section currently shows English posts only (built
+          at compile time via getLastTenPosts). For localization, either embed
+          post lists for each language in the HTML (as hidden elements or JSON
+          data) and swap client-side, or show a language-neutral version.
+          Date formatting must also use the detected locale.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: medium
+        effort: "PT1H30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Keep the page size reasonable — don't embed hundreds of posts per language"
+          - "Date format must match locale (en-GB for English, it-IT for Italian, etc.)"
+        forbidden: []
+        references:
+          - "src/utils/posts.ts"
+        notes: []
+        subtasks: []
+
+      - id: 404-home-link-localized
+        title: "Localize 'cd ~/home' link target"
+        description: >
+          The home link (cd ~/home) must dynamically point to the correct
+          language root (/ for English, /it/ for Italian) based on the
+          client-side detected language. The label text must also be
+          translated (e.g. 404.backButtonLabel).
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 4: Theme-compliant 404 page
+  # ---------------------------------------------------------------------------
+  - id: 404-theme-compliant
+    title: "Make 404 page theme-compliant"
+    description: >
+      The 404 page is a mock-bash terminal styled with scoped <style> in
+      404.astro. It uses hardcoded hex colors with :global(.dark) and
+      :global(:not(.dark)) CSS overrides for theme switching. Despite having
+      these dark/light CSS rules, the page currently always renders in light
+      theme. The likely cause is that the ThemeToggle.vue component (which
+      manages the .dark class on <html> via @vueuse/core useDark()) may not
+      properly initialize on the 404 page, or the dark class from localStorage
+      is not applied before first paint, causing the :not(.dark) rules to
+      always win. The terminal colors (titlebar #2d2d2d/#1e1e1e, body
+      #1e1e1e/#f5f5f5, prompt colors, error red, comment green, etc.) need
+      to actually respond to the user's theme preference. The ThemeToggle
+      must also work interactively on the 404 page so users can switch themes.
+    status: backlog
+    completion: 0
+    difficulty: medium
+    priority: medium
+    effort: "PT4H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must work with the existing UnoCSS dark: variant system and ThemeToggle.vue"
+      - "Dark class from localStorage must be applied BEFORE first paint to prevent flash of wrong theme (FOUC)"
+      - "Must not break View Transitions when toggling theme on the 404 page"
+      - "All terminal colors (titlebar, body, prompt parts, commands, errors, hints, file listings, cursor) must switch correctly"
+    forbidden:
+      - "Do not remove the mock-bash terminal design — it is a deliberate design choice"
+      - "Do not use a separate CSS file for 404 — keep scoped styles in the component"
+    references:
+      - "src/pages/404.astro"
+      - "src/components/ThemeToggle.vue"
+      - "uno.config.ts"
+    notes:
+      - "2026-03-10: Feature added to backlog. The 404 page is a mock-bash terminal with scoped CSS that has :global(.dark) overrides for all elements. Despite this, it always renders light-themed. Root cause likely: .dark class not applied to <html> before first paint on the 404 page. ThemeToggle uses @vueuse/core useDark() which reads localStorage, but this may not run early enough or may not hydrate at all on the 404 page."
+    subtasks:
+
+      - id: 404-theme-debug
+        title: "Debug why dark mode never activates on 404"
+        description: >
+          Investigate why the 404 page always renders in light theme despite
+          having :global(.dark) CSS rules. Check: (1) Is ThemeToggle.vue
+          present and hydrating on the 404 page? (2) Is BaseLayout.astro
+          including the dark mode initialization script? (3) Is the .dark
+          class being set on <html> before the 404 styles are evaluated?
+          (4) Is there a race condition between Astro hydration and the
+          scoped style evaluation?
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT1H30M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must test with both localStorage dark=true and dark=false"
+          - "Must test with JS disabled to see server-rendered state"
+        forbidden: []
+        references:
+          - "src/pages/404.astro"
+          - "src/layouts/BaseLayout.astro"
+          - "src/components/ThemeToggle.vue"
+        notes: []
+        subtasks: []
+
+      - id: 404-theme-early-init
+        title: "Ensure dark class is applied before first paint"
+        description: >
+          Add an inline <script> (not deferred) in the <head> that reads
+          the theme preference from localStorage and applies the .dark class
+          to <html> immediately, before any CSS is evaluated. This prevents
+          flash of light theme (FOUC). This script may already exist in
+          BaseLayout.astro — verify it runs on the 404 page.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Script must be inline and blocking (not async/defer)"
+          - "Must respect the same localStorage key that ThemeToggle.vue uses"
+        forbidden:
+          - "Do not duplicate theme logic — share the localStorage key name"
+        references:
+          - "src/components/ThemeToggle.vue"
+        notes: []
+        subtasks: []
+
+      - id: 404-theme-toggle-verify
+        title: "Verify ThemeToggle works interactively on 404"
+        description: >
+          Ensure the ThemeToggle button in the site header works on the 404
+          page — clicking it should toggle the .dark class and all terminal
+          colors should switch. The circular clip-path View Transition
+          animation should also work.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        effort: "PT30M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: 404-theme-terminal-colors
+        title: "Audit and fix all terminal color pairs"
+        description: >
+          Verify every color in the 404 scoped styles has both a light and
+          dark variant. Current pairs to check: titlebar bg (#2d2d2d / #1e1e1e),
+          body bg (#1e1e1e / #f5f5f5), body text (#d4d4d4 / #333), prompt
+          parts (user green, host blue, path blue, at/colon/dollar gray),
+          command text (#ce9178 / #a31515), error red (#f44747 / #cd3131),
+          hint/help green (#6a9955 / #008000), file listing colors, link
+          colors, hover backgrounds, cursor color. Ensure contrast ratios
+          meet WCAG AA in both themes.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "All color pairs must meet WCAG AA contrast ratio (4.5:1 for normal text)"
+        forbidden: []
+        references:
+          - "src/pages/404.astro"
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 5: i18n architecture overhaul
+  # ---------------------------------------------------------------------------
+  - id: i18n-overhaul
+    title: "Redo i18n for easier language management"
+    description: >
+      Redesign the internationalization system to solve three pain points:
+      (1) Easier jumping between language versions of the same page/post,
+      (2) Ability to share static resources (cover images, assets) across
+      language versions of a post without duplication, and (3) Eliminate the
+      /it/ folder duplication pattern in src/pages/ and src/content/ that
+      mirrors the entire English structure. The current system is a hand-rolled
+      solution because Astro's built-in i18n "breaks the site for some reason"
+      (noted in astro.config.ts). The new system should be cleaner while
+      remaining compatible with Astro's static output for GitHub Pages.
+    status: backlog
+    completion: 0
+    difficulty: very_hard
+    priority: high
+    effort: "P5D"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must remain fully static (GitHub Pages deployment)"
+      - "Must not break existing URLs - implement redirects if paths change"
+      - "Must support at least en and it; should be extensible to nl and others"
+      - "Must preserve RSS feeds per language"
+      - "Must preserve sitemap with hreflang alternates"
+      - "Must preserve or improve SEO (hreflang tags, canonical URLs)"
+      - "Must work with Astro Content Collections v2/v3"
+    forbidden:
+      - "Do not use Astro's built-in i18n routing if it remains broken - investigate first, but don't force it"
+      - "Do not use heavy i18n libraries (i18next, etc.) client-side - keep translations in build-time data"
+      - "Do not require a CMS or external translation service"
+    references:
+      - "src/i18n/ui.ts"
+      - "src/i18n/utils.ts"
+      - "astro.config.ts"
+      - "src/pages/it/"
+      - "src/content/blog/it/"
+    notes:
+      - "2026-03-10: Feature added to backlog. This is the largest feature - impacts nearly every page and component. Current system works but has significant DRY violations and makes language switching fragile."
+    subtasks:
+
+      - id: i18n-audit-current
+        title: "Audit current i18n implementation"
+        description: >
+          Thoroughly document the current i18n system: all files involved,
+          how routing works, how translations are loaded, how content is
+          associated across languages, and all known pain points.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        effort: "PT3H"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: i18n-investigate-astro-builtin
+        title: "Investigate Astro built-in i18n (again)"
+        description: >
+          Re-test Astro's native i18n routing to understand exactly why it
+          "breaks the site." Document the specific failures. Determine if
+          recent Astro updates have fixed the issues. This may be the
+          simplest path forward if it works now.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT4H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Test on a branch - do not break main"
+        forbidden: []
+        references:
+          - "https://docs.astro.build/en/guides/internationalization/"
+          - "astro.config.ts"
+        notes: []
+        subtasks: []
+
+      - id: i18n-design-new-architecture
+        title: "Design new i18n architecture"
+        description: >
+          Based on the audit and Astro investigation, design a new i18n
+          architecture that solves the three pain points. Write an ADR
+          (Architecture Decision Record) with the chosen approach, trade-offs,
+          and migration plan.
+        status: backlog
+        completion: 0
+        difficulty: hard
+        priority: high
+        effort: "PT4H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must address all three pain points explicitly"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: i18n-shared-resources
+        title: "Implement shared static resources across languages"
+        description: >
+          Design and implement a system where post cover images and other
+          static assets can be defined once and shared across all language
+          versions of the same post. This likely involves a content schema
+          change where the "canonical" assets live in one location and
+          translations reference them.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT6H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must not break image optimization pipeline"
+          - "Must work with Astro's content collections asset handling"
+        forbidden:
+          - "Do not symlink assets - use references or a shared assets directory"
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: i18n-eliminate-folder-duplication
+        title: "Eliminate /it/ page folder duplication"
+        description: >
+          Refactor src/pages/ so that language-specific page variants are
+          generated from a single set of page templates rather than
+          maintaining parallel folder trees (src/pages/blog/ and
+          src/pages/it/blog/ etc.). Use dynamic routing with language as
+          a parameter.
+        status: backlog
+        completion: 0
+        difficulty: hard
+        priority: high
+        effort: "P1D"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must produce identical URL structure as current site"
+          - "Default language (en) must remain unprefixed"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks:
+
+          - id: i18n-dynamic-routing
+            title: "Implement language-parameterized dynamic routes"
+            description: >
+              Create dynamic route templates like src/pages/[lang]/blog/
+              that handle all languages from a single file. The default
+              language routes (unprefixed) must also be generated.
+            status: backlog
+            completion: 0
+            difficulty: hard
+            priority: high
+            effort: "PT6H"
+            started_at: null
+            ended_at: null
+            constraints: []
+            forbidden: []
+            references: []
+            notes: []
+            subtasks: []
+
+          - id: i18n-remove-it-pages
+            title: "Remove duplicated /it/ page files"
+            description: >
+              Once dynamic routing is confirmed working, remove the
+              src/pages/it/ directory and all its contents.
+            status: backlog
+            completion: 0
+            difficulty: trivial
+            priority: medium
+            effort: "PT30M"
+            started_at: null
+            ended_at: null
+            constraints:
+              - "Only after dynamic routing is fully tested"
+            forbidden: []
+            references: []
+            notes: []
+            subtasks: []
+
+      - id: i18n-language-switcher-upgrade
+        title: "Upgrade language switcher for reliable page jumping"
+        description: >
+          Improve LanguageDropdown.vue so it can reliably jump between
+          language versions of the same page/post. Currently it uses
+          fetch HEAD to check if the target URL exists, which is fragile.
+          The new system should have a build-time map of page-to-translation
+          correspondences.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT4H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must handle pages that exist in some languages but not others (graceful fallback)"
+          - "Must not require runtime API calls to check page existence"
+        forbidden:
+          - "Do not use fetch HEAD for existence checks in production"
+        references:
+          - "src/components/LanguageDropdown.vue"
+        notes: []
+        subtasks: []
+
+      - id: i18n-content-collection-refactor
+        title: "Refactor content collections for multilingual support"
+        description: >
+          Restructure src/content/blog/ and src/content/pages/ so that
+          translations are explicitly linked (e.g. via a shared slug or
+          translation_of field in frontmatter) rather than relying on
+          parallel directory structures.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT6H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must update content collection schema in src/content/config.ts"
+          - "Must migrate all existing content to new structure"
+        forbidden: []
+        references:
+          - "src/content/config.ts"
+          - "src/content/blog/"
+          - "src/content/blog/it/"
+        notes: []
+        subtasks: []
+
+      - id: i18n-migration-testing
+        title: "Full regression testing after migration"
+        description: >
+          Run a complete build and verify every page renders correctly in
+          all languages. Check RSS feeds, sitemap, hreflang tags, OG meta,
+          and all navigation paths. Compare old and new URL structures.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        effort: "PT4H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must verify no 404s for previously working URLs"
+          - "Must verify SEO metadata is preserved"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 6: Language-specific syntax highlighting in code blocks
+  # ---------------------------------------------------------------------------
+  - id: syntax-highlighting-languages
+    title: "Language-specific syntax highlighting in code blocks"
+    description: >
+      Ensure code blocks with language identifiers (```json, ```yaml, ```ts,
+      ```rust, ```shell, etc.) are properly syntax-highlighted with
+      language-specific grammars. The site already uses Shiki via Astro's
+      built-in markdown processing with github-light-default and
+      github-dark-default themes. This feature is about verifying coverage,
+      adding any missing language grammars, and potentially adding visual
+      indicators of the code language (e.g. a small label in the top-right
+      corner of code blocks).
+    status: backlog
+    completion: 0
+    difficulty: medium
+    priority: medium
+    effort: "PT6H"
+    started_at: null
+    ended_at: null
+    constraints:
+      - "Must use Shiki (already integrated) - do not switch highlighters"
+      - "Must work in both light and dark themes"
+      - "Must not increase page load time significantly"
+      - "Language labels (if added) must not interfere with copy-paste of code"
+    forbidden:
+      - "Do not replace Shiki with Prism, highlight.js, or other highlighters"
+      - "Do not add client-side syntax highlighting - keep it build-time"
+    references:
+      - "astro.config.ts"
+      - "src/styles/global.css"
+      - "src/styles/prose.css"
+    notes:
+      - "2026-03-10: Feature added to backlog. Shiki already handles most languages out of the box. Main work is auditing coverage and adding UX improvements like language labels."
+    subtasks:
+
+      - id: syntax-audit-languages
+        title: "Audit supported languages in current Shiki config"
+        description: >
+          Test code blocks with all commonly used languages in blog posts:
+          json, yaml, typescript, javascript, rust, shell/bash, python, go,
+          html, css, toml, dockerfile, markdown, diff, sql. Document which
+          ones work and which ones need attention.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: high
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "https://shiki.style/languages"
+        notes: []
+        subtasks: []
+
+      - id: syntax-add-missing-grammars
+        title: "Add any missing Shiki language grammars"
+        description: >
+          If the audit reveals missing languages, add them to the Shiki
+          configuration in astro.config.ts. Shiki supports a vast list of
+          languages, so most should already work - but some may need explicit
+          registration.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        effort: "PT1H"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "astro.config.ts"
+        notes: []
+        subtasks: []
+
+      - id: syntax-language-labels
+        title: "Add language labels to code blocks"
+        description: >
+          Add a small visual label (e.g. "TypeScript", "JSON", "Rust") in
+          the top-right or top-left corner of fenced code blocks. This
+          improves UX by making it immediately clear what language is shown.
+          Implement via a Shiki transformer or CSS/remark plugin.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: medium
+        effort: "PT3H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Label must not be selectable/copyable (use CSS user-select: none or pseudo-elements)"
+          - "Label must be visible in both light and dark themes"
+          - "Label must not obscure code content"
+        forbidden:
+          - "Do not use JavaScript to inject labels - must be build-time"
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: syntax-copy-button
+        title: "Add copy-to-clipboard button for code blocks"
+        description: >
+          Add a small copy button to code blocks that copies the raw code
+          content to the clipboard. Show brief feedback (e.g. checkmark or
+          "Copied!" tooltip) on successful copy.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: low
+        effort: "PT2H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must use navigator.clipboard API"
+          - "Button must be unobtrusive - appear on hover or in a consistent corner"
+          - "Must not copy language labels or line numbers"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+
+      - id: syntax-line-numbers
+        title: "Optional line numbers for code blocks"
+        description: >
+          Add support for optional line numbers in code blocks, togglable
+          via a frontmatter flag or code fence attribute (e.g.
+          ```ts {lines} or a remark/rehype directive). Line numbers should
+          not be copyable.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: low
+        effort: "PT3H"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Line numbers must not be included when copying code"
+          - "Must be opt-in, not default"
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
