@@ -1757,89 +1757,6 @@ features:
         subtasks: []
 
   # ---------------------------------------------------------------------------
-  # FEATURE 13: Search improvements
-  # ---------------------------------------------------------------------------
-  - id: search-improvements
-    title: "Search UX improvements with URL query parameter"
-    description: >
-      Improve the Pagefind search experience by adding URL query parameter
-      support so search queries can be shared via URL. The format must be
-      ${url}?s=${keyword} (using "s" parameter, not "q"). When a user
-      navigates to a search URL with ?s=keyword, the search input should be
-      pre-populated and results shown automatically. Also improve search
-      result presentation, add keyboard navigation, and ensure the search
-      works correctly across language versions.
-    status: done
-    completion: 100
-    difficulty: medium
-    priority: high
-    depends_on: []
-    effort: "PT6H"
-    started_at: "2026-03-10"
-    ended_at: "2026-03-10"
-    constraints:
-      - "URL parameter must be ?s= (not ?q= or other)"
-      - "Must update URL in real-time as user types (pushState, not page reload)"
-      - "Must work with View Transitions"
-      - "Must work on both /search and /it/search pages"
-      - "Must handle URL-encoded special characters in search terms"
-    forbidden:
-      - "Do not use ?q= parameter — must be ?s="
-      - "Do not add server-side search — keep it Pagefind client-side"
-    references:
-      - "src/pages/search.astro"
-      - "src/pages/it/search.astro"
-      - "https://pagefind.app"
-    notes:
-      - "2026-03-10: Feature added to backlog. User specifically requested ?s= URL parameter format. Current search pages are duplicated (EN/IT) with Pagefind client-side indexing."
-      - "2026-03-10: All subtasks completed. URL ?s= param read/write, keyboard nav (ArrowUp/Down/Enter/Escape), ARIA combobox pattern, result type badges (Blog/Project/Tag/Page). Applied to both EN and IT search pages."
-    subtasks:
-
-      - id: search-url-param-read
-        title: "Read search query from URL parameter on page load"
-        status: done
-        completion: 100
-        difficulty: easy
-        priority: high
-        started_at: "2026-03-10"
-        ended_at: "2026-03-10"
-        notes:
-          - "Reads ?s= param via URLSearchParams, populates input, triggers performSearch()."
-
-      - id: search-url-param-write
-        title: "Update URL parameter as user types"
-        status: done
-        completion: 100
-        difficulty: easy
-        priority: high
-        started_at: "2026-03-10"
-        ended_at: "2026-03-10"
-        notes:
-          - "Uses history.replaceState in debounced input handler (200ms). Clears ?s= when empty."
-
-      - id: search-keyboard-navigation
-        title: "Add keyboard navigation to search results"
-        status: done
-        completion: 100
-        difficulty: medium
-        priority: medium
-        started_at: "2026-03-10"
-        ended_at: "2026-03-10"
-        notes:
-          - "ArrowDown/Up navigates results, Enter follows link, Escape clears or blurs. Uses aria-activedescendant pattern."
-
-      - id: search-result-improvements
-        title: "Improve search result presentation"
-        status: done
-        completion: 100
-        difficulty: medium
-        priority: medium
-        started_at: "2026-03-10"
-        ended_at: "2026-03-10"
-        notes:
-          - "Added type badges (Blog/Project/Tag/Page) from URL patterns with color-coded borders. Date display skipped — no data-pagefind-meta for dates in templates."
-
-  # ---------------------------------------------------------------------------
   # FEATURE 14: Security headers
   # ---------------------------------------------------------------------------
   - id: security-headers
@@ -4004,6 +3921,43 @@ features:
 # Archive - completed or cancelled features (end of life-cycle)
 # =============================================================================
 archive:
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 13: Search improvements (DONE 2026-03-10)
+  # ---------------------------------------------------------------------------
+  - id: search-improvements
+    title: "Search UX improvements with URL query parameter"
+    description: >
+      Improved Pagefind search with URL ?s= parameter support (read on load,
+      write on type via replaceState), keyboard navigation (ArrowUp/Down/Enter/
+      Escape with aria-activedescendant combobox pattern), and result type
+      badges (Blog/Project/Tag/Page) with color-coded borders. Applied to
+      both EN and IT search pages.
+    status: done
+    completion: 100
+    difficulty: medium
+    priority: high
+    started_at: "2026-03-10"
+    ended_at: "2026-03-10"
+    notes:
+      - "2026-03-10: All 4 subtasks completed. URL param uses ?s= format. Keyboard nav uses ARIA combobox pattern. Type badges inferred from URL patterns. Date display skipped (no pagefind metadata)."
+    subtasks:
+      - id: search-url-param-read
+        title: "Read search query from URL parameter on page load"
+        status: done
+        completion: 100
+      - id: search-url-param-write
+        title: "Update URL parameter as user types"
+        status: done
+        completion: 100
+      - id: search-keyboard-navigation
+        title: "Add keyboard navigation to search results"
+        status: done
+        completion: 100
+      - id: search-result-improvements
+        title: "Improve search result presentation"
+        status: done
+        completion: 100
 
   # ---------------------------------------------------------------------------
   # FEATURE 2: Mastodon share button (DONE 2026-03-10)
