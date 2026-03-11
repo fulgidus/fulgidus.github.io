@@ -2,17 +2,20 @@ name: Deploy to GitHub Pages
 
 on:
   # Trigger the workflow every time you push to the `main` branch
-  # Replace `main` with your branch name if it's different
   push:
+    branches: [main]
+  # Run Lighthouse CI audits on pull requests
+  pull_request:
     branches: [main]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Permissions required to deploy to GitHub Pages
+# Permissions required to deploy to GitHub Pages and post PR comments
 permissions:
   contents: read
   pages: write
   id-token: write
+  pull-requests: write
 
 jobs:
   Build:
@@ -43,22 +46,125 @@ jobs:
       - name: Build site
         run: bun run build
 
-      # Step 6: Upload build artifact for Pages deployment
+      # Step 6: Lighthouse CI audit
+      # Runs against built dist/ files before deployment.
+      # Only a11y and SEO regressions block deployment (see lighthouserc.js).
+      - name: Lighthouse CI audit
+        id: lighthouse
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./lighthouserc.js
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      # Step 7: Upload Lighthouse reports as build artifacts
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          retention-days: 14
+
+      # Step 8: Post Lighthouse score summary as PR comment
+      - name: Post Lighthouse summary to PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Read manifest to get results
+            const lhciDir = '.lighthouseci';
+            let manifest;
+            try {
+              manifest = JSON.parse(fs.readFileSync(path.join(lhciDir, 'manifest.json'), 'utf8'));
+            } catch (e) {
+              console.log('No Lighthouse manifest found, skipping PR comment');
+              return;
+            }
+
+            // Aggregate scores per URL
+            const urlScores = {};
+            for (const entry of manifest) {
+              const url = new URL(entry.url).pathname;
+              const result = JSON.parse(fs.readFileSync(entry.jsonPath, 'utf8'));
+              const categories = result.categories;
+              if (!urlScores[url]) {
+                urlScores[url] = { performance: [], accessibility: [], seo: [], 'best-practices': [] };
+              }
+              for (const [key, cat] of Object.entries(categories)) {
+                if (urlScores[url][key]) {
+                  urlScores[url][key].push(cat.score * 100);
+                }
+              }
+            }
+
+            // Build markdown table
+            const toEmoji = (score) => score >= 90 ? '🟢' : score >= 50 ? '🟠' : '🔴';
+            const avg = (arr) => arr.length ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : 'N/A';
+
+            let body = '## ⚡ Lighthouse CI Results\n\n';
+            body += '| Page | Performance | Accessibility | SEO | Best Practices |\n';
+            body += '|------|:-----------:|:-------------:|:---:|:--------------:|\n';
+
+            for (const [url, scores] of Object.entries(urlScores)) {
+              const perf = avg(scores.performance);
+              const a11y = avg(scores.accessibility);
+              const seo = avg(scores.seo);
+              const bp = avg(scores['best-practices']);
+              body += `| \`${url}\` | ${toEmoji(perf)} ${perf} | ${toEmoji(a11y)} ${a11y} | ${toEmoji(seo)} ${seo} | ${toEmoji(bp)} ${bp} |\n`;
+            }
+
+            body += '\n_Scores are median of 3 runs. 🟢 90+ · 🟠 50-89 · 🔴 <50_\n';
+            body += '_Full reports available in the [build artifacts](../actions/runs/' + context.runId + ')._\n';
+
+            // Find and update or create comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('Lighthouse CI Results')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      # Step 9: Upload build artifact for Pages deployment
       - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist/
 
   Deploy:
-    # Deploy job depends on the build job
+    # Deploy job depends on the build job and only runs on push (not PRs)
     needs: Build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
 
-      # Step 2: Deploy to GitHub Pages
+      # Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
