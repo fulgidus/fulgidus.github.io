@@ -65,6 +65,11 @@ ${itPageLinks}
     const content = body.trim()
     const etag = `"${createHash('md5').update(content).digest('hex')}"`;
 
+    // Note: Cache-Control and ETag headers are set here for correctness, but
+    // GitHub Pages (the current deployment target) does not support custom
+    // response headers. These headers will only be effective during local
+    // development or if the site is moved to a hosting platform that supports
+    // custom headers (e.g., Netlify, Cloudflare Pages, Vercel).
     return new Response(content, {
         headers: {
             'Content-Type': 'text/plain; charset=utf-8',
