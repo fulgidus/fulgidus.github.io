@@ -21,7 +21,7 @@ module.exports = {
       // URLs to audit (relative to the local server root)
       url: [
         'http://localhost/index.html',
-        'http://localhost/posts/Testing/index.html',
+        'http://localhost/posts/testing/index.html',
         'http://localhost/search/index.html',
         'http://localhost/404.html',
       ],
