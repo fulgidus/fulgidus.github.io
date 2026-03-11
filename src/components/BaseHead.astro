@@ -4,15 +4,21 @@ import "@/styles/global.css";
 import "@/styles/prose.css";
 import "@/styles/dot.css";
 import { defaultLang, Languages, ui } from "@/i18n/ui";
-import { useSpecificPath, translateFrom } from "@/i18n/utils";
+import { useSpecificPath, translateFrom, getLangFromUrl } from "@/i18n/utils";
 import { getHreflangLinks } from "@/utils/hreflang";
+import {
+  buildArticleJsonLd,
+  buildPersonJsonLd,
+  buildWebSiteJsonLd,
+  buildBreadcrumbJsonLd,
+} from "@/utils/jsonld";
 
 interface Props {
   title?: string;
   description?: string;
   image?: { src: string; alt?: string };
   ogImage?: string;
-  pageType?: "website" | "article";
+  pageType?: "website" | "article" | "profile";
   noindex?: boolean;
   postSlug?: string;
   pubDate?: string | Date;
@@ -56,11 +62,8 @@ function formatCanonicalURL(url: string | URL) {
   return path.replace(/\/?$/, hasQueryParams ? "" : "/");
 }
 
-// const currentLang = getLangFromUrl(Astro.url.pathname);
 const availableLanguages = Object.keys(ui) as Languages[];
-// const languages = availableLanguages.map((lang) => [lang, ui[lang].language]);
-// const t = useTranslations(currentLang as Languages);
-// const tp = useTranslatedPath(currentLang as Languages);
+const currentLang = getLangFromUrl(Astro.url);
 
 // Hreflang alternate links for SEO
 const hreflangLinks = await getHreflangLinks(
@@ -70,63 +73,41 @@ const hreflangLinks = await getHreflangLinks(
 );
 
 // JSON-LD structured data
-function buildJsonLd() {
-  const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://fulgidus.github.io';
-  const pageUrl = formatCanonicalURL(canonicalURL);
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://fulgidus.github.io';
+const pageUrl = formatCanonicalURL(canonicalURL);
 
+function buildJsonLd(): Record<string, unknown> {
   if (pageType === 'article' && Astro.props.title) {
-    // BlogPosting schema
-    const blogPosting: Record<string, unknown> = {
-      '@context': 'https://schema.org',
-      '@type': 'BlogPosting',
-      headline: Astro.props.title,
+    return buildArticleJsonLd({
+      title: Astro.props.title,
+      description,
       url: pageUrl,
-      author: {
-        '@type': 'Person',
-        name: siteConfig.author,
-        url: siteUrl,
-      },
-      publisher: {
-        '@type': 'Person',
-        name: siteConfig.author,
-        url: siteUrl,
-      },
-    };
-
-    if (description) blogPosting.description = description;
-    if (resolvedImage?.src) blogPosting.image = resolvedImage.src;
-    if (pubDate) {
-      const isoDate = new Date(pubDate).toISOString();
-      blogPosting.datePublished = isoDate;
-      blogPosting.dateModified = isoDate;
-    }
-    if (tags && tags.length > 0) blogPosting.keywords = tags;
-    if (readingTime) {
-      // Convert "5m" to ISO 8601 duration "PT5M"
-      const minutes = parseInt(readingTime, 10);
-      if (!isNaN(minutes)) {
-        blogPosting.timeRequired = `PT${minutes}M`;
-      }
-    }
-
-    return blogPosting;
+      siteUrl,
+      imageUrl: resolvedImage?.src,
+      pubDate,
+      tags,
+      readingTime,
+    });
   }
 
-  // WebSite schema for non-article pages
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: siteConfig.title,
-    description: siteConfig.description,
-    url: siteUrl,
-    author: {
-      '@type': 'Person',
-      name: siteConfig.author,
-    },
-  };
+  if (pageType === 'profile') {
+    return buildPersonJsonLd({ siteUrl });
+  }
+
+  // Default: WebSite schema
+  return buildWebSiteJsonLd(siteUrl);
 }
 
 const jsonLd = buildJsonLd();
+
+// Breadcrumb structured data (null for homepage)
+const breadcrumbJsonLd = buildBreadcrumbJsonLd({
+  url: pageUrl,
+  siteUrl,
+  lang: currentLang,
+  pageTitle: Astro.props.title,
+  labels: {},
+});
 ---
 
 <!-- High Priority Global Metadata -->
@@ -237,6 +218,9 @@ const jsonLd = buildJsonLd();
 
 <!-- JSON-LD structured data -->
 <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+{breadcrumbJsonLd && (
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+)}
 
 <script>
   import nprogress from "nprogress";
