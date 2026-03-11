@@ -8,6 +8,7 @@ import UnoCSS from 'unocss/astro'
 import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import { remarkReadingTime } from './src/plugins/remark-reading-time'
+import { rehypeTocHeadings } from './src/plugins/rehype-toc-headings'
 import nodePath from 'node:path'
 
 
@@ -135,6 +136,7 @@ export default defineConfig({
                     }],
                 },
             }],
+            rehypeTocHeadings,
         ],
         shikiConfig: {
             themes: {

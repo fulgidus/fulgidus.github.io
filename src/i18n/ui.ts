@@ -83,6 +83,8 @@ export const ui = {
         'marp.downloadPptx': 'Download PPTX',
         'marp.downloadMd': 'Download source',
         'marp.downloads': 'Downloads',
+        'toc.title': 'Table of Contents',
+        'toc.ariaLabel': 'Table of contents',
     },
     it: {
         'flag': '🇮🇹',
@@ -168,6 +170,8 @@ export const ui = {
         'marp.downloadPptx': 'Scarica PPTX',
         'marp.downloadMd': 'Scarica sorgente',
         'marp.downloads': 'Download',
+        'toc.title': 'Indice dei contenuti',
+        'toc.ariaLabel': 'Indice dei contenuti',
     },
     nl: {
         'disabled': 'true',
@@ -248,6 +252,8 @@ export const ui = {
         'marp.downloadPptx': 'Download PPTX',
         'marp.downloadMd': 'Download bron',
         'marp.downloads': 'Downloads',
+        'toc.title': 'Inhoudsopgave',
+        'toc.ariaLabel': 'Inhoudsopgave',
     },
     
 
