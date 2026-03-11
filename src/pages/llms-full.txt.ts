@@ -3,6 +3,12 @@ import { PAGE_KEY } from '@/types'
 import { getPosts, removeLangFromSlug } from '@/utils/posts'
 import type { APIContext } from 'astro'
 
+function getContentMetrics(content: string): { wordCount: number; tokenEstimate: number } {
+    const wordCount = content.split(/\s+/).filter(w => w.length > 0).length
+    const tokenEstimate = Math.ceil(wordCount * 1.3)
+    return { wordCount, tokenEstimate }
+}
+
 export async function GET(context: APIContext) {
     const enPosts = await getPosts({ lang: 'en', withDrafts: false, withUnlisted: false })
     const itPosts = await getPosts({ lang: 'it', withDrafts: false, withUnlisted: false })
@@ -14,11 +20,15 @@ export async function GET(context: APIContext) {
 
     const enPostSections = enPosts.map(post => {
         const slug = post.slug
+        const content = post.body?.trim() ?? ''
+        const { wordCount, tokenEstimate } = getContentMetrics(content)
         const frontmatter = [
             `title: ${post.data.title}`,
             post.data.description ? `description: ${post.data.description}` : null,
             post.data.pubDate ? `date: ${post.data.pubDate instanceof Date ? post.data.pubDate.toISOString() : post.data.pubDate}` : null,
             post.data.tags?.length ? `tags: ${post.data.tags.join(', ')}` : null,
+            `word_count: ${wordCount}`,
+            `token_estimate: ${tokenEstimate}`,
         ].filter(Boolean).join('\n')
 
         return `<post>
@@ -27,18 +37,22 @@ export async function GET(context: APIContext) {
 ${frontmatter}
 </frontmatter>
 <content>
-${post.body?.trim() ?? ''}
+${content}
 </content>
 </post>`
     }).join('\n\n')
 
     const itPostSections = itPosts.map(post => {
         const slug = removeLangFromSlug(post.slug)
+        const content = post.body?.trim() ?? ''
+        const { wordCount, tokenEstimate } = getContentMetrics(content)
         const frontmatter = [
             `title: ${post.data.title}`,
             post.data.description ? `description: ${post.data.description}` : null,
             post.data.pubDate ? `date: ${post.data.pubDate instanceof Date ? post.data.pubDate.toISOString() : post.data.pubDate}` : null,
             post.data.tags?.length ? `tags: ${post.data.tags.join(', ')}` : null,
+            `word_count: ${wordCount}`,
+            `token_estimate: ${tokenEstimate}`,
         ].filter(Boolean).join('\n')
 
         return `<post>
@@ -47,16 +61,20 @@ ${post.body?.trim() ?? ''}
 ${frontmatter}
 </frontmatter>
 <content>
-${post.body?.trim() ?? ''}
+${content}
 </content>
 </post>`
     }).join('\n\n')
 
     const enPageSections = enPages.map(page => {
         const slug = page.slug
+        const content = page.body?.trim() ?? ''
+        const { wordCount, tokenEstimate } = getContentMetrics(content)
         const frontmatter = [
             `title: ${page.data.title}`,
             page.data.description ? `description: ${page.data.description}` : null,
+            `word_count: ${wordCount}`,
+            `token_estimate: ${tokenEstimate}`,
         ].filter(Boolean).join('\n')
 
         return `<page>
@@ -65,16 +83,20 @@ ${post.body?.trim() ?? ''}
 ${frontmatter}
 </frontmatter>
 <content>
-${page.body?.trim() ?? ''}
+${content}
 </content>
 </page>`
     }).join('\n\n')
 
     const itPageSections = itPages.map(page => {
         const slug = removeLangFromSlug(page.slug)
+        const content = page.body?.trim() ?? ''
+        const { wordCount, tokenEstimate } = getContentMetrics(content)
         const frontmatter = [
             `title: ${page.data.title}`,
             page.data.description ? `description: ${page.data.description}` : null,
+            `word_count: ${wordCount}`,
+            `token_estimate: ${tokenEstimate}`,
         ].filter(Boolean).join('\n')
 
         return `<page>
@@ -83,7 +105,7 @@ ${page.body?.trim() ?? ''}
 ${frontmatter}
 </frontmatter>
 <content>
-${page.body?.trim() ?? ''}
+${content}
 </content>
 </page>`
     }).join('\n\n')
