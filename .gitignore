@@ -11,3 +11,6 @@ AGENTS.md
 */*/AGENTS.md
 public/marp/
 
+# Lychee link checker cache
+.lycheecache
+
