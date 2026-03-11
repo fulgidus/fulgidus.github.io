@@ -99,7 +99,11 @@ html.dark .skip-to-content {
   clip: auto;
 }
 
-/* Reading progress bar gradient — theme-aware */
+/* Reading progress bar gradient — theme-aware
+ * Light: violet-600 → purple-500 (high contrast on #eef5fc background)
+ * Dark:  violet-400 → violet-300 (lighter shades for visibility on #0d1117 background)
+ * These variables are consumed by ReadingProgress.vue's scoped gradient.
+ */
 html:not(.dark) {
   --reading-progress-from: #7c3aed;
   --reading-progress-to: #a855f7;
