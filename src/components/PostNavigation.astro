@@ -1,0 +1,67 @@
+---
+import type { CollectionPost } from '@/types'
+import { getHref, getDate } from '@/utils/posts'
+import { translatePath, useTranslate } from '@/i18n/utils'
+import { type Languages } from '@/i18n/ui'
+import { getFormattedDate } from '@/utils/date'
+
+interface Props {
+  previousPost: CollectionPost | null
+  nextPost: CollectionPost | null
+  lang: Languages
+}
+
+const { previousPost, nextPost, lang } = Astro.props
+const t = useTranslate(lang)
+---
+
+{(previousPost || nextPost) && (
+  <nav aria-label="Post navigation" class="post-navigation !mt-12 !mb-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {previousPost ? (
+        <a
+          href={translatePath(getHref(previousPost), lang)}
+          class="nav-link !no-underline flex flex-col gap-1 p-3 b-rd-2"
+          data-astro-prefetch
+        >
+          <span class="opacity-50 text-sm flex items-center gap-1">
+            <span aria-hidden="true">&larr;</span>
+            {t('postNav.previous')}
+          </span>
+          <span class="font-medium">{previousPost.data.title}</span>
+          {previousPost.data.pubDate && (
+            <span class="opacity-50 text-sm">
+              <time datetime={getDate(previousPost.data.pubDate)}>
+                {getFormattedDate(previousPost.data.pubDate, lang)}
+              </time>
+            </span>
+          )}
+        </a>
+      ) : (
+        <div />
+      )}
+      {nextPost ? (
+        <a
+          href={translatePath(getHref(nextPost), lang)}
+          class="nav-link !no-underline flex flex-col gap-1 p-3 b-rd-2 text-right sm:col-start-2"
+          data-astro-prefetch
+        >
+          <span class="opacity-50 text-sm flex items-center justify-end gap-1">
+            {t('postNav.next')}
+            <span aria-hidden="true">&rarr;</span>
+          </span>
+          <span class="font-medium">{nextPost.data.title}</span>
+          {nextPost.data.pubDate && (
+            <span class="opacity-50 text-sm">
+              <time datetime={getDate(nextPost.data.pubDate)}>
+                {getFormattedDate(nextPost.data.pubDate, lang)}
+              </time>
+            </span>
+          )}
+        </a>
+      ) : (
+        <div />
+      )}
+    </div>
+  </nav>
+)}
