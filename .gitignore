@@ -10,3 +10,5 @@ AGENTS.md
 */AGENTS.md
 */*/AGENTS.md
 public/marp/
+.wave-state.json
+.wave-logs/
