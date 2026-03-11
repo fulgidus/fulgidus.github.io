@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Offline — The Fulgidus Chronicles</title>
+  <meta name="theme-color" content="#380541">
+  <style>
+    /* ── Reset & base ────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #eef5fc;
+      --fg: #333;
+      --fg-muted: #666;
+      --card-bg: #fff;
+      --card-border: #dde3ea;
+      --accent: #380541;
+      --link: #0451a5;
+      --link-hover: #380541;
+      --badge-bg: #f0e6f3;
+      --badge-fg: #380541;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --fg: #e6edf3;
+        --fg-muted: #8b949e;
+        --card-bg: #161b22;
+        --card-border: #30363d;
+        --accent: #c9a0d0;
+        --link: #79c0ff;
+        --link-hover: #c9a0d0;
+        --badge-bg: #2d1a33;
+        --badge-fg: #c9a0d0;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      line-height: 1.6;
+    }
+
+    /* ── Main container ──────────────────────── */
+    .container {
+      max-width: 36rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* ── Icon ─────────────────────────────────── */
+    .offline-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.8;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+
+    .subtitle {
+      color: var(--fg-muted);
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+    }
+
+    /* ── Cached pages section ────────────────── */
+    .cached-section {
+      text-align: left;
+      margin-top: 1.5rem;
+    }
+
+    .cached-section h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--fg);
+    }
+
+    .cached-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .cached-list a {
+      display: block;
+      padding: 0.75rem 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0.5rem;
+      color: var(--link);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: border-color 0.15s, background 0.15s;
+      word-break: break-word;
+    }
+
+    .cached-list a:hover {
+      border-color: var(--accent);
+      color: var(--link-hover);
+    }
+
+    .no-cached {
+      color: var(--fg-muted);
+      font-style: italic;
+      font-size: 0.9rem;
+      padding: 0.75rem 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0.5rem;
+    }
+
+    /* ── Retry button ────────────────────────── */
+    .retry-btn {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.6rem 1.5rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+
+    .retry-btn:hover {
+      opacity: 0.85;
+    }
+
+    /* ── Online banner ───────────────────────── */
+    .online-banner {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: 0.6rem;
+      background: #28a745;
+      color: #fff;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      z-index: 1000;
+    }
+
+    .online-banner.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="online-banner" class="online-banner" role="status" aria-live="polite"></div>
+
+  <div class="container">
+    <div class="offline-icon" aria-hidden="true">📡</div>
+    <h1 id="heading"></h1>
+    <p class="subtitle" id="subtitle"></p>
+
+    <div class="cached-section">
+      <h2 id="cached-heading"></h2>
+      <ul class="cached-list" id="cached-list"></ul>
+    </div>
+
+    <button class="retry-btn" id="retry-btn" onclick="window.location.reload()"></button>
+  </div>
+
+  <script>
+    // ── i18n ────────────────────────────────────
+    var strings = {
+      en: {
+        title: 'Offline — The Fulgidus Chronicles',
+        heading: 'You are offline',
+        subtitle: 'The page you requested is not available offline. Check your connection and try again.',
+        cachedHeading: 'Pages available offline',
+        noCached: 'No pages have been cached yet. Visit some pages while online and they will be available offline.',
+        retry: 'Try again',
+        onlineMsg: 'You are back online! Reloading…',
+      },
+      it: {
+        title: 'Offline — The Fulgidus Chronicles',
+        heading: 'Sei offline',
+        subtitle: 'La pagina richiesta non è disponibile offline. Controlla la connessione e riprova.',
+        cachedHeading: 'Pagine disponibili offline',
+        noCached: 'Nessuna pagina è stata ancora salvata. Visita alcune pagine mentre sei online e saranno disponibili offline.',
+        retry: 'Riprova',
+        onlineMsg: 'Sei di nuovo online! Ricaricamento…',
+      }
+    };
+
+    // Detect language from URL referrer, stored preference, or navigator
+    function detectLang() {
+      // Check if the URL that was being navigated to was /it/...
+      try {
+        var ref = document.referrer;
+        if (ref) {
+          var refUrl = new URL(ref);
+          var parts = refUrl.pathname.split('/');
+          if (parts[1] === 'it') return 'it';
+        }
+      } catch (e) { /* ignore */ }
+
+      // Check localStorage for language preference
+      try {
+        var stored = localStorage.getItem('preferred-lang');
+        if (stored && strings[stored]) return stored;
+      } catch (e) { /* ignore */ }
+
+      // Check navigator language
+      var navLang = (navigator.language || '').split('-')[0];
+      if (strings[navLang]) return navLang;
+
+      return 'en';
+    }
+
+    var lang = detectLang();
+    var t = strings[lang] || strings.en;
+
+    // Apply translations
+    document.documentElement.lang = lang;
+    document.title = t.title;
+    document.getElementById('heading').textContent = t.heading;
+    document.getElementById('subtitle').textContent = t.subtitle;
+    document.getElementById('cached-heading').textContent = t.cachedHeading;
+    document.getElementById('retry-btn').textContent = t.retry;
+
+    // ── Cached pages list ────────────────────────
+    function loadCachedPages() {
+      var listEl = document.getElementById('cached-list');
+      if (!navigator.serviceWorker || !navigator.serviceWorker.controller) {
+        listEl.innerHTML = '<li class="no-cached">' + t.noCached + '</li>';
+        return;
+      }
+
+      var messageChannel = new MessageChannel();
+      messageChannel.port1.onmessage = function(event) {
+        var pages = event.data.cachedPages || [];
+        if (pages.length === 0) {
+          listEl.innerHTML = '<li class="no-cached">' + t.noCached + '</li>';
+          return;
+        }
+
+        // Deduplicate and create friendly names
+        var seen = {};
+        var items = [];
+        pages.forEach(function(pageUrl) {
+          if (seen[pageUrl]) return;
+          seen[pageUrl] = true;
+          try {
+            var u = new URL(pageUrl);
+            var path = u.pathname.replace(/\/$/, '') || '/';
+            // Skip the offline page itself
+            if (path === '/offline.html') return;
+            var label = path === '/' ? 'Home' : decodeURIComponent(path);
+            items.push({ url: pageUrl, label: label });
+          } catch (e) { /* skip */ }
+        });
+
+        if (items.length === 0) {
+          listEl.innerHTML = '<li class="no-cached">' + t.noCached + '</li>';
+          return;
+        }
+
+        listEl.innerHTML = items.map(function(item) {
+          return '<li><a href="' + item.url + '">' + item.label + '</a></li>';
+        }).join('');
+      };
+
+      navigator.serviceWorker.controller.postMessage(
+        { type: 'GET_CACHED_PAGES' },
+        [messageChannel.port2]
+      );
+    }
+
+    loadCachedPages();
+
+    // ── Online detection ─────────────────────────
+    window.addEventListener('online', function() {
+      var banner = document.getElementById('online-banner');
+      banner.textContent = t.onlineMsg;
+      banner.classList.add('visible');
+      setTimeout(function() { window.location.reload(); }, 1500);
+    });
+  </script>
+</body>
+</html>
