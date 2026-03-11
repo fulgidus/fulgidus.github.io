@@ -152,6 +152,13 @@ const jsonLd = buildJsonLd();
   title="Last 10 posts in English"
   lang="en"
 />
+<link
+  rel="alternate"
+  type="application/feed+json"
+  href={"/feed.json"}
+  title="All posts in English (JSON Feed)"
+  lang="en"
+/>
 {
   availableLanguages
     .filter((l) => l !== "en" && !ui[l]["disabled"])
@@ -171,6 +178,13 @@ const jsonLd = buildJsonLd();
               type="application/rss+xml"
               href={useSpecificPath(lang, `/last-ten.xml`)}
               title={translateFrom(lang, "rss.titleLastTen")}
+              lang={lang}
+            />
+            <link
+              rel="alternate"
+              type="application/feed+json"
+              href={useSpecificPath(lang, `/feed.json`)}
+              title={`${translateFrom(lang, "rss.titleAll")} (JSON Feed)`}
               lang={lang}
             />
           </>
