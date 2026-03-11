@@ -315,4 +315,20 @@ const jsonLd = buildJsonLd();
   defer
   src="https://cloud.umami.is/script.js"
   data-website-id="e4492488-53e1-4115-8b3b-f07c527d973b"></script>
+<script is:inline define:vars={{ isProd: import.meta.env.PROD }}>
+  // Service Worker registration — production only
+  if (isProd && 'serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker
+        .register('/sw.js', { scope: '/' })
+        .then(function (reg) {
+          // Check for updates periodically (every 60 minutes)
+          setInterval(function () { reg.update(); }, 60 * 60 * 1000);
+        })
+        .catch(function (err) {
+          console.warn('[PWA] Service worker registration failed:', err);
+        });
+    });
+  }
+</script>
 
