@@ -78,5 +78,10 @@ export default defineConfig({
         'i-ri-file-copy-line',
         'i-ri-check-line',
         'i-ri-error-warning-line',
+        // CV page icons (Font Awesome replacements)
+        'i-fa6-solid-location-dot',
+        'i-fa6-solid-phone',
+        'i-fa6-solid-envelope',
+        'i-fa6-brands-github',
     ],
 })
