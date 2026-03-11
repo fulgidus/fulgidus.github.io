@@ -1,0 +1,116 @@
+# Lychee link checker configuration
+# https://github.com/lycheeverse/lychee
+#
+# This config is used by the CI pipeline to validate links in the built site.
+# It runs against the dist/ directory (built HTML files).
+
+#############################  Display  #############################
+
+# Verbose output for better debugging in CI logs
+verbose = "info"
+
+# Markdown output format for CI reports and artifacts
+format = "markdown"
+
+# Don't show interactive progress bar in CI
+no_progress = true
+
+#############################  Cache  ###############################
+
+# Enable link caching to avoid rechecking the same external links
+cache = true
+
+# Discard cached requests older than 1 day
+max_cache_age = "1d"
+
+#############################  Runtime  #############################
+
+# Maximum number of allowed redirects
+max_redirects = 10
+
+# Maximum number of retries before declaring a link dead
+# Higher value to tolerate transient failures
+max_retries = 3
+
+# Maximum number of concurrent link checks
+max_concurrency = 8
+
+#############################  Requests  ############################
+
+# Use a browser-like user agent to avoid bot-blocking by external sites
+user_agent = "Mozilla/5.0 (compatible; lychee-link-checker/0.1; +https://github.com/lycheeverse/lychee)"
+
+# Website timeout (seconds) - generous for slow external sites
+timeout = 30
+
+# Wait time between retries (seconds)
+retry_wait_time = 5
+
+# Accept common success codes and bot-blocked/rate-limited responses
+# 100-103: informational
+# 200-299: standard success
+# 403: forbidden (many sites block bots but work fine in browsers)
+# 429: rate limited (transient, treat as warning not error)
+accept = ["100..=103", "200..=299", "403", "429"]
+
+# Don't require HTTPS (some legitimate sites still use HTTP)
+require_https = false
+
+# Enable fragment/anchor checking for internal links
+include_fragments = true
+
+# Fallback extensions for URLs without extensions
+fallback_extensions = ["html"]
+
+#############################  Exclusions  ##########################
+
+# Exclude URLs from checking (regex patterns)
+exclude = [
+    # Tarpit pages - intentionally self-referential, must not be checked
+    '/well/',
+
+    # Common external sites that block bots or are unreliable in CI
+    '^https?://(www\.)?linkedin\.com',
+    '^https?://(www\.)?facebook\.com',
+    '^https?://(www\.)?twitter\.com',
+    '^https?://(www\.)?x\.com',
+    '^https?://(www\.)?instagram\.com',
+
+    # Localhost/dev server URLs that won't resolve in CI
+    '^https?://localhost',
+    '^https?://127\.0\.0\.1',
+    '^https?://0\.0\.0\.0',
+
+    # mailto links (can't be checked via HTTP)
+    '^mailto:',
+]
+
+# Exclude paths from getting checked (regex patterns)
+exclude_path = [
+    # Tarpit directory - intentionally self-referential pages
+    "well/",
+]
+
+# Don't check mail addresses
+include_mail = false
+
+# Exclude all private IPs from checking
+exclude_all_private = true
+
+#############################  Hosts  #############################
+
+# Rate limiting for external domains to avoid being blocked
+# Default: 1 request per second per host
+host_request_interval = "1000ms"
+
+# Limit concurrent requests to same host
+host_concurrency = 2
+
+# GitHub-specific rate limiting (more generous since we have tokens)
+[hosts."github.com"]
+request_interval = "500ms"
+concurrency = 3
+
+[hosts."raw.githubusercontent.com"]
+request_interval = "500ms"
+concurrency = 3
