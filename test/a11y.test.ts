@@ -49,6 +49,7 @@ async function runAxeOnFile(filePath: string): Promise<{
     const dom = new JSDOM(html, {
         url: 'https://fulgidus.github.io/',
         pretendToBeVisual: true,
+        runScripts: 'dangerously',
     })
 
     // axe-core needs a document to analyze
