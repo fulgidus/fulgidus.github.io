@@ -43,7 +43,26 @@ jobs:
       - name: Build site
         run: bun run build
 
-      # Step 6: Upload build artifact for Pages deployment
+      # Step 6: Lighthouse CI audit
+      # Runs against built dist/ files before deployment.
+      # Only a11y and SEO regressions block deployment (see lighthouserc.js).
+      - name: Lighthouse CI audit
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./lighthouserc.js
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      # Step 7: Upload Lighthouse reports as build artifacts
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          retention-days: 14
+
+      # Step 8: Upload build artifact for Pages deployment
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
