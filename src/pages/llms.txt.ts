@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import siteConfig from '@/site-config'
 import { PAGE_KEY } from '@/types'
 import { getPosts, removeLangFromSlug } from '@/utils/posts'
@@ -61,7 +62,14 @@ ${itPageLinks}
 - [RSS Feed](${siteUrl}/rss.xml): RSS feed with full post content
 `
 
-    return new Response(body.trim(), {
-        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    const content = body.trim()
+    const etag = `"${createHash('md5').update(content).digest('hex')}"`;
+
+    return new Response(content, {
+        headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+            'ETag': etag,
+        },
     })
 }
