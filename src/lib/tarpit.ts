@@ -3,6 +3,29 @@
  * that trap misbehaving crawlers ignoring robots.txt.
  *
  * All generation is deterministic via Mulberry32 PRNG seeded from path strings.
+ *
+ * ─── Analytics ─────────────────────────────────────────────────────────────
+ *
+ * Tarpit pages are tracked via Umami custom events (see scripts/tarpit-analytics.ts).
+ * To view tarpit metrics in the Umami dashboard:
+ *
+ * 1. Go to the Umami dashboard → Events tab
+ * 2. Look for these custom events:
+ *
+ *    • "tarpit-entry" — One per session entering the tarpit
+ *      Data shape: { path: string, userAgentClass: "bot"|"suspected"|"human", referrer: string }
+ *
+ *    • "tarpit-pageview" — Every tarpit page view
+ *      Data shape: { path: string, depth: number, userAgentClass: "bot"|"suspected"|"human" }
+ *
+ *    • "tarpit-depth" — Depth milestones (5/10/25/50/100) and exit summary
+ *      Data shape: { maxDepth: number, userAgentClass: "bot"|"suspected"|"human", sessionDuration: number }
+ *
+ * 3. To filter for bot traffic only: click an event → filter userAgentClass = "bot"
+ * 4. To see how deep crawlers go: look at "tarpit-depth" events sorted by maxDepth
+ * 5. To see session duration: the sessionDuration field is in seconds
+ *
+ * The standard Umami page views also track /well/* paths automatically.
  */
 
 // ─── Mulberry32 PRNG ──────────────────────────────────────────────────────────
