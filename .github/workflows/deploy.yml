@@ -38,13 +38,18 @@ jobs:
       - name: Install Playwright Chromium
         run: bunx playwright install chromium --with-deps
 
-      # Step 4: Run tests before building
-      - name: Testing
-        run: bun run test
+      # Step 4: Run unit tests before building
+      - name: Unit tests
+        run: bun run vitest run
 
       # Step 5: Build the site
       - name: Build site
         run: bun run build
+
+      # Step 5b: Run post-build validation tests (RSS, build output, a11y)
+      # These tests require dist/ to exist and validate build artifacts
+      - name: Post-build validation tests
+        run: bun run vitest run test/rss-validation.test.ts test/build-output.test.ts test/a11y.test.ts
 
       # Step 6: Lighthouse CI audit
       # Runs against built dist/ files before deployment.
