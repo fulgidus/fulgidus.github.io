@@ -56,7 +56,7 @@ onUnmounted(() => {
 }
 .reading-progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #7c3aed, #a855f7);
+  background: linear-gradient(90deg, var(--reading-progress-from, #7c3aed), var(--reading-progress-to, #a855f7));
   transition: width 0.1s linear;
   will-change: width;
 }

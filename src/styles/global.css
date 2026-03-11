@@ -99,6 +99,16 @@ html.dark .skip-to-content {
   clip: auto;
 }
 
+/* Reading progress bar gradient — theme-aware */
+html:not(.dark) {
+  --reading-progress-from: #7c3aed;
+  --reading-progress-to: #a855f7;
+}
+html.dark {
+  --reading-progress-from: #a78bfa;
+  --reading-progress-to: #c4b5fd;
+}
+
 /* Global :focus-visible styles for keyboard navigation */
 :focus-visible {
   outline: 2px solid currentColor;
