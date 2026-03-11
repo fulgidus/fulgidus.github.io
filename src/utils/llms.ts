@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto'
-import type { CollectionPages, CollectionPost } from '@/types'
 import { removeLangFromSlug } from '@/utils/posts'
+
+/** Minimal shape needed by URL builders — accepts both CollectionPost and CollectionPages. */
+type SlugEntry = { slug: string }
 
 /**
  * Calculate word count and estimated token count for a content string.
@@ -24,7 +26,7 @@ export function computeETag(content: string): string {
 /**
  * Build the URL for a post's markdown content endpoint.
  */
-export function getPostUrl(siteUrl: string, post: CollectionPost, lang: 'en' | 'it'): string {
+export function getPostUrl(siteUrl: string, post: SlugEntry, lang: 'en' | 'it'): string {
     const slug = lang === 'en' ? post.slug : removeLangFromSlug(post.slug)
     const prefix = lang === 'en' ? '' : '/it'
     return `${siteUrl}${prefix}/posts/${slug}/index.html.md`
@@ -33,7 +35,7 @@ export function getPostUrl(siteUrl: string, post: CollectionPost, lang: 'en' | '
 /**
  * Build the URL for a page's markdown content endpoint.
  */
-export function getPageUrl(siteUrl: string, page: CollectionPages, lang: 'en' | 'it'): string {
+export function getPageUrl(siteUrl: string, page: SlugEntry, lang: 'en' | 'it'): string {
     const slug = lang === 'en' ? page.slug : removeLangFromSlug(page.slug)
     const prefix = lang === 'en' ? '' : '/it'
     return `${siteUrl}${prefix}/${slug}/index.html.md`
