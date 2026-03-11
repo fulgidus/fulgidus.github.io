@@ -156,7 +156,7 @@ const t = useTranslate(lang);
     <RelatedPosts currentPost={post} allPosts={allLangPosts} lang={lang} />
   )}
 
-  {!draft && !unlisted && <GiscusComments client:only="vue" />}
+  {!draft && !unlisted && <GiscusComments lang={lang} client:only="vue" />}
 
   <GoBackToBlog client:only="vue" />
 </BaseLayout>
