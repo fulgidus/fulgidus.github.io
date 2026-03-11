@@ -21,14 +21,38 @@ function updateLangFromUrl() {
     currentLang.value = getLangFromUrl(window.location.pathname) as Languages;
 }
 
+/** Feature detection: true when the browser supports the Web Share API */
+const canNativeShare = ref(false);
+
 onMounted(() => {
     updateLangFromUrl();
     document.addEventListener('astro:page-load', updateLangFromUrl);
+    canNativeShare.value = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
 });
 
 onUnmounted(() => {
     document.removeEventListener('astro:page-load', updateLangFromUrl);
 });
+
+/**
+ * Trigger the native OS share sheet via the Web Share API.
+ * AbortError (user cancelled) is silently ignored; other errors log to console.
+ */
+async function nativeShare() {
+    try {
+        await navigator.share({
+            title: shareTitle,
+            text: t.value('sharePost.nativeShareText'),
+            url: window.location.href,
+        });
+    } catch (err) {
+        // User cancelled the share dialog – not an error
+        if (err instanceof DOMException && err.name === 'AbortError') {
+            return;
+        }
+        console.error('Web Share API error:', err);
+    }
+}
 
 const isHidden = ref(true);
 
@@ -74,7 +98,17 @@ function copyLink() {
 </script>
 
 <template>
-    <span class="flex flex-nowrap flex-row items-center justify-center sm-justify-start pos-relative gap-4 overflow-hidden mr-2 text-xl sm-text-base">
+    <!-- Native Web Share API button (mobile / supported browsers) -->
+    <span v-if="canNativeShare"
+        class="flex flex-nowrap flex-row items-center justify-center sm-justify-start pos-relative gap-4 overflow-hidden mr-2 text-xl sm-text-base">
+        <button @click.prevent="nativeShare"
+            class="flex flex-nowrap flex-row items-center justify-center pos-relative gap-4 overflow-hidden w-100% h-6">
+            <i i-ri-share-line />{{ t('sharePost.nativeShareButton') }}
+        </button>
+    </span>
+
+    <!-- Fallback icon row for browsers without Web Share API support (desktop) -->
+    <span v-else class="flex flex-nowrap flex-row items-center justify-center sm-justify-start pos-relative gap-4 overflow-hidden mr-2 text-xl sm-text-base">
         <transition name="slide-right">
             <span v-if="isHidden" class="pos-relative h-6">
                 <button @click.prevent="toggleModal"
