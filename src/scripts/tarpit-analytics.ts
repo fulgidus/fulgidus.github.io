@@ -217,6 +217,8 @@ function trackTarpitExit(): void {
 
 /** Track whether init has already run for the current page to avoid duplicates. */
 let currentTrackedPath = '';
+/** Ensure the exit handler is registered only once across all page navigations. */
+let exitHandlerRegistered = false;
 
 function init(): void {
   // Prevent double-tracking the same page (astro:page-load + DOMContentLoaded)
@@ -226,12 +228,15 @@ function init(): void {
   whenUmamiReady(() => {
     trackTarpitEvents();
 
-    // Track final depth when leaving (use visibilitychange for reliability)
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
-        trackTarpitExit();
-      }
-    });
+    // Register exit handler once — repeated listeners would fire N times on exit
+    if (!exitHandlerRegistered) {
+      exitHandlerRegistered = true;
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          trackTarpitExit();
+        }
+      });
+    }
   });
 }
 
