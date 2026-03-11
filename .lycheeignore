@@ -1,0 +1,18 @@
+# Lychee ignore file
+# URLs matching these patterns (regex) will be excluded from link checking.
+# One pattern per line. Lines starting with # are comments.
+
+# Tarpit pages - intentionally self-referential, MUST NOT be checked
+.*/well/.*
+
+# Social media sites that commonly block bot requests
+https?://(www\.)?linkedin\.com.*
+https?://(www\.)?facebook\.com.*
+https?://(www\.)?twitter\.com.*
+https?://(www\.)?x\.com.*
+https?://(www\.)?instagram\.com.*
+https?://(www\.)?tiktok\.com.*
+
+# Sites known to return 403 for automated requests
+https?://(www\.)?medium\.com.*
+https?://(www\.)?slideshare\.net.*

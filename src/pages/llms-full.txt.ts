@@ -1,14 +1,8 @@
-import { createHash } from 'node:crypto'
 import siteConfig from '@/site-config'
 import { PAGE_KEY } from '@/types'
-import { getPosts, removeLangFromSlug } from '@/utils/posts'
+import { computeETag, getContentMetrics, getLlmsHeaders, getPageUrl, getPostUrl } from '@/utils/llms'
+import { getPosts } from '@/utils/posts'
 import type { APIContext } from 'astro'
-
-function getContentMetrics(content: string): { wordCount: number; tokenEstimate: number } {
-    const wordCount = content.split(/\s+/).filter(w => w.length > 0).length
-    const tokenEstimate = Math.ceil(wordCount * 1.3)
-    return { wordCount, tokenEstimate }
-}
 
 export async function GET(context: APIContext) {
     const enPosts = await getPosts({ lang: 'en', withDrafts: false, withUnlisted: false })
@@ -19,8 +13,7 @@ export async function GET(context: APIContext) {
 
     const siteUrl = String(context.site ?? '').replace(/\/$/, '')
 
-    const enPostSections = enPosts.map(post => {
-        const slug = post.slug
+    const formatPostSection = (post: typeof enPosts[number], lang: 'en' | 'it') => {
         const content = post.body?.trim() ?? ''
         const { wordCount, tokenEstimate } = getContentMetrics(content)
         const frontmatter = [
@@ -33,7 +26,7 @@ export async function GET(context: APIContext) {
         ].filter(Boolean).join('\n')
 
         return `<post>
-<source>${siteUrl}/posts/${slug}/index.html.md</source>
+<source>${getPostUrl(siteUrl, post, lang)}</source>
 <frontmatter>
 ${frontmatter}
 </frontmatter>
@@ -41,34 +34,9 @@ ${frontmatter}
 ${content}
 </content>
 </post>`
-    }).join('\n\n')
+    }
 
-    const itPostSections = itPosts.map(post => {
-        const slug = removeLangFromSlug(post.slug)
-        const content = post.body?.trim() ?? ''
-        const { wordCount, tokenEstimate } = getContentMetrics(content)
-        const frontmatter = [
-            `title: ${post.data.title}`,
-            post.data.description ? `description: ${post.data.description}` : null,
-            post.data.pubDate ? `date: ${post.data.pubDate instanceof Date ? post.data.pubDate.toISOString() : post.data.pubDate}` : null,
-            post.data.tags?.length ? `tags: ${post.data.tags.join(', ')}` : null,
-            `word_count: ${wordCount}`,
-            `token_estimate: ${tokenEstimate}`,
-        ].filter(Boolean).join('\n')
-
-        return `<post>
-<source>${siteUrl}/it/posts/${slug}/index.html.md</source>
-<frontmatter>
-${frontmatter}
-</frontmatter>
-<content>
-${content}
-</content>
-</post>`
-    }).join('\n\n')
-
-    const enPageSections = enPages.map(page => {
-        const slug = page.slug
+    const formatPageSection = (page: typeof enPages[number], lang: 'en' | 'it') => {
         const content = page.body?.trim() ?? ''
         const { wordCount, tokenEstimate } = getContentMetrics(content)
         const frontmatter = [
@@ -79,7 +47,7 @@ ${content}
         ].filter(Boolean).join('\n')
 
         return `<page>
-<source>${siteUrl}/${slug}/index.html.md</source>
+<source>${getPageUrl(siteUrl, page, lang)}</source>
 <frontmatter>
 ${frontmatter}
 </frontmatter>
@@ -87,37 +55,37 @@ ${frontmatter}
 ${content}
 </content>
 </page>`
-    }).join('\n\n')
+    }
 
-    const itPageSections = itPages.map(page => {
-        const slug = removeLangFromSlug(page.slug)
-        const content = page.body?.trim() ?? ''
-        const { wordCount, tokenEstimate } = getContentMetrics(content)
-        const frontmatter = [
-            `title: ${page.data.title}`,
-            page.data.description ? `description: ${page.data.description}` : null,
-            `word_count: ${wordCount}`,
-            `token_estimate: ${tokenEstimate}`,
-        ].filter(Boolean).join('\n')
+    const enPostSections = enPosts.map(p => formatPostSection(p, 'en')).join('\n\n')
+    const itPostSections = itPosts.map(p => formatPostSection(p, 'it')).join('\n\n')
+    const enPageSections = enPages.map(p => formatPageSection(p, 'en')).join('\n\n')
+    const itPageSections = itPages.map(p => formatPageSection(p, 'it')).join('\n\n')
 
-        return `<page>
-<source>${siteUrl}/it/${slug}/index.html.md</source>
-<frontmatter>
-${frontmatter}
-</frontmatter>
-<content>
-${content}
-</content>
-</page>`
-    }).join('\n\n')
+    // Compute aggregate metrics across all content for the header summary.
+    // This helps LLM consumers quickly assess total content size vs. their context window.
+    const allContents = [...enPosts, ...itPosts, ...enPages, ...itPages]
+        .map(p => p.body?.trim() ?? '')
+    const totalMetrics = allContents.reduce(
+        (acc, c) => {
+            const m = getContentMetrics(c)
+            return { wordCount: acc.wordCount + m.wordCount, tokenEstimate: acc.tokenEstimate + m.tokenEstimate }
+        },
+        { wordCount: 0, tokenEstimate: 0 }
+    )
 
-    const body = `# ${siteConfig.title} — Full Content
+    // Build content sections first (without timestamp) for stable ETag computation.
+    // The Generated timestamp is added after ETag calculation so that the ETag
+    // only changes when actual content changes, not on every rebuild.
+    const contentBody = `# ${siteConfig.title} — Full Content
 
 > ${siteConfig.description}
 
 Author: ${siteConfig.author}
 Site: ${siteUrl}
-Generated: ${new Date().toISOString()}
+Total entries: ${allContents.length}
+Total word count: ${totalMetrics.wordCount}
+Total token estimate: ${totalMetrics.tokenEstimate}
 
 ---
 
@@ -144,14 +112,19 @@ ${enPageSections}
 ${itPageSections}
 `
 
-    const content = body.trim()
-    const etag = `"${createHash('md5').update(content).digest('hex')}"`;
+    const trimmedContent = contentBody.trim()
 
-    return new Response(content, {
-        headers: {
-            'Content-Type': 'text/plain; charset=utf-8',
-            'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
-            'ETag': etag,
-        },
+    // ETag is computed from content excluding the timestamp, so it only changes
+    // when actual post/page content changes — not on every rebuild.
+    const etag = computeETag(trimmedContent)
+
+    // Insert the Generated timestamp after ETag computation for informational purposes.
+    const finalContent = trimmedContent.replace(
+        `Site: ${siteUrl}`,
+        `Site: ${siteUrl}\nGenerated: ${new Date().toISOString()}`
+    )
+
+    return new Response(finalContent, {
+        headers: getLlmsHeaders(etag),
     })
 }

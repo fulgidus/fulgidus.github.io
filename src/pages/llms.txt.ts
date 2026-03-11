@@ -1,7 +1,7 @@
-import { createHash } from 'node:crypto'
 import siteConfig from '@/site-config'
 import { PAGE_KEY } from '@/types'
-import { getPosts, removeLangFromSlug } from '@/utils/posts'
+import { computeETag, getLlmsHeaders, getPageUrl, getPostUrl } from '@/utils/llms'
+import { getPosts } from '@/utils/posts'
 import type { APIContext } from 'astro'
 
 export async function GET(context: APIContext) {
@@ -13,25 +13,21 @@ export async function GET(context: APIContext) {
 
     const siteUrl = String(context.site ?? '').replace(/\/$/, '')
 
-    const enPostLinks = enPosts.map(post => {
-        const slug = post.slug
-        return `- [${post.data.title}](${siteUrl}/posts/${slug}/index.html.md)${post.data.description ? `: ${post.data.description}` : ''}`
-    }).join('\n')
+    const enPostLinks = enPosts.map(post =>
+        `- [${post.data.title}](${getPostUrl(siteUrl, post, 'en')})${post.data.description ? `: ${post.data.description}` : ''}`
+    ).join('\n')
 
-    const itPostLinks = itPosts.map(post => {
-        const slug = removeLangFromSlug(post.slug)
-        return `- [${post.data.title}](${siteUrl}/it/posts/${slug}/index.html.md)${post.data.description ? `: ${post.data.description}` : ''}`
-    }).join('\n')
+    const itPostLinks = itPosts.map(post =>
+        `- [${post.data.title}](${getPostUrl(siteUrl, post, 'it')})${post.data.description ? `: ${post.data.description}` : ''}`
+    ).join('\n')
 
-    const enPageLinks = enPages.map(page => {
-        const slug = page.slug
-        return `- [${page.data.title}](${siteUrl}/${slug}/index.html.md)${page.data.description ? `: ${page.data.description}` : ''}`
-    }).join('\n')
+    const enPageLinks = enPages.map(page =>
+        `- [${page.data.title}](${getPageUrl(siteUrl, page, 'en')})${page.data.description ? `: ${page.data.description}` : ''}`
+    ).join('\n')
 
-    const itPageLinks = itPages.map(page => {
-        const slug = removeLangFromSlug(page.slug)
-        return `- [${page.data.title}](${siteUrl}/it/${slug}/index.html.md)${page.data.description ? `: ${page.data.description}` : ''}`
-    }).join('\n')
+    const itPageLinks = itPages.map(page =>
+        `- [${page.data.title}](${getPageUrl(siteUrl, page, 'it')})${page.data.description ? `: ${page.data.description}` : ''}`
+    ).join('\n')
 
     const body = `# ${siteConfig.title}
 
@@ -63,13 +59,9 @@ ${itPageLinks}
 `
 
     const content = body.trim()
-    const etag = `"${createHash('md5').update(content).digest('hex')}"`;
+    const etag = computeETag(content)
 
     return new Response(content, {
-        headers: {
-            'Content-Type': 'text/plain; charset=utf-8',
-            'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
-            'ETag': etag,
-        },
+        headers: getLlmsHeaders(etag),
     })
 }

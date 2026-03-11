@@ -1,0 +1,190 @@
+name: Link Checker
+
+on:
+  # Run after deployments complete, and on PRs to catch issues early
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  # Allow manual runs for debugging
+  workflow_dispatch:
+  # Scheduled weekly check to catch external link rot
+  schedule:
+    - cron: "0 6 * * 1" # Every Monday at 6:00 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: bunx playwright install chromium --with-deps
+
+      - name: Build site
+        run: bun run build
+
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
+  check-internal-links:
+    name: Check Internal Links
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Restore lychee cache
+        id: restore-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .lycheecache
+          key: cache-lychee-internal-${{ github.sha }}
+          restore-keys: cache-lychee-internal-
+
+      - name: Check internal links
+        id: lychee-internal
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Only check local files in dist/ - no external requests
+          args: >-
+            --offline
+            --root-dir dist
+            --base "https://fulgidus.github.io"
+            --include-fragments
+            --no-progress
+            --format markdown
+            --cache
+            --max-cache-age 1d
+            --exclude-path "well/"
+            --exclude '/well/'
+            'dist/**/*.html'
+          output: lychee/internal-links-report.md
+          # MUST fail on broken internal links
+          fail: true
+          jobSummary: true
+
+      - name: Save lychee cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .lycheecache
+          key: cache-lychee-internal-${{ github.sha }}
+
+      - name: Upload internal link report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: internal-links-report
+          path: lychee/internal-links-report.md
+          retention-days: 30
+
+  check-external-links:
+    name: Check External Links
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Restore lychee cache
+        id: restore-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .lycheecache
+          key: cache-lychee-external-${{ github.sha }}
+          restore-keys: cache-lychee-external-
+
+      - name: Check external links
+        id: lychee-external
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Check external links only, with tolerant settings
+          args: >-
+            --root-dir dist
+            --base "https://fulgidus.github.io"
+            --no-progress
+            --format markdown
+            --cache
+            --max-cache-age 1d
+            --max-retries 3
+            --retry-wait-time 5
+            --timeout 30
+            --max-concurrency 4
+            --user-agent "Mozilla/5.0 (compatible; lychee-link-checker/0.1; +https://github.com/lycheeverse/lychee)"
+            --exclude-path "well/"
+            --exclude '/well/'
+            --exclude '^mailto:'
+            --exclude '^https?://localhost'
+            --exclude '^https?://127\.0\.0\.1'
+            --exclude '^https?://0\.0\.0\.0'
+            --exclude '^https?://(www\.)?linkedin\.com'
+            --exclude '^https?://(www\.)?facebook\.com'
+            --exclude '^https?://(www\.)?twitter\.com'
+            --exclude '^https?://(www\.)?x\.com'
+            --exclude '^https?://(www\.)?instagram\.com'
+            --scheme https
+            --scheme http
+            --accept "100..=103,200..=299,403,429"
+            --exclude-all-private
+            --include-mail=false
+            'dist/**/*.html'
+          output: lychee/external-links-report.md
+          # External links should WARN but NOT fail the build
+          fail: false
+          jobSummary: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save lychee cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .lycheecache
+          key: cache-lychee-external-${{ github.sha }}
+
+      - name: Upload external link report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-links-report
+          path: lychee/external-links-report.md
+          retention-days: 30
+
+      - name: Warn on external link issues
+        if: steps.lychee-external.outputs.exit_code != 0
+        run: |
+          echo "::warning::External link issues detected. Check the external-links-report artifact for details."
+          echo "## External Link Check Warning" >> $GITHUB_STEP_SUMMARY
+          echo "Some external links may be broken or unreachable. This is a warning only and does not fail the build." >> $GITHUB_STEP_SUMMARY
+          echo "Download the **external-links-report** artifact for full details." >> $GITHUB_STEP_SUMMARY
