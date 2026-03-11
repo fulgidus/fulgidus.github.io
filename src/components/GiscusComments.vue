@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useDark } from '@vueuse/core'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { defaultLang, type Languages } from '@/i18n/ui'
+import { defaultLang } from '@/i18n/ui'
 import { getLangFromUrl, getGiscusLocale, stripLangFromPath } from '@/i18n/utils'
 
 const props = defineProps<{
@@ -79,29 +79,48 @@ function loadGiscus() {
 }
 
 /**
- * Updates Giscus theme via postMessage (lightweight, no reload needed).
+ * Sends a setConfig message to the Giscus iframe via postMessage.
+ * This is the lightweight way to update Giscus without a full reload.
+ * @see https://github.com/giscus/giscus/blob/main/ADVANCED-USAGE.md#isetconfigmessage
  */
-function updateTheme() {
+function sendGiscusMessage(config: Record<string, unknown>) {
   const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame')
   if (iframe) {
     iframe.contentWindow?.postMessage(
-      { giscus: { setConfig: { theme: getTheme() } } },
+      { giscus: { setConfig: config } },
       'https://giscus.app'
     )
   }
 }
 
 /**
+ * Updates Giscus theme via postMessage (lightweight, no reload needed).
+ */
+function updateTheme() {
+  sendGiscusMessage({ theme: getTheme() })
+}
+
+/**
+ * Updates Giscus language via postMessage (lightweight, no reload needed).
+ * Giscus supports changing language dynamically via ISetConfigMessage.
+ * @see https://github.com/giscus/giscus/blob/main/ADVANCED-USAGE.md#isetconfigmessage
+ */
+function updateLang(lang: string) {
+  const giscusLocale = getGiscusLocale(lang)
+  sendGiscusMessage({ lang: giscusLocale })
+}
+
+/**
  * Handles View Transition navigation (astro:page-load).
- * Detects if the language changed and reloads Giscus to update both the
- * UI locale and the canonical discussion term.
+ * Detects if the language changed and updates Giscus UI locale via postMessage.
+ * Since we use shared comment isolation (canonical paths), the discussion term
+ * stays the same across language versions — only the UI language needs updating.
  */
 function onPageLoad() {
   const newLang = detectLang()
   if (newLang !== currentLang.value) {
-    // Language changed — full reload needed since Giscus doesn't support
-    // changing language via postMessage setConfig
-    loadGiscus()
+    currentLang.value = newLang
+    updateLang(newLang)
   }
 }
 
