@@ -110,6 +110,10 @@ const postsToShow = recentPosts.slice(0, 5);
     line-height: 1.6;
   }
 
+  :global(:not(.dark)) .terminal-wrapper {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  }
+
   /* Title bar */
   .terminal-titlebar {
     display: flex;
@@ -185,7 +189,7 @@ const postsToShow = recentPosts.slice(0, 5);
   .prompt-path { color: #569cd6; }
   .prompt-dollar { color: #d4d4d4; margin-left: 0.15rem; }
 
-  :global(:not(.dark)) .prompt-user { color: #098658; }
+  :global(:not(.dark)) .prompt-user { color: #067a4e; }
   :global(:not(.dark)) .prompt-at { color: #333; }
   :global(:not(.dark)) .prompt-host { color: #0451a5; }
   :global(:not(.dark)) .prompt-colon { color: #333; }
@@ -250,22 +254,22 @@ const postsToShow = recentPosts.slice(0, 5);
   }
 
   .file-permissions {
-    color: #858585;
+    color: #8b8b8b;
     flex-shrink: 0;
   }
 
   :global(:not(.dark)) .file-permissions {
-    color: #999;
+    color: #666;
   }
 
   .file-date {
-    color: #858585;
+    color: #8b8b8b;
     min-width: 7.5rem;
     flex-shrink: 0;
   }
 
   :global(:not(.dark)) .file-date {
-    color: #999;
+    color: #666;
   }
 
   .file-name {
