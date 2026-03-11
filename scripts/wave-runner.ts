@@ -71,6 +71,7 @@ import {
   printAgentUpdate,
 } from "./lib/ui.js";
 import { WaveTUI } from "./lib/tui.js";
+import { exec } from "node:child_process";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -88,6 +89,29 @@ const DEFAULT_MAX_RETRIES = 2;
 // CLI Argument Parsing
 // ---------------------------------------------------------------------------
 
+/**
+ * Push the base branch to its remote (origin) after all merges.
+ * Returns true on success, false on failure.
+ */
+async function pushBaseBranch(baseBranch: string): Promise<boolean> {
+  console.log(`\nPushing ${baseBranch} to origin...`);
+  return new Promise((resolve) => {
+    exec(
+      `git push origin "${baseBranch}"`,
+      { cwd: PROJECT_ROOT, encoding: "utf-8", timeout: 120_000 },
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Push failed: ${stderr?.trim() || error.message}`);
+          resolve(false);
+        } else {
+          console.log(`Pushed ${baseBranch} to origin.`);
+          resolve(true);
+        }
+      }
+    );
+  });
+}
+
 interface CLIArgs {
   command: string;
   topPriority?: number;
@@ -104,6 +128,7 @@ interface CLIArgs {
   baseBranch: string;
   maxRetries: number;
   noTui: boolean;
+  autoPush: boolean;
 }
 
 function parseArgs(argv: string[]): CLIArgs {
@@ -116,6 +141,7 @@ function parseArgs(argv: string[]): CLIArgs {
     baseBranch: DEFAULT_BASE_BRANCH,
     maxRetries: DEFAULT_MAX_RETRIES,
     noTui: false,
+    autoPush: false,
   };
 
   for (let i = 1; i < args.length; i++) {
@@ -154,6 +180,9 @@ function parseArgs(argv: string[]): CLIArgs {
         break;
       case "--no-tui":
         result.noTui = true;
+        break;
+      case "--auto-push":
+        result.autoPush = true;
         break;
       case "--base-branch":
         result.baseBranch = args[++i];
@@ -432,14 +461,30 @@ async function launchWaveHeadless(
       dashboardCounter++;
       // Print dashboard every ~15 seconds (3 poll cycles at 5s each)
       if (dashboardCounter % 3 === 0) {
-        printDashboard(state);
-      }
+  printDashboard(state);
+
+  // Auto-push base branch if requested
+  if (args.autoPush) {
+    const anyMerged = state.agents.some((a) => a.status === "merged");
+    if (anyMerged) {
+      await pushBaseBranch(state.base_branch);
+    } else {
+      console.log("No branches were merged — skipping push.");
+    }
+  }
+}
     }
   }
 
   // Wave complete — tear down TUI and show final summary
   if (tuiRef.current) tuiRef.current.stop();
   printDashboard(state);
+
+  // Auto-push base branch if requested
+  if (args.autoPush) {
+    await pushBaseBranch(state.base_branch);
+  }
+
   console.log("Wave complete.");
 }
 
@@ -1227,6 +1272,12 @@ async function cmdResume(args: CLIArgs): Promise<void> {
 
     if (tuiRef2.current) tuiRef2.current.stop();
     printDashboard(state);
+
+    // Auto-push base branch if requested
+    if (args.autoPush) {
+      await pushBaseBranch(state.base_branch);
+    }
+
     console.log("Wave complete.");
   }
 }
@@ -1305,6 +1356,7 @@ Launch Options:
   --model <model>        Model to use (e.g., "anthropic/claude-sonnet-4-20250514")
   --interactive          Use tmux TUI mode instead of headless
   --no-tui               Headless mode without neo-blessed TUI (uses periodic console dashboard)
+  --auto-push            Push base branch to origin after all merges complete
   --dry-run              Show what would be launched without launching
   --base-branch <branch> Base branch (default: ${DEFAULT_BASE_BRANCH})
   --max-retries N        Max retries per agent (default: ${DEFAULT_MAX_RETRIES})
