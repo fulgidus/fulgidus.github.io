@@ -1,4 +1,5 @@
 import siteConfig from '@/site-config'
+import { PAGE_KEY } from '@/types'
 import { getPosts, removeLangFromSlug } from '@/utils/posts'
 import type { APIContext } from 'astro'
 
@@ -6,9 +7,12 @@ export async function GET(context: APIContext) {
     const enPosts = await getPosts({ lang: 'en', withDrafts: false, withUnlisted: false })
     const itPosts = await getPosts({ lang: 'it', withDrafts: false, withUnlisted: false })
 
+    const enPages = await getPosts({ lang: 'en', collection: PAGE_KEY })
+    const itPages = await getPosts({ lang: 'it', collection: PAGE_KEY })
+
     const siteUrl = String(context.site ?? '').replace(/\/$/, '')
 
-    const enSections = enPosts.map(post => {
+    const enPostSections = enPosts.map(post => {
         const slug = post.slug
         const frontmatter = [
             `title: ${post.data.title}`,
@@ -28,7 +32,7 @@ ${post.body?.trim() ?? ''}
 </post>`
     }).join('\n\n')
 
-    const itSections = itPosts.map(post => {
+    const itPostSections = itPosts.map(post => {
         const slug = removeLangFromSlug(post.slug)
         const frontmatter = [
             `title: ${post.data.title}`,
@@ -48,6 +52,42 @@ ${post.body?.trim() ?? ''}
 </post>`
     }).join('\n\n')
 
+    const enPageSections = enPages.map(page => {
+        const slug = page.slug
+        const frontmatter = [
+            `title: ${page.data.title}`,
+            page.data.description ? `description: ${page.data.description}` : null,
+        ].filter(Boolean).join('\n')
+
+        return `<page>
+<source>${siteUrl}/${slug}/index.html.md</source>
+<frontmatter>
+${frontmatter}
+</frontmatter>
+<content>
+${page.body?.trim() ?? ''}
+</content>
+</page>`
+    }).join('\n\n')
+
+    const itPageSections = itPages.map(page => {
+        const slug = removeLangFromSlug(page.slug)
+        const frontmatter = [
+            `title: ${page.data.title}`,
+            page.data.description ? `description: ${page.data.description}` : null,
+        ].filter(Boolean).join('\n')
+
+        return `<page>
+<source>${siteUrl}/it/${slug}/index.html.md</source>
+<frontmatter>
+${frontmatter}
+</frontmatter>
+<content>
+${page.body?.trim() ?? ''}
+</content>
+</page>`
+    }).join('\n\n')
+
     const body = `# ${siteConfig.title} — Full Content
 
 > ${siteConfig.description}
@@ -60,13 +100,25 @@ Generated: ${new Date().toISOString()}
 
 ## Blog Posts (English)
 
-${enSections}
+${enPostSections}
 
 ---
 
 ## Blog Posts (Italiano)
 
-${itSections}
+${itPostSections}
+
+---
+
+## Pages (English)
+
+${enPageSections}
+
+---
+
+## Pages (Italiano)
+
+${itPageSections}
 `
 
     return new Response(body.trim(), {
