@@ -1,5 +1,30 @@
 import { ui, defaultLang, routesFromEnToLocalized, substituteTemplate, availableLanguages, TranslationKeys, Languages } from './ui';
 
+/**
+ * Giscus-supported locale codes.
+ * @see https://github.com/giscus/giscus/blob/main/lib/i18n.tsx
+ *
+ * This map translates the site's language codes to Giscus locale codes.
+ * Most codes are identical (en, it, nl), but some Giscus locales differ
+ * (e.g. Greek is 'gr' in Giscus, Chinese variants use 'zh-CN'/'zh-TW').
+ * Any unmapped language falls back to 'en'.
+ */
+const giscusLocaleMap: Record<string, string> = {
+    en: 'en',
+    it: 'it',
+    nl: 'nl',
+    // Add future mappings here as the site adds new languages.
+    // Example: 'zh' -> 'zh-CN', 'pt-BR' -> 'pt', etc.
+};
+
+/**
+ * Maps a site language code to a Giscus-supported locale code.
+ * Falls back to 'en' if the language is not supported by Giscus.
+ */
+export function getGiscusLocale(lang: string): string {
+    return giscusLocaleMap[lang] ?? 'en';
+}
+
 function isValidLanguage(lang: string): lang is Languages {
     return lang in ui;
 }
