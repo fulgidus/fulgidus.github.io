@@ -34,6 +34,8 @@ module.exports = {
         throttlingMethod: 'simulate',
         // Chrome flags for headless CI environment
         chromeFlags: '--no-sandbox --headless --disable-gpu',
+        // Resource budgets defined in budget.json (JS, CSS, image, timing budgets)
+        budgets: require('./budget.json'),
       },
     },
     assert: {
