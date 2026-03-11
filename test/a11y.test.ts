@@ -1,3 +1,4 @@
+/// <reference path="../node_modules/axe-core/axe.d.ts" />
 import { describe, it, expect, beforeAll } from 'vitest'
 import { readFileSync, existsSync } from 'fs'
 import { resolve } from 'path'
