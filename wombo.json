@@ -1,0 +1,34 @@
+{
+  "featuresFile": ".features.yml",
+  "baseBranch": "develop",
+  "build": {
+    "command": "bun run build",
+    "timeout": 300000,
+    "artifactDir": "dist"
+  },
+  "install": {
+    "command": "bun install",
+    "timeout": 120000
+  },
+  "git": {
+    "branchPrefix": "feature/",
+    "worktreePrefix": "fulgidus.github.io-",
+    "remote": "origin",
+    "mergeStrategy": "--no-ff"
+  },
+  "agent": {
+    "bin": null,
+    "name": "wave-worker",
+    "configFiles": [
+      ".opencode/",
+      "opencode.json",
+      "AGENTS.md",
+      "agent/"
+    ],
+    "tmuxPrefix": "w"
+  },
+  "defaults": {
+    "maxConcurrent": 10,
+    "maxRetries": 5
+  }
+}
