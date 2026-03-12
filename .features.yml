@@ -1,280 +1,11 @@
 version: "1.0"
 meta:
   created_at: 2026-03-10T00:00:00+01:00
-  updated_at: 2026-03-11T23:15:59.078Z
+  updated_at: 2026-03-12T22:29:41.273Z
   project: fulgidus.github.io
   generator: Astro 4.x
   maintainer: fulgidus
 features:
-  - id: 404-localized
-    title: Make 404 page localized
-    description: >
-      The 404 page is a mock-bash terminal (visitor@fulgidus.github.io:~$) that shows the attempted path, a "command not
-      found" error, an `ls` of recent posts, and a `cd ~/home` link. It calls getLangFromUrl(Astro.url) at build time to
-      resolve the language, but since GitHub Pages serves a single static 404.html for ALL missing paths, Astro.url at
-      build time has no knowledge of the user's actual requested URL. The result is that the page always renders in
-      English regardless of whether the user was navigating under /it/. The i18n keys (404.title, 404.terminalError,
-      404.terminalHint, 404.terminalHelp, 404.backButtonLabel) already exist in en, it, and nl in src/i18n/ui.ts, but
-      they are never activated for non-English visitors. Additionally, hardcoded English strings exist in the template
-      (e.g. the titlebar text "bash - 404", date formatting locale 'en-GB' in toLocaleDateString, the "open" command
-      prefix in the inline script). All terminal text — prompts, commands, comments, error messages, and the home link —
-      must switch to the detected language.
-    status: done
-    completion: 100
-    difficulty: medium
-    priority: medium
-    depends_on: []
-    effort: PT6H
-    started_at: null
-    ended_at: 2026-03-11T23:15:59.078Z
-    constraints:
-      - GitHub Pages serves a single 404.html — language detection MUST happen client-side via window.location.pathname
-      - Must work with the existing i18n system (src/i18n/utils.ts, src/i18n/ui.ts)
-      - Must support all enabled languages (en, it); extensible to nl
-      - The 'cd ~/home' link must point to the correct language root (/it/ for Italian, / for English)
-      - The `ls ./posts/` listing must show posts in the detected language
-      - Date formatting in the ls listing must use the correct locale (en-GB, it-IT, etc.)
-    forbidden:
-      - Do not require server-side routing (static site on GitHub Pages)
-      - Do not use JavaScript-based redirects that cause visible page flicker
-      - Do not embed all language versions of the post list in the HTML — use a data attribute or JSON blob approach
-    references:
-      - src/pages/404.astro
-      - src/i18n/ui.ts
-      - src/i18n/utils.ts
-    notes:
-      - "2026-03-10: Soft dependency recommendation — consider completing 404-theme-compliant first. It is simpler and
-        fixes the FOUC/dark-mode issue; localizing a theme-broken page wastes effort if theme fix requires structural
-        changes."
-      - "2026-03-10: Feature added to backlog. The page is a mock-bash terminal. All 404.* i18n keys already exist in
-        en/it/nl in ui.ts but are never used for non-English visitors because getLangFromUrl runs at build time against
-        a static URL. Hardcoded English: titlebar 'bash - 404', toLocaleDateString('en-GB'), inline script 'open'
-        prefix."
-    subtasks:
-      - id: 404-lang-detection
-        title: Client-side language detection from URL
-        description: >
-          Implement client-side logic in the 404 page that parses window.location.pathname to detect the language prefix
-          (e.g. /it/). This must run immediately on page load and determine which language's strings to display. The
-          detection logic should mirror getLangFromUrl from src/i18n/utils.ts but run in the browser.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on: []
-        effort: PT2H
-        started_at: null
-        ended_at: null
-        constraints:
-          - Must not cause layout shift — either hide terminal until language is resolved, or render with data
-            attributes and swap text in place
-          - Must handle URLs without a language prefix (default to English)
-          - Must match the same language prefix list as src/i18n/ui.ts
-        forbidden:
-          - Do not use navigator.language as primary detection — URL path takes precedence
-        references:
-          - src/i18n/utils.ts
-        notes: []
-        subtasks: []
-      - id: 404-embed-translations
-        title: Embed all language strings in the 404 page
-        description: >
-          Since the 404 page is a single static HTML and language is resolved client-side, all translation variants must
-          be embedded in the page (e.g. as a JSON object in a <script> tag or as data-* attributes on translatable
-          elements). The client-side script then picks the right set based on detected language. This includes: terminal
-          error message, hint text, help text, home link label, and titlebar title.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on:
-          - 404-lang-detection
-        effort: PT2H
-        started_at: null
-        ended_at: null
-        constraints:
-          - Must include strings for all enabled languages
-          - Must be maintainable — ideally generated from the same ui.ts source at build time
-        forbidden:
-          - Do not fetch translations via network request
-        references:
-          - src/i18n/ui.ts
-        notes: []
-        subtasks: []
-      - id: 404-localized-post-list
-        title: Show language-appropriate post list
-        description: >
-          The `ls ./posts/` section currently shows English posts only (built at compile time via getLastTenPosts). For
-          localization, either embed post lists for each language in the HTML (as hidden elements or JSON data) and swap
-          client-side, or show a language-neutral version. Date formatting must also use the detected locale.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: medium
-        depends_on:
-          - 404-lang-detection
-        effort: PT1H30M
-        started_at: null
-        ended_at: null
-        constraints:
-          - Keep the page size reasonable — don't embed hundreds of posts per language
-          - Date format must match locale (en-GB for English, it-IT for Italian, etc.)
-        forbidden: []
-        references:
-          - src/utils/posts.ts
-        notes: []
-        subtasks: []
-      - id: 404-home-link-localized
-        title: Localize 'cd ~/home' link target
-        description: >
-          The home link (cd ~/home) must dynamically point to the correct language root (/ for English, /it/ for
-          Italian) based on the client-side detected language. The label text must also be translated (e.g.
-          404.backButtonLabel).
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: medium
-        depends_on:
-          - 404-lang-detection
-        effort: PT30M
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-  - id: 404-theme-compliant
-    title: Make 404 page theme-compliant
-    description: >
-      The 404 page is a mock-bash terminal styled with scoped <style> in 404.astro. It uses hardcoded hex colors with
-      :global(.dark) and :global(:not(.dark)) CSS overrides for theme switching. Despite having these dark/light CSS
-      rules, the page currently always renders in light theme. The likely cause is that the ThemeToggle.vue component
-      (which manages the .dark class on <html> via @vueuse/core useDark()) may not properly initialize on the 404 page,
-      or the dark class from localStorage is not applied before first paint, causing the :not(.dark) rules to always
-      win. The terminal colors (titlebar #2d2d2d/#1e1e1e, body #1e1e1e/#f5f5f5, prompt colors, error red, comment green,
-      etc.) need to actually respond to the user's theme preference. The ThemeToggle must also work interactively on the
-      404 page so users can switch themes.
-    status: done
-    completion: 100
-    difficulty: medium
-    priority: medium
-    depends_on: []
-    effort: PT4H
-    started_at: null
-    ended_at: 2026-03-11T22:33:02.439Z
-    constraints:
-      - "Must work with the existing UnoCSS dark: variant system and ThemeToggle.vue"
-      - Dark class from localStorage must be applied BEFORE first paint to prevent flash of wrong theme (FOUC)
-      - Must not break View Transitions when toggling theme on the 404 page
-      - All terminal colors (titlebar, body, prompt parts, commands, errors, hints, file listings, cursor) must switch
-        correctly
-    forbidden:
-      - Do not remove the mock-bash terminal design — it is a deliberate design choice
-      - Do not use a separate CSS file for 404 — keep scoped styles in the component
-    references:
-      - src/pages/404.astro
-      - src/components/ThemeToggle.vue
-      - uno.config.ts
-    notes:
-      - "2026-03-10: Feature added to backlog. The 404 page is a mock-bash terminal with scoped CSS that has
-        :global(.dark) overrides for all elements. Despite this, it always renders light-themed. Root cause likely:
-        .dark class not applied to <html> before first paint on the 404 page. ThemeToggle uses @vueuse/core useDark()
-        which reads localStorage, but this may not run early enough or may not hydrate at all on the 404 page."
-    subtasks:
-      - id: 404-theme-debug
-        title: Debug why dark mode never activates on 404
-        description: >
-          Investigate why the 404 page always renders in light theme despite having :global(.dark) CSS rules. Check: (1)
-          Is ThemeToggle.vue present and hydrating on the 404 page? (2) Is BaseLayout.astro including the dark mode
-          initialization script? (3) Is the .dark class being set on <html> before the 404 styles are evaluated? (4) Is
-          there a race condition between Astro hydration and the scoped style evaluation?
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on: []
-        effort: PT1H30M
-        started_at: null
-        ended_at: null
-        constraints:
-          - Must test with both localStorage dark=true and dark=false
-          - Must test with JS disabled to see server-rendered state
-        forbidden: []
-        references:
-          - src/pages/404.astro
-          - src/layouts/BaseLayout.astro
-          - src/components/ThemeToggle.vue
-        notes: []
-        subtasks: []
-      - id: 404-theme-early-init
-        title: Ensure dark class is applied before first paint
-        description: >
-          Add an inline <script> (not deferred) in the <head> that reads the theme preference from localStorage and
-          applies the .dark class to <html> immediately, before any CSS is evaluated. This prevents flash of light theme
-          (FOUC). This script may already exist in BaseLayout.astro — verify it runs on the 404 page.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: high
-        depends_on:
-          - 404-theme-debug
-        effort: PT1H
-        started_at: null
-        ended_at: null
-        constraints:
-          - Script must be inline and blocking (not async/defer)
-          - Must respect the same localStorage key that ThemeToggle.vue uses
-        forbidden:
-          - Do not duplicate theme logic — share the localStorage key name
-        references:
-          - src/components/ThemeToggle.vue
-        notes: []
-        subtasks: []
-      - id: 404-theme-toggle-verify
-        title: Verify ThemeToggle works interactively on 404
-        description: >
-          Ensure the ThemeToggle button in the site header works on the 404 page — clicking it should toggle the .dark
-          class and all terminal colors should switch. The circular clip-path View Transition animation should also
-          work.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: medium
-        depends_on:
-          - 404-theme-early-init
-        effort: PT30M
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: 404-theme-terminal-colors
-        title: Audit and fix all terminal color pairs
-        description: >
-          Verify every color in the 404 scoped styles has both a light and dark variant. Current pairs to check:
-          titlebar bg (#2d2d2d / #1e1e1e), body bg (#1e1e1e / #f5f5f5), body text (#d4d4d4 / #333), prompt parts (user
-          green, host blue, path blue, at/colon/dollar gray), command text (#ce9178 / #a31515), error red (#f44747 /
-          #cd3131), hint/help green (#6a9955 / #008000), file listing colors, link colors, hover backgrounds, cursor
-          color. Ensure contrast ratios meet WCAG AA in both themes.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: medium
-        depends_on:
-          - 404-theme-early-init
-        effort: PT1H
-        started_at: null
-        ended_at: null
-        constraints:
-          - All color pairs must meet WCAG AA contrast ratio (4.5:1 for normal text)
-        forbidden: []
-        references:
-          - src/pages/404.astro
-        notes: []
-        subtasks: []
   - id: syntax-highlighting-languages
     title: Language-specific syntax highlighting in code blocks
     description: >
@@ -410,248 +141,6 @@ features:
         forbidden: []
         references: []
         notes: []
-        subtasks: []
-  - id: marp-presentations
-    title: Marp presentation support with download buttons
-    description: >
-      Add support for Marp (https://marp.app) slide deck presentations in two modes: (1) as standalone post pages where
-      the entire post IS a presentation (full-screen slide viewer), and (2) as embedded slide decks within regular blog
-      articles (inline iframe or component). Both modes must offer download buttons for the presentation in multiple
-      formats: Markdown source (.md), PDF (.pdf), and PowerPoint (.pptx). Marp uses CommonMark with --- as slide
-      separator and supports directives, image syntax, math typesetting, and CSS theming. The build pipeline must
-      convert Marp Markdown to HTML slides at build time using @marp-team/marp-cli or @marp-team/marp-core. Export to
-       PDF and PPTX must also happen at build time (requires Chromium).
-    status: done
-    completion: 100
-    difficulty: very_hard
-    priority: high
-    depends_on: []
-    effort: P4D
-    started_at: 2026-03-10
-    ended_at: 2026-03-10
-    constraints:
-      - Must integrate with Astro's build pipeline
-      - Must support both dark and light themes for slides
-      - Slide HTML output must be self-contained (no external dependencies at runtime)
-      - PDF/PPTX generation requires Chromium — must work in GitHub Actions CI
-      - Must coexist with regular Markdown/MDX posts without interference
-      - Download files (.md, .pdf, .pptx) must be generated at build time and served statically
-      - Embedded presentations must be responsive and not break page layout
-      - Must support Marp directives (theme, paginate, class, etc.)
-    forbidden:
-      - Do not use client-side Marp rendering — all conversion must be build-time
-      - Do not require users to install Marp CLI globally — use npm dependency
-      - Do not modify the Marp source files during build — treat them as read-only input
-    references:
-      - https://marp.app
-      - https://github.com/marp-team/marp-cli
-      - https://github.com/marp-team/marp-core
-      - https://marpit.marp.app/markdown
-      - https://marpit.marp.app/directives
-    notes:
-      - "2026-03-10: Soft dependency recommendation — implement after i18n-overhaul to avoid duplicating content type
-        definitions and routing for /it/ folder structure that will be eliminated."
-      - "2026-03-10: Feature added to backlog. Marp converts Markdown to HTML/PDF/PPTX slide decks. The site already has
-        a 'Talks' nav item commented out in site-config.ts — this feature could revive it. Build-time PDF/PPTX export
-        requires Chromium (available in GitHub Actions ubuntu runners)."
-      - "2026-03-10: Implementation started. Completed 5/6 subtasks: content type (extended blog schema with marp
-        fields), build pipeline (Astro integration using marp-core Node API), standalone viewer (MarpViewer.vue with
-        keyboard/touch/fullscreen), embeddable component (MarpSlides.astro for MDX), download buttons (MarpDownloads.vue
-        with format badges). Only marp-theme-integration remains (low priority). Build passes with 0 errors. PDF/PPTX
-        export gracefully skips on Node 23+ (works in CI with LTS)."
-      - "2026-03-10: Major rewrite to component-centric architecture. MarpSlides.astro is now the sole interface (no
-        marp frontmatter coupling, no separate src/marp/ directory). Marp .md files co-located with posts using _
-        prefix. Inline marp-core compilation with content-hashed deduplication. PDF export via playwright chromium (not
-        puppeteer — broken under Bun). PdfViewer.vue using pdfjs-dist. Iframe isolation for Marp CSS. Migrated from
-        pnpm/Node.js to Bun. Deploy workflow updated for Bun + playwright."
-      - "2026-03-10: Phase 2 complete. Added PPTX-to-PDF conversion at build time via LibreOffice CLI (soffice
-        --headless --convert-to pdf) with graceful fallback if LibreOffice not installed. Created custom Marp CSS theme
-        (src/styles/marp-theme.css) matching site design system: light/dark mode, Inter/Roboto/Fira Code fonts, brand
-        colors (#380541/#9b7ba3), lead/invert/highlight slide classes. Theme registered with marp-core via
-        themeSet.add(). Sample slides updated to use custom theme. All 6 subtasks complete. Build passes with 0 errors."
-    subtasks:
-      - id: marp-content-type
-        title: Define Marp content type and frontmatter schema
-        description: >
-          Add a 'presentation' or 'talk' content type (or extend the existing blog collection with a 'marp: true'
-          frontmatter flag). Define the schema to include: marp theme, slide aspect ratio, export formats to generate,
-          and whether the post is a pure presentation or an article with embedded slides. Consider reviving the
-          commented-out 'Talks' nav category.
-        status: done
-        completion: 100
-        difficulty: medium
-        priority: high
-        depends_on: []
-        effort: PT3H
-        started_at: 2026-03-10
-        ended_at: 2026-03-10
-        constraints:
-          - Must be backward-compatible with existing blog posts
-          - Must work with the content collection system in src/content/config.ts
-        forbidden: []
-        references:
-          - src/content/config.ts
-          - src/site-config.ts
-        notes:
-          - "2026-03-10: Extended blog schema with marp (boolean), marpTheme (string), marpAspectRatio (enum).
-            Uncommented Talks nav links in site-config.ts. Added nav.talks + marp.* i18n keys for en/it/nl. Created
-            sample talk MDX in src/content/blog/talks/."
-          - "2026-03-10: Revised — removed marp fields from blog schema in favor of component-centric architecture.
-            MarpSlides component is now self-contained; no frontmatter coupling needed. Talks nav and i18n keys remain."
-        subtasks: []
-      - id: marp-build-pipeline
-        title: Build-time Marp compilation pipeline
-        description: >
-          Create a build step (Astro integration or npm script) that finds all Marp content files, compiles them to
-          self-contained HTML using @marp-team/marp-core, and generates PDF and PPTX exports using @marp-team/marp-cli
-          (which uses Puppeteer/Chromium). Output files must be placed in the static output directory. Must be
-          incremental (skip unchanged presentations).
-        status: done
-        completion: 100
-        difficulty: hard
-        priority: high
-        depends_on:
-          - marp-content-type
-        effort: P1D
-        started_at: 2026-03-10
-        ended_at: 2026-03-10
-        constraints:
-          - Must install Chromium in CI (GitHub Actions has it pre-installed)
-          - Must handle Chromium sandbox issues in CI environments
-          - Must cache results to avoid re-rendering unchanged slides
-        forbidden:
-          - Do not shell out to marp-cli binary — use the Node.js API
-        references:
-          - https://github.com/marp-team/marp-cli
-        notes:
-          - "2026-03-10: Created Astro integration src/integrations/marp-build.ts. Uses marp-core Node API for HTML
-            compilation. PDF/PPTX via marp-cli child process (graceful skip on Node 23+ due to yargs ESM bug). Outputs
-            to public/marp/. Note: marp-cli Node API is broken on Node 23+ so we use execFile as fallback — this works
-            in CI with LTS Node."
-          - "2026-03-10: Revised — deleted marp-build.ts integration. Compilation now happens inline in MarpSlides.astro
-            using marp-core Node API. PDF export via playwright chromium (page.pdf()). Content-hashed output files
-            (_compiled-{hash}.html, _compiled-{hash}.pdf, _source-{hash}.md) in public/marp/ (gitignored). Graceful
-            fallback if playwright/chromium unavailable."
-        subtasks: []
-      - id: marp-standalone-viewer
-        title: Standalone presentation viewer page
-        description: >
-          Create a page template for pure presentation posts. The page shows the Marp HTML slides in a full-viewport
-          viewer with navigation controls (arrow keys, click, swipe). Include a toolbar with download buttons for .md,
-          .pdf, and .pptx formats. Include a fullscreen toggle. Must support keyboard navigation and touch gestures.
-        status: done
-        completion: 100
-        difficulty: hard
-        priority: high
-        depends_on:
-          - marp-build-pipeline
-        effort: PT6H
-        started_at: 2026-03-10
-        ended_at: 2026-03-10
-        constraints:
-          - Must work on mobile (touch swipe for slide navigation)
-          - Must support keyboard shortcuts (left/right arrows, Escape for fullscreen)
-          - Download buttons must show file sizes
-        forbidden: []
-        references: []
-        notes:
-          - "2026-03-10: Built MarpViewer.vue with keyboard nav (arrows, Home/End, Space, F, Escape), touch swipe,
-            fullscreen toggle, slide counter, loading/error states, dark mode. Integrated into posts/[...slug].astro
-            with marp-conditional rendering."
-          - "2026-03-10: Revised — removed all marp-conditional rendering from post template. MarpViewer now uses src
-            URL prop and iframe sandbox with allow-popups. Overlay click handler removed (was blocking links); touch
-            swipe via pointer:coarse media query. Links inside slides forced to target=_blank."
-        subtasks: []
-      - id: marp-embedded-component
-        title: Embeddable slide deck component for articles
-        description: >
-          Create a Vue or Astro component that embeds a Marp slide deck within a regular blog post. The component
-          renders the slides in a contained area (not full-page) with navigation controls and download buttons. Should
-          support a configurable aspect ratio (16:9, 4:3) and height. Authors use it in MDX like: <MarpSlides
-          src="./my-deck.md" />
-        status: done
-        completion: 100
-        difficulty: medium
-        priority: medium
-        depends_on:
-          - marp-build-pipeline
-        effort: PT4H
-        started_at: 2026-03-10
-        ended_at: 2026-03-10
-        constraints:
-          - Must not break the surrounding article layout
-          - Must be lazy-loaded (don't load slide HTML until visible)
-          - Must respect the site's dark/light theme for the container chrome
-        forbidden: []
-        references: []
-        notes:
-          - "2026-03-10: Built MarpSlides.astro wrapper using client:visible for lazy loading. Wraps MarpViewer.vue
-            (embedded mode) + MarpDownloads.vue. Usage: <MarpSlides src='name' aspectRatio='16:9' showDownloads={true}
-            />"
-          - "2026-03-10: Revised — MarpSlides.astro is now the universal interface. Accepts md prop (?raw import) for
-            inline compilation, or src prop for pre-built files (HTML/PDF/PPTX). Auto-detects format by extension.
-            Co-located Marp .md files use _ prefix to avoid content collection validation. Usage: import slides from
-            './_deck.slides.md?raw'; <MarpSlides md={slides} />"
-        subtasks: []
-      - id: marp-download-buttons
-        title: Download buttons component (md/pdf/pptx)
-        description: >
-          Create a reusable download button group component that provides download links for .md (source), .pdf, and
-          .pptx versions of a presentation. Must show file format icons and file sizes. Must be i18n-aware (button
-          labels translated).
-        status: done
-        completion: 100
-        difficulty: easy
-        priority: medium
-        depends_on:
-          - marp-build-pipeline
-        effort: PT2H
-        started_at: 2026-03-10
-        ended_at: 2026-03-10
-        constraints:
-          - File sizes must be calculated at build time and embedded in the component
-          - Must handle missing formats gracefully (e.g. if PPTX generation failed)
-        forbidden: []
-        references: []
-        notes:
-          - "2026-03-10: Built MarpDownloads.vue. Fetches metadata JSON at runtime, shows available formats
-            (MD/PDF/PPTX) with file sizes and color-coded badges. i18n-aware labels. Gracefully handles missing
-            formats."
-          - "2026-03-10: Revised — MarpDownloads.vue now accepts items prop array directly (no JSON fetch). Download
-            items generated by MarpSlides.astro at build time with HTML/PDF/MD labels."
-        subtasks: []
-      - id: marp-theme-integration
-        title: Marp theme matching site dark/light mode
-        description: >
-          Create or customize a Marp CSS theme that visually matches the site's design system (colors, fonts, spacing).
-          The theme should have light and dark variants that respect the site's theme toggle. For standalone
-          presentations, the slides themselves should switch themes. For embedded presentations, at minimum the
-          container chrome should match.
-        status: done
-        completion: 100
-        difficulty: medium
-        priority: low
-        depends_on:
-          - marp-build-pipeline
-        effort: PT4H
-        started_at: 2026-03-10
-        ended_at: 2026-03-10
-        constraints:
-          - Must use the same font stack as the site (or a complementary one)
-          - Slide content must be readable in both themes
-        forbidden: []
-        references:
-          - https://marpit.marp.app/theme-css
-          - uno.config.ts
-        notes:
-          - "2026-03-10: Dark mode sync already implemented via MutationObserver watching :root.dark class and
-            postMessage to iframe. Custom Marp CSS theme to match site design is Phase 2."
-          - "2026-03-10: Custom Marp CSS theme created at src/styles/marp-theme.css. Uses @theme site metadata for
-            Marpit registration. Features: light mode (bg #eef5fc, text #555555, brand #380541), dark mode via .invert
-            (bg #0d1117, text #bbbbbb, brand #9b7ba3), Inter for titles, Roboto for body, Fira Code for code. Includes
-            lead (centered titles), invert (dark mode), and highlight (brand accent bg) slide classes. Registered with
-            marp-core via themeSet.add() in MarpSlides.astro. Also added PPTX-to-PDF conversion via LibreOffice CLI with
-            graceful fallback."
         subtasks: []
   - id: pgp-email-encryption
     title: In-browser PGP encryption before sending email
@@ -1115,6 +604,1780 @@ features:
           - https://securityheaders.com/
           - https://observatory.mozilla.org/
         notes: []
+        subtasks: []
+  - id: og-image-enhancements
+    title: Enhance Open Graph image generation
+    description: >
+      Improve the Satori-generated OG cards with richer visual content. Currently the cards are text-only on a hardcoded
+      purple gradient. Enhancements: (1) add the site logo to the card, (2) incorporate the post's hero/cover image if
+      available, (3) display tags or category, (4) improve description truncation to respect word boundaries instead of
+      cutting mid-word at 140 characters.
+    status: backlog
+    completion: 0
+    difficulty: medium
+    priority: low
+    depends_on: []
+    effort: PT6H
+    started_at: null
+    ended_at: null
+    constraints:
+      - Must keep the card at 1200x630 (standard OG dimensions)
+      - Must maintain fast build times — image generation is already the slowest build step
+      - Satori does not support all CSS — must work within its subset
+    forbidden:
+      - Do not use external image CDN — all images must be generated at build time
+    references:
+      - src/utils/og.ts
+      - https://github.com/vercel/satori
+    notes:
+      - "2026-03-11: Feature added to backlog. Current OG images use a fixed purple gradient with text only. Satori has
+        limited CSS support (no background-image from URL, but supports base64-encoded images). Hero image integration
+        may require converting the cover image to base64 at build time."
+    subtasks:
+      - id: og-add-logo
+        title: Add site logo to OG cards
+        description: >
+          Embed the site logo (public/img/logo.svg or a PNG version) into the OG card template. Position it in the
+          top-left or top-right corner. Satori supports SVG rendering directly.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on: []
+        effort: PT1H
+        started_at: null
+        ended_at: null
+        constraints:
+          - Logo must be clearly visible but not dominate the card
+        forbidden: []
+        references:
+          - public/img/logo.svg
+          - src/utils/og.ts
+        notes: []
+        subtasks: []
+      - id: og-hero-image
+        title: Incorporate post hero image into OG card
+        description: >
+          If a post has a cover/hero image, include it in the OG card (e.g., as a background or a side panel). This
+          requires reading the image at build time and encoding it for Satori. Handle posts without images gracefully
+          (use the current text-only design as fallback).
+        status: backlog
+        completion: 0
+        difficulty: hard
+        priority: low
+        depends_on: []
+        effort: PT3H
+        started_at: null
+        ended_at: null
+        constraints:
+          - Must handle posts without images (fallback to current design)
+          - Image must be resized/cropped to fit the card without distortion
+          - Must not significantly increase build time
+        forbidden: []
+        references:
+          - src/utils/og.ts
+        notes:
+          - "2026-03-11: Satori does not support CSS background-image from URLs. Images must be base64-encoded and
+            passed as <img> src. Sharp can handle the resizing."
+        subtasks: []
+      - id: og-display-tags
+        title: Show tags or category on OG card
+        description: >
+          Display the first 2-3 tags as small badges on the OG card. This helps with visual identification of post
+          topics when shared on social media.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: low
+        depends_on: []
+        effort: PT1H
+        started_at: null
+        ended_at: null
+        constraints:
+          - Limit to 3 tags maximum to avoid clutter
+          - Must be readable at small sizes (social media thumbnails)
+        forbidden: []
+        references:
+          - src/utils/og.ts
+        notes: []
+        subtasks: []
+      - id: og-word-truncation
+        title: Improve description truncation at word boundaries
+        description: >
+          The current truncation cuts descriptions at exactly 140 characters, potentially mid-word. Improve to truncate
+          at the nearest word boundary and add an ellipsis. Consider using a slightly higher limit if the last word
+          would bring it close to 140.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: low
+        depends_on: []
+        effort: PT20M
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - src/utils/og.ts
+        notes: []
+        subtasks: []
+  - id: footer-enhancements
+    title: Enhanced site footer with social links and RSS
+    description: >
+      Improve the site footer (FooterComponent.vue) by adding: (1) a row of social media icons from siteConfig (GitHub,
+      LinkedIn, etc.), (2) a visible RSS feed link, (3) a copyright year range showing the start year through the
+      current year (e.g., "2024-2026" instead of just "2026"). The footer currently only has nav text links and the CC
+      license notice.
+    status: backlog
+    completion: 0
+    difficulty: easy
+    priority: low
+    depends_on: []
+    effort: PT3H
+    started_at: null
+    ended_at: null
+    constraints:
+      - Must use social links from siteConfig (single source of truth)
+      - Must be responsive and look good on mobile
+      - Must remain hidden in print mode (existing behavior)
+    forbidden: []
+    references:
+      - src/components/FooterComponent.vue
+      - src/site-config.ts
+    notes:
+      - "2026-03-11: Feature added to backlog. FooterComponent.vue currently renders nav links from
+        siteConfig.footer.navLinks, CC license, and copyright year. Social links exist in siteConfig.socialLinks but are
+        only shown in the header."
+    subtasks:
+      - id: footer-social-links
+        title: Add social media icon row to footer
+        description: >
+          Render social media icons (from siteConfig.socialLinks) in the footer. Use the same icon set as the header but
+          with footer- appropriate sizing and spacing.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on: []
+        effort: PT1H
+        started_at: null
+        ended_at: null
+        constraints:
+          - Must use siteConfig.socialLinks as data source
+          - Must include aria-labels for accessibility
+        forbidden: []
+        references:
+          - src/site-config.ts
+        notes: []
+        subtasks: []
+      - id: footer-rss-link
+        title: Add RSS feed link to footer
+        description: >
+          Add a visible RSS feed link (or icon) to the footer. Should point to the language-appropriate RSS feed
+          (/rss.xml for EN, /it/rss.xml for IT).
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: PT30M
+        started_at: null
+        ended_at: null
+        constraints:
+          - Must be language-aware (link to correct language RSS feed)
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: footer-copyright-range
+        title: Show copyright year range
+        description: >
+          Change the copyright notice from showing only the current year to showing a range (e.g., "2024-2026"). The
+          start year should be configurable in siteConfig or hardcoded to the site's launch year.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: low
+        depends_on: []
+        effort: PT15M
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - src/components/FooterComponent.vue
+        notes: []
+        subtasks: []
+  - id: content-linting-ci
+    title: Frontmatter validation and content linting in CI
+    description: >
+      Add automated content linting to the CI pipeline that validates blog post frontmatter completeness and
+      consistency. Check that required fields exist (title, pubDate, description), lang is set, images have alt text,
+      dates parse correctly, tags follow naming conventions (kebab-case), and series posts have sequential seriesOrder
+      values. Catches content issues before they reach production.
+    status: backlog
+    completion: 0
+    difficulty: medium
+    priority: low
+    depends_on: []
+    effort: PT4H
+    started_at: null
+    ended_at: null
+    constraints:
+      - Must validate all posts in src/content/blog/
+      - Must catch missing required fields that Zod does not enforce (e.g., lang)
+      - Must be runnable locally and in CI
+    forbidden:
+      - Do not duplicate Zod schema validation — focus on what Zod does not check
+    references:
+      - src/content/config.ts
+      - src/content/blog/
+    notes:
+      - "2026-03-11: Feature added to backlog. Zod validates the core schema, but many fields are optional. This linter
+        checks for best practices: every post should have a description, a lang field, image alt text if an image is
+        provided, etc."
+    subtasks:
+      - id: content-lint-rules
+        title: Define frontmatter validation rules
+        description: >
+          Document and implement the validation rules: (1) every post must have a description, (2) every post must have
+          a lang field, (3) images must have imageAlt, (4) tags must be kebab-case, (5) pubDate must be a valid date,
+          (6) series posts must have sequential seriesOrder, (7) Italian posts must have a matching English post (or be
+          explicitly marked as untranslated).
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        depends_on: []
+        effort: PT2H
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - src/content/config.ts
+        notes: []
+        subtasks: []
+      - id: content-lint-script
+        title: Write validation script
+        description: >
+          Create a Node.js/TypeScript script that reads all MDX/MD files in src/content/blog/, parses their frontmatter,
+          and validates against the rules. Output clear error messages with file paths and line numbers. Exit with
+          non-zero code on violations.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        depends_on:
+          - content-lint-rules
+        effort: PT1H30M
+        started_at: null
+        ended_at: null
+        constraints:
+          - Must be runnable with 'node' or 'tsx' without special setup
+          - Must parse YAML frontmatter correctly (handle multiline values)
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: content-lint-ci-integration
+        title: Add content linting to CI pipeline
+        description: >
+          Add the validation script as a step in the GitHub Actions workflow, running before the build step. Violations
+          should fail the build.
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on:
+          - content-lint-script
+        effort: PT15M
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - .github/workflows/deploy.yml
+        notes: []
+        subtasks: []
+      - id: content-lint-fix-existing
+        title: Fix existing frontmatter issues
+        description: >
+          Run the linter against current content and fix any violations found. This may include adding missing
+          descriptions, lang fields, imageAlt values, or normalizing tag naming.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on:
+          - content-lint-rules
+        effort: PT1H
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+archive:
+  - id: splathash-integration
+    title: SplatHash integration for ultrafast TTFF
+    description: >
+      Integrated splathash-ts (zero-dep, 16-byte image hashes) for blur placeholders. At build time, each image is
+      encoded to a 16-byte hash stored in data-splat attribute (~24 chars base64). Client-side decoder renders hash to
+      canvas and sets blob: URL as background-image on <img>. No-JS fallback uses average color from hash as
+      background-color. Applied to post templates (EN/IT), ListPosts, and PokerPic.
+    status: done
+    completion: 100
+    difficulty: hard
+    priority: high
+    started_at: 2026-03-10
+    ended_at: 2026-03-10
+    notes:
+      - "2026-03-10: Second bugfix — removed format=webp from SplatImage callers (caused 404s due to Astro cache),
+        replaced canvas.toDataURL() base64 with toBlob()+createObjectURL() blob: URLs, fixed variable shadowing in
+        decoder."
+      - "2026-03-10: Bugfix fix-splathash merged — replaced useless encode→decode→sharp→PNG round-trip with true 16-byte
+        SplatHash: data-splat contains base64 of 16-byte hash (~24 chars), client-side decoder renders to canvas, no-JS
+        fallback uses average color extracted from hash. Reduces per-image placeholder from ~1-3KB to 24 chars."
+      - "2026-03-10: All 5 subtasks completed. splathash-ts v1.3.0 added as dependency. SplatImage.astro is a drop-in
+        <Image> replacement. Hashes cached in-memory during build (~25ms/image). No persistent disk cache yet."
+    subtasks:
+      - id: splathash-research
+        title: Research and prototype
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: splathash-build-pipeline
+        title: Build-time hash generation pipeline
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: splathash-client-decoder
+        title: Client-side decoder component (SplatImage.astro)
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: splathash-post-images
+        title: Apply to blog post cover images
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: splathash-all-images
+        title: Apply to all site images
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+    depends_on: []
+    constraints: []
+    forbidden: []
+    references: []
+  - id: search-improvements
+    title: Search UX improvements with URL query parameter
+    description: >
+      Improved Pagefind search with URL ?s= parameter support (read on load, write on type via replaceState), keyboard
+      navigation (ArrowUp/Down/Enter/ Escape with aria-activedescendant combobox pattern), and result type badges
+      (Blog/Project/Tag/Page) with color-coded borders. Applied to both EN and IT search pages.
+    status: done
+    completion: 100
+    difficulty: medium
+    priority: high
+    started_at: 2026-03-10
+    ended_at: 2026-03-10
+    notes:
+      - "2026-03-10: All 4 subtasks completed. URL param uses ?s= format. Keyboard nav uses ARIA combobox pattern. Type
+        badges inferred from URL patterns. Date display skipped (no pagefind metadata)."
+    subtasks:
+      - id: search-url-param-read
+        title: Read search query from URL parameter on page load
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: search-url-param-write
+        title: Update URL parameter as user types
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: search-keyboard-navigation
+        title: Add keyboard navigation to search results
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: search-result-improvements
+        title: Improve search result presentation
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+    depends_on: []
+    constraints: []
+    forbidden: []
+    references: []
+  - id: mastodon-share-button
+    title: Official Mastodon share icon among sharing options
+    description: >
+      Added official Mastodon share button to SharePost.vue using share.joinmastodon.org endpoint. Uses
+      i-ri-mastodon-line icon, placed after Bluesky before Twitter/X. i18n labels for en/it/nl.
+    status: done
+    completion: 100
+    difficulty: easy
+    priority: high
+    started_at: 2026-03-10
+    ended_at: 2026-03-10
+    notes:
+      - "2026-03-10: All 4 subtasks completed. Official share tool, no tracking, browser-only."
+    subtasks:
+      - id: mastodon-icon-sourcing
+        title: Source or create Mastodon icon
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: mastodon-share-url
+        title: Implement share URL logic
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: mastodon-i18n-labels
+        title: Add i18n labels for Mastodon share
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: mastodon-button-placement
+        title: Decide button placement order
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+    depends_on: []
+    constraints: []
+    forbidden: []
+    references: []
+  - id: torinojs-projects
+    title: Add TorinoJS organizer role to projects section
+    description: >
+      Add a new project group in the projects section to highlight the role as co-organizer at TorinoJS. Entry added to
+      both EN and IT project data.
+    status: done
+    completion: 100
+    difficulty: trivial
+    priority: high
+    depends_on: []
+    effort: PT30M
+    started_at: 2026-03-10
+    ended_at: 2026-03-10
+    notes:
+      - "2026-03-10: Added 'Community' group with TorinoJS entry to both EN and IT project data files. Merged into
+        develop via git flow feature finish. Moved to archive."
+    subtasks:
+      - id: torinojs-data-en
+        title: Add TorinoJS entry to EN project data
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: torinojs-data-it
+        title: Add TorinoJS entry to IT project data
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+    constraints: []
+    forbidden: []
+    references: []
+  - id: accessibility-pass
+    title: Comprehensive accessibility pass (WCAG 2.1 AA)
+    description: >
+      Perform a full accessibility audit and remediation across the entire site targeting WCAG 2.1 AA compliance. Known
+      issues include: no skip-to-content link, a malformed tag in Header.astro (line 34: <i> closed with </span>), no
+      aria-expanded on toggle buttons (mobile nav, theme toggle, language dropdown), no aria-current="page" on active
+      nav links, no keyboard Escape key handler to dismiss drawers/dropdowns, no focus trap on the mobile navigation
+      drawer, no :focus-visible audit across components, and unverified color contrast ratios (especially the purple
+      #380541 used in accents). This feature covers structural HTML semantics, ARIA attributes, keyboard navigation,
+      focus management, and color contrast.
+    status: done
+    completion: 100
+    difficulty: hard
+    priority: critical
+    depends_on: []
+    effort: P2D
+    started_at: 2026-03-10
+    ended_at: 2026-03-10
+    constraints:
+      - Must achieve WCAG 2.1 AA compliance as verified by axe-core or Lighthouse accessibility audit
+      - Must not break existing visual design
+      - Must work with View Transitions (focus management after navigation)
+      - All interactive elements must be keyboard-operable
+      - Color contrast must meet 4.5:1 for normal text, 3:1 for large text (WCAG AA)
+      - Must test with at least one screen reader (NVDA, VoiceOver, or ORCA)
+    forbidden:
+      - Do not add ARIA attributes where native HTML semantics suffice (use <button> not <div role=button>)
+      - Do not use tabindex values greater than 0
+      - Do not disable outline/focus styles without providing a visible alternative
+    references:
+      - https://www.w3.org/WAI/WCAG21/quickref/?levels=aaa
+      - https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA
+      - src/components/Header.astro
+      - src/components/Header.vue
+      - src/components/ThemeToggle.vue
+      - src/components/LanguageDropdown.vue
+      - src/layouts/BaseLayout.astro
+    notes:
+      - "2026-03-10: Feature added to backlog at critical priority. Accessibility gaps identified during codebase audit:
+        missing skip-to-content, malformed HTML in Header.astro:34, missing ARIA attributes on toggles, no focus trap on
+        mobile nav, no keyboard dismiss, color contrast unverified."
+      - "2026-03-10: All 9 subtasks completed. Merged into develop via git flow feature finish. Moved to archive."
+    subtasks:
+      - id: a11y-skip-to-content
+        title: Add skip-to-content link
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: a11y-fix-malformed-html
+        title: Fix malformed tag in Header.astro
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: a11y-aria-expanded-toggles
+        title: Add aria-expanded to all toggle buttons
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: a11y-aria-current-page
+        title: Add aria-current=page to active nav links
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: a11y-keyboard-dismiss
+        title: Add keyboard Escape to dismiss drawers and dropdowns
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: a11y-focus-trap-mobile-nav
+        title: Add focus trap to mobile navigation drawer
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: a11y-focus-visible-audit
+        title: Audit and fix :focus-visible styles across all components
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: a11y-color-contrast-audit
+        title: Audit and fix color contrast ratios
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: a11y-landmark-semantics
+        title: Verify HTML landmark semantics
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+  - id: bug-fixes-batch
+    title: Fix known bugs discovered during codebase audit
+    description: >
+      Fix all 7 concrete bugs discovered during the comprehensive codebase audit. These range from string immutability
+      errors in utility code to HTML tag mismatches, incorrect RSS self-references, missing RSS elements, hardcoded
+      language values, stray console.log statements in production, and CI/CD pipeline ordering issues.
+    status: done
+    completion: 100
+    difficulty: easy
+    priority: critical
+    depends_on: []
+    effort: PT4H
+    started_at: 2026-03-10T13:06:00+01:00
+    ended_at: 2026-03-10T15:35:00+01:00
+    constraints:
+      - Each fix must be verified by running the build successfully
+      - Fixes must not introduce regressions in other functionality
+      - All RSS/Atom feeds must validate after fixes
+    forbidden:
+      - Do not refactor beyond the minimal fix needed for each bug
+      - Do not introduce new dependencies to fix these bugs
+    references:
+      - src/utils/posts.ts
+      - src/components/Header.astro
+      - src/pages/it/rss.xml.ts
+      - src/pages/last-ten.xml.ts
+      - src/components/GiscusComments.vue
+      - .github/workflows/deploy.yml
+    notes:
+      - "2026-03-10: Feature added to backlog at critical priority. 7 bugs identified during comprehensive codebase
+        audit. All are concrete, reproducible issues with clear fixes."
+      - "2026-03-10: All 16 subtask bugs fixed and build verified. Committed on feature/bug-fixes-batch branch
+        (5c872eb). bug-string-immutability was N/A (code already correct). 3 console.logs found in posts.ts (not 1). IT
+        post template had additional parity issues fixed."
+      - "2026-03-10: Merged into develop via git flow feature finish. Moved to archive."
+    subtasks:
+      - id: bug-string-immutability
+        title: Fix string immutability bug in posts.ts
+        description: >
+          In src/utils/posts.ts line 55, path.replace() result is never reassigned. JavaScript strings are immutable, so
+          .replace() returns a new string but the original variable is unchanged. Fix by reassigning: path =
+          path.replace(...).
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: critical
+        depends_on: []
+        effort: PT10M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T13:30:00+01:00
+        constraints: []
+        forbidden: []
+        references:
+          - src/utils/posts.ts:55
+        notes:
+          - "2026-03-10: N/A — path.replace() does not exist in current getPosts function. Bug was either already fixed
+            or line numbers shifted. No action needed."
+        subtasks: []
+      - id: bug-header-tag-mismatch
+        title: Fix <i> closed with </span> in Header.astro
+        description: >
+          In src/components/Header.astro line 34, an <i> element used for social link icons is incorrectly closed with
+          </span>. Change </span> to </i> to fix the HTML validity error.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: critical
+        depends_on: []
+        effort: PT5M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T13:15:00+01:00
+        constraints: []
+        forbidden: []
+        references:
+          - src/components/Header.astro:34
+        notes:
+          - "2026-03-10: DUPLICATE — this is the exact same fix as a11y-fix-malformed-html in accessibility-pass
+            (Header.astro line 34: <i> closed with </span>). Completing either one resolves both. Coordinate to avoid
+            double work."
+          - "2026-03-10: Fixed — changed </span> to </i> on line 34."
+        subtasks: []
+      - id: bug-it-rss-self-ref
+        title: Fix Italian RSS atom:link self-reference
+        description: >
+          In src/pages/it/rss.xml.ts, the atom:link self-reference points to /rss.xml instead of /it/rss.xml. This means
+          the Italian RSS feed claims to live at the English feed URL. Fix the href to point to the correct /it/rss.xml
+          path.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: PT10M
+        started_at: 2026-03-10T13:15:00+01:00
+        ended_at: 2026-03-10T13:25:00+01:00
+        constraints:
+          - Must validate as valid Atom/RSS after fix
+        forbidden: []
+        references:
+          - src/pages/it/rss.xml.ts
+        notes:
+          - "2026-03-10: Fixed — changed 'rss.xml' to 'it/rss.xml' in atom:link href."
+        subtasks: []
+      - id: bug-last-ten-missing-elements
+        title: Add missing atom:link and XSL stylesheet to last-ten.xml
+        description: >
+          The src/pages/last-ten.xml.ts feed is missing an atom:link self-reference (required by Atom spec) and an XSL
+          stylesheet reference (present in other feeds for browser rendering). Add both to match the structure of
+          rss.xml.ts.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: PT15M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T15:30:00+01:00
+        constraints:
+          - Must validate as valid RSS/Atom after fix
+          - XSL stylesheet path must match the existing pattern used by rss.xml.ts
+        forbidden: []
+        references:
+          - src/pages/last-ten.xml.ts
+          - src/pages/rss.xml.ts
+        notes:
+          - "2026-03-10: Fixed — added atom:link self-reference and XSL stylesheet to match rss.xml.ts structure."
+        subtasks: []
+      - id: bug-giscus-hardcoded-lang
+        title: Fix Giscus hardcoded data-lang=en
+        description: >
+          In src/components/GiscusComments.vue line 29, data-lang is hardcoded to "en". This means Italian pages show
+          English Giscus UI. Fix by accepting a lang prop or detecting the current language from the URL and passing it
+          to the Giscus script configuration.
+        status: done
+        completion: 100
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: PT30M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T15:30:00+01:00
+        constraints:
+          - Must map site language codes to Giscus-supported language codes
+          - Must update when language changes (if applicable via View Transitions)
+        forbidden: []
+        references:
+          - src/components/GiscusComments.vue:29
+          - https://giscus.app
+        notes:
+          - "2026-03-10: Note: This overlaps with feature J (giscus-i18n). This subtask covers the minimal bug fix;
+            feature J covers the full i18n integration."
+          - "2026-03-10: Fixed — added lang prop and detectLang() function that reads language from URL path."
+        subtasks: []
+      - id: bug-console-log-production
+        title: Remove stray console.log in posts.ts
+        description: >
+          In src/utils/posts.ts line 59, there is a console.log statement that logs all returned post slugs. This runs
+          in production and clutters the build output. Remove it or guard it behind an environment check.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: PT5M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T15:30:00+01:00
+        constraints:
+          - Must not break the getPosts function
+        forbidden:
+          - Do not add a logging framework just for this
+        references:
+          - src/utils/posts.ts:59
+        notes:
+          - "2026-03-10: Fixed — removed 3 console.log statements (lines 42, 59, 71), not just 1 as originally
+            described."
+        subtasks: []
+      - id: bug-ci-test-ordering
+        title: Fix test ordering in deploy workflow
+        description: >
+          In .github/workflows/deploy.yml, tests run after the build artifact is uploaded. This means a failing test
+          does not prevent deployment. Reorder the steps so that tests run before the artifact upload step.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: PT15M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T15:30:00+01:00
+        constraints:
+          - Tests must complete successfully before artifact upload
+          - Must not break the GitHub Actions workflow syntax
+        forbidden: []
+        references:
+          - .github/workflows/deploy.yml
+        notes:
+          - "2026-03-10: Fixed — restructured workflow to run tests before build/upload step."
+        subtasks: []
+      - id: bug-trans-hardcoded-url
+        title: Fix Trans.astro hardcoded URL with typo
+        description: >
+          In src/components/Trans.astro line 17, getLangFromUrl() is called with a hardcoded string "/it/blogss" (note
+          the typo "blogss") instead of using Astro.url. This means the component always detects Italian language
+          regardless of the actual page URL. Fix to use the actual page URL from Astro.url.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: PT10M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T15:30:00+01:00
+        constraints: []
+        forbidden: []
+        references:
+          - src/components/Trans.astro:17
+        notes:
+          - "2026-03-10: Fixed — replaced hardcoded '/it/blogss' with Astro.url."
+        subtasks: []
+      - id: bug-trans-console-log
+        title: Remove console.log from Trans.astro
+        description: >
+          In src/components/Trans.astro line 20, there is a debug console.log("Received key:", key) statement that runs
+          in production on every use of the Trans component.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: PT5M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T15:30:00+01:00
+        constraints: []
+        forbidden: []
+        references:
+          - src/components/Trans.astro:20
+        notes:
+          - "2026-03-10: Fixed — removed console.log('Received key:', key)."
+        subtasks: []
+      - id: bug-it-posts-console-log
+        title: Remove console.log from Italian posts template
+        description: >
+          In src/pages/it/posts/[...slug].astro lines 32-35, there is a console.log that dumps all Italian post slugs
+          during build. This debug logging should be removed.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: PT5M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T15:30:00+01:00
+        constraints: []
+        forbidden: []
+        references:
+          - src/pages/it/posts/[...slug].astro:32-35
+        notes:
+          - "2026-03-10: Fixed — removed console.log dumping post slugs."
+        subtasks: []
+      - id: bug-tags-semantic-html
+        title: Fix tags page content wrapped inside <a> tag
+        description: >
+          In src/pages/tags/[tag]/[...page].astro (both EN and IT), the entire content section (h1, post list,
+          paginator) is wrapped inside an <a> tag that serves as the "Back" button link. This is semantically invalid
+          HTML — block-level content should not be inside an anchor element. It likely causes accessibility issues with
+          screen readers. Restructure so the back link is separate from the content.
+        status: done
+        completion: 100
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: PT20M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T15:30:00+01:00
+        constraints:
+          - Must fix both EN and IT versions
+          - Must preserve the back navigation functionality
+        forbidden: []
+        references:
+          - src/pages/tags/[tag]/[...page].astro
+          - src/pages/it/tags/[tag]/[...page].astro
+        notes:
+          - "2026-03-10: Fixed — extracted h1, section, Paginator out of <a> tag; back link is now a separate element."
+        subtasks: []
+      - id: bug-header-astro-noscript
+        title: Fix Header.astro noscript fallback issues
+        description: >
+          Header.astro (the noscript fallback header) has multiple issues: (1) Line 15 uses :href (Vue bind syntax)
+          instead of href — in an Astro template this renders literally as a :href attribute, not as a dynamic binding.
+          (2) The <style> block at the bottom (lines 49-75) appears truncated — .social-links ul rule has 'gap:' with no
+          value and no closing brace.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: PT15M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T15:30:00+01:00
+        constraints:
+          - Must use standard href= attribute syntax in Astro templates
+        forbidden: []
+        references:
+          - src/components/Header.astro:15
+          - src/components/Header.astro:49-75
+        notes:
+          - "2026-03-10: Fixed — corrected :href to href on line 15; fixed truncated CSS (.social-links ul now has gap:
+            0.5rem and closing brace)."
+        subtasks: []
+      - id: bug-postpreview-i18n
+        title: Fix PostPreview.astro hardcoded English URLs
+        description: >
+          In src/components/PostPreview.astro line 34, the post link href is hardcoded as /posts/${post.slug}/ without
+          language prefix. Italian tag pages that use this component will link to /posts/... instead of /it/posts/...,
+          sending Italian users to the English version of the post. Must use translatePath or a language-aware href
+          construction.
+        status: done
+        completion: 100
+        difficulty: easy
+        priority: high
+        depends_on: []
+        effort: PT20M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T15:30:00+01:00
+        constraints:
+          - Must work for all languages
+          - Must use the existing i18n utilities
+        forbidden: []
+        references:
+          - src/components/PostPreview.astro:34
+          - src/i18n/utils.ts
+        notes:
+          - "2026-03-10: Fixed — added language detection from slug; builds href with lang prefix using getLangFromSlug
+            and removeLangFromSlug."
+        subtasks: []
+      - id: bug-it-unlisted-noindex
+        title: Fix Italian unlisted posts not set as noindex
+        description: >
+          In src/pages/it/posts/[...slug].astro, the unlisted property is never destructured from post.data and noindex
+          is never passed to BaseLayout for unlisted posts. The English version correctly passes noindex={unlisted} to
+          prevent search engine indexing of unlisted posts. The Italian version must do the same.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: high
+        depends_on: []
+        effort: PT10M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T15:30:00+01:00
+        constraints: []
+        forbidden: []
+        references:
+          - src/pages/it/posts/[...slug].astro
+          - src/pages/posts/[...slug].astro
+        notes:
+          - "2026-03-10: Fixed — added unlisted to destructured props and noindex={unlisted} to BaseLayout."
+        subtasks: []
+      - id: bug-it-unlisted-comments
+        title: Fix Italian unlisted/draft posts showing comments
+        description: >
+          In src/pages/it/posts/[...slug].astro, Giscus comments are shown even for unlisted and draft posts. The
+          English version conditionally hides comments when !draft && !unlisted. The Italian version must apply the same
+          conditional logic.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: PT10M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T15:30:00+01:00
+        constraints: []
+        forbidden: []
+        references:
+          - src/pages/it/posts/[...slug].astro
+          - src/pages/posts/[...slug].astro
+        notes:
+          - "2026-03-10: Fixed — changed condition to {!draft && !unlisted && <GiscusComments>} and same for
+            RelatedPosts."
+        subtasks: []
+      - id: bug-link-mailto-target
+        title: Fix link.ts incorrectly targeting mailto/tel as _blank
+        description: >
+          In src/utils/link.ts, isExternalLink() uses a regex that matches any URL with a protocol prefix (including
+          mailto: and tel:). This causes getLinkTarget() to return _blank for mailto and tel links, which is incorrect —
+          these should open in _self (the current window). Fix the regex to exclude mailto: and tel: protocols.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: PT10M
+        started_at: 2026-03-10T13:06:00+01:00
+        ended_at: 2026-03-10T15:30:00+01:00
+        constraints:
+          - Must still correctly identify http:// and https:// as external
+        forbidden: []
+        references:
+          - src/utils/link.ts
+        notes:
+          - "2026-03-10: Fixed — added isNonNavigableProtocol() function checking mailto:, tel:, sms:, geo:, data:
+            before regex check. Note: existing regex /^[a-z0-9-]+:\\/\\//i already excludes mailto/tel since they lack
+            ://, but guard added for robustness."
+        subtasks: []
+  - id: i18n-overhaul
+    title: Redo i18n for easier language management
+    description: >
+      Redesigned the internationalization system to solve three pain points: language switching, shared resources across
+      translations, and page folder duplication. Enabled Astro built-in i18n, converted pubDate to Date objects,
+      translated hardcoded strings, shared images across language versions (32 duplicate images eliminated), added
+      lang/translationOf to content schema, eliminated page folder duplication via dynamic [...lang] routing (11 page
+      pairs to 9 parameterized pages), upgraded language switcher to build-time translation map, and fixed sitemap
+      hreflang codes.
+    status: done
+    completion: 100
+    difficulty: very_hard
+    priority: high
+    started_at: 2026-03-10
+    ended_at: 2026-03-11
+    notes:
+      - "2026-03-11: All 15 subtasks completed. 10 commits merged (102 files changed, 1117 insertions, 1294 deletions,
+        32 image files deleted). ADR-001 written. Full regression testing passed (6 PASS, 0 FAIL)."
+      - "2026-03-10: Astro built-in i18n re-enabled — old config had buggy array indexing. Works with
+        prefixDefaultLocale: false."
+      - "2026-03-10: SplatImage approach uses background-image CSS on <img> — no wrapper div, no client-side JS."
+    subtasks:
+      - id: i18n-audit-current
+        title: Audit current i18n implementation
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-investigate-astro-builtin
+        title: Investigate Astro built-in i18n
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-design-new-architecture
+        title: Design new i18n architecture (ADR-001)
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-shared-resources
+        title: Shared static resources across languages
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-eliminate-folder-duplication
+        title: Eliminate /it/ page folder duplication
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-language-switcher-upgrade
+        title: Upgrade language switcher (build-time map)
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-content-collection-refactor
+        title: Refactor content collections (lang/translationOf)
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-migration-testing
+        title: Full regression testing
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-series-navigation
+        title: Translate SeriesNavigation.astro strings
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-it-page-meta
+        title: Translate Italian page meta descriptions
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-it-projects-page
+        title: Translate Italian projects page chrome
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-date-locale
+        title: Language-aware date formatting
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-related-posts
+        title: Replace RelatedPosts hardcoded language check
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-scroll-to-top
+        title: Translate ScrollToTop.vue aria-label
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: i18n-dynamic-routing
+        title: Dynamic [...lang] routing
+        status: done
+        completion: 100
+        depends_on: []
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+    depends_on: []
+    constraints: []
+    forbidden: []
+    references: []
+  - id: 404-localized
+    title: Make 404 page localized
+    description: >
+      The 404 page is a mock-bash terminal (visitor@fulgidus.github.io:~$) that shows the attempted path, a "command not
+      found" error, an `ls` of recent posts, and a `cd ~/home` link. It calls getLangFromUrl(Astro.url) at build time to
+      resolve the language, but since GitHub Pages serves a single static 404.html for ALL missing paths, Astro.url at
+      build time has no knowledge of the user's actual requested URL. The result is that the page always renders in
+      English regardless of whether the user was navigating under /it/. The i18n keys (404.title, 404.terminalError,
+      404.terminalHint, 404.terminalHelp, 404.backButtonLabel) already exist in en, it, and nl in src/i18n/ui.ts, but
+      they are never activated for non-English visitors. Additionally, hardcoded English strings exist in the template
+      (e.g. the titlebar text "bash - 404", date formatting locale 'en-GB' in toLocaleDateString, the "open" command
+      prefix in the inline script). All terminal text — prompts, commands, comments, error messages, and the home link —
+      must switch to the detected language.
+    status: done
+    completion: 100
+    difficulty: medium
+    priority: medium
+    depends_on: []
+    effort: PT6H
+    started_at: null
+    ended_at: 2026-03-11T23:15:59.078Z
+    constraints:
+      - GitHub Pages serves a single 404.html — language detection MUST happen client-side via window.location.pathname
+      - Must work with the existing i18n system (src/i18n/utils.ts, src/i18n/ui.ts)
+      - Must support all enabled languages (en, it); extensible to nl
+      - The 'cd ~/home' link must point to the correct language root (/it/ for Italian, / for English)
+      - The `ls ./posts/` listing must show posts in the detected language
+      - Date formatting in the ls listing must use the correct locale (en-GB, it-IT, etc.)
+    forbidden:
+      - Do not require server-side routing (static site on GitHub Pages)
+      - Do not use JavaScript-based redirects that cause visible page flicker
+      - Do not embed all language versions of the post list in the HTML — use a data attribute or JSON blob approach
+    references:
+      - src/pages/404.astro
+      - src/i18n/ui.ts
+      - src/i18n/utils.ts
+    notes:
+      - "2026-03-10: Soft dependency recommendation — consider completing 404-theme-compliant first. It is simpler and
+        fixes the FOUC/dark-mode issue; localizing a theme-broken page wastes effort if theme fix requires structural
+        changes."
+      - "2026-03-10: Feature added to backlog. The page is a mock-bash terminal. All 404.* i18n keys already exist in
+        en/it/nl in ui.ts but are never used for non-English visitors because getLangFromUrl runs at build time against
+        a static URL. Hardcoded English: titlebar 'bash - 404', toLocaleDateString('en-GB'), inline script 'open'
+        prefix."
+    subtasks:
+      - id: 404-lang-detection
+        title: Client-side language detection from URL
+        description: >
+          Implement client-side logic in the 404 page that parses window.location.pathname to detect the language prefix
+          (e.g. /it/). This must run immediately on page load and determine which language's strings to display. The
+          detection logic should mirror getLangFromUrl from src/i18n/utils.ts but run in the browser.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        depends_on: []
+        effort: PT2H
+        started_at: null
+        ended_at: null
+        constraints:
+          - Must not cause layout shift — either hide terminal until language is resolved, or render with data
+            attributes and swap text in place
+          - Must handle URLs without a language prefix (default to English)
+          - Must match the same language prefix list as src/i18n/ui.ts
+        forbidden:
+          - Do not use navigator.language as primary detection — URL path takes precedence
+        references:
+          - src/i18n/utils.ts
+        notes: []
+        subtasks: []
+      - id: 404-embed-translations
+        title: Embed all language strings in the 404 page
+        description: >
+          Since the 404 page is a single static HTML and language is resolved client-side, all translation variants must
+          be embedded in the page (e.g. as a JSON object in a <script> tag or as data-* attributes on translatable
+          elements). The client-side script then picks the right set based on detected language. This includes: terminal
+          error message, hint text, help text, home link label, and titlebar title.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        depends_on:
+          - 404-lang-detection
+        effort: PT2H
+        started_at: null
+        ended_at: null
+        constraints:
+          - Must include strings for all enabled languages
+          - Must be maintainable — ideally generated from the same ui.ts source at build time
+        forbidden:
+          - Do not fetch translations via network request
+        references:
+          - src/i18n/ui.ts
+        notes: []
+        subtasks: []
+      - id: 404-localized-post-list
+        title: Show language-appropriate post list
+        description: >
+          The `ls ./posts/` section currently shows English posts only (built at compile time via getLastTenPosts). For
+          localization, either embed post lists for each language in the HTML (as hidden elements or JSON data) and swap
+          client-side, or show a language-neutral version. Date formatting must also use the detected locale.
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: medium
+        depends_on:
+          - 404-lang-detection
+        effort: PT1H30M
+        started_at: null
+        ended_at: null
+        constraints:
+          - Keep the page size reasonable — don't embed hundreds of posts per language
+          - Date format must match locale (en-GB for English, it-IT for Italian, etc.)
+        forbidden: []
+        references:
+          - src/utils/posts.ts
+        notes: []
+        subtasks: []
+      - id: 404-home-link-localized
+        title: Localize 'cd ~/home' link target
+        description: >
+          The home link (cd ~/home) must dynamically point to the correct language root (/ for English, /it/ for
+          Italian) based on the client-side detected language. The label text must also be translated (e.g.
+          404.backButtonLabel).
+        status: backlog
+        completion: 0
+        difficulty: trivial
+        priority: medium
+        depends_on:
+          - 404-lang-detection
+        effort: PT30M
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+  - id: 404-theme-compliant
+    title: Make 404 page theme-compliant
+    description: >
+      The 404 page is a mock-bash terminal styled with scoped <style> in 404.astro. It uses hardcoded hex colors with
+      :global(.dark) and :global(:not(.dark)) CSS overrides for theme switching. Despite having these dark/light CSS
+      rules, the page currently always renders in light theme. The likely cause is that the ThemeToggle.vue component
+      (which manages the .dark class on <html> via @vueuse/core useDark()) may not properly initialize on the 404 page,
+      or the dark class from localStorage is not applied before first paint, causing the :not(.dark) rules to always
+      win. The terminal colors (titlebar #2d2d2d/#1e1e1e, body #1e1e1e/#f5f5f5, prompt colors, error red, comment green,
+      etc.) need to actually respond to the user's theme preference. The ThemeToggle must also work interactively on the
+      404 page so users can switch themes.
+    status: done
+    completion: 100
+    difficulty: medium
+    priority: medium
+    depends_on: []
+    effort: PT4H
+    started_at: null
+    ended_at: 2026-03-11T22:33:02.439Z
+    constraints:
+      - "Must work with the existing UnoCSS dark: variant system and ThemeToggle.vue"
+      - Dark class from localStorage must be applied BEFORE first paint to prevent flash of wrong theme (FOUC)
+      - Must not break View Transitions when toggling theme on the 404 page
+      - All terminal colors (titlebar, body, prompt parts, commands, errors, hints, file listings, cursor) must switch
+        correctly
+    forbidden:
+      - Do not remove the mock-bash terminal design — it is a deliberate design choice
+      - Do not use a separate CSS file for 404 — keep scoped styles in the component
+    references:
+      - src/pages/404.astro
+      - src/components/ThemeToggle.vue
+      - uno.config.ts
+    notes:
+      - "2026-03-10: Feature added to backlog. The 404 page is a mock-bash terminal with scoped CSS that has
+        :global(.dark) overrides for all elements. Despite this, it always renders light-themed. Root cause likely:
+        .dark class not applied to <html> before first paint on the 404 page. ThemeToggle uses @vueuse/core useDark()
+        which reads localStorage, but this may not run early enough or may not hydrate at all on the 404 page."
+    subtasks:
+      - id: 404-theme-debug
+        title: Debug why dark mode never activates on 404
+        description: >
+          Investigate why the 404 page always renders in light theme despite having :global(.dark) CSS rules. Check: (1)
+          Is ThemeToggle.vue present and hydrating on the 404 page? (2) Is BaseLayout.astro including the dark mode
+          initialization script? (3) Is the .dark class being set on <html> before the 404 styles are evaluated? (4) Is
+          there a race condition between Astro hydration and the scoped style evaluation?
+        status: backlog
+        completion: 0
+        difficulty: medium
+        priority: high
+        depends_on: []
+        effort: PT1H30M
+        started_at: null
+        ended_at: null
+        constraints:
+          - Must test with both localStorage dark=true and dark=false
+          - Must test with JS disabled to see server-rendered state
+        forbidden: []
+        references:
+          - src/pages/404.astro
+          - src/layouts/BaseLayout.astro
+          - src/components/ThemeToggle.vue
+        notes: []
+        subtasks: []
+      - id: 404-theme-early-init
+        title: Ensure dark class is applied before first paint
+        description: >
+          Add an inline <script> (not deferred) in the <head> that reads the theme preference from localStorage and
+          applies the .dark class to <html> immediately, before any CSS is evaluated. This prevents flash of light theme
+          (FOUC). This script may already exist in BaseLayout.astro — verify it runs on the 404 page.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: high
+        depends_on:
+          - 404-theme-debug
+        effort: PT1H
+        started_at: null
+        ended_at: null
+        constraints:
+          - Script must be inline and blocking (not async/defer)
+          - Must respect the same localStorage key that ThemeToggle.vue uses
+        forbidden:
+          - Do not duplicate theme logic — share the localStorage key name
+        references:
+          - src/components/ThemeToggle.vue
+        notes: []
+        subtasks: []
+      - id: 404-theme-toggle-verify
+        title: Verify ThemeToggle works interactively on 404
+        description: >
+          Ensure the ThemeToggle button in the site header works on the 404 page — clicking it should toggle the .dark
+          class and all terminal colors should switch. The circular clip-path View Transition animation should also
+          work.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on:
+          - 404-theme-early-init
+        effort: PT30M
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references: []
+        notes: []
+        subtasks: []
+      - id: 404-theme-terminal-colors
+        title: Audit and fix all terminal color pairs
+        description: >
+          Verify every color in the 404 scoped styles has both a light and dark variant. Current pairs to check:
+          titlebar bg (#2d2d2d / #1e1e1e), body bg (#1e1e1e / #f5f5f5), body text (#d4d4d4 / #333), prompt parts (user
+          green, host blue, path blue, at/colon/dollar gray), command text (#ce9178 / #a31515), error red (#f44747 /
+          #cd3131), hint/help green (#6a9955 / #008000), file listing colors, link colors, hover backgrounds, cursor
+          color. Ensure contrast ratios meet WCAG AA in both themes.
+        status: backlog
+        completion: 0
+        difficulty: easy
+        priority: medium
+        depends_on:
+          - 404-theme-early-init
+        effort: PT1H
+        started_at: null
+        ended_at: null
+        constraints:
+          - All color pairs must meet WCAG AA contrast ratio (4.5:1 for normal text)
+        forbidden: []
+        references:
+          - src/pages/404.astro
+        notes: []
+        subtasks: []
+  - id: marp-presentations
+    title: Marp presentation support with download buttons
+    description: >
+      Add support for Marp (https://marp.app) slide deck presentations in two modes: (1) as standalone post pages where
+      the entire post IS a presentation (full-screen slide viewer), and (2) as embedded slide decks within regular blog
+      articles (inline iframe or component). Both modes must offer download buttons for the presentation in multiple
+      formats: Markdown source (.md), PDF (.pdf), and PowerPoint (.pptx). Marp uses CommonMark with --- as slide
+      separator and supports directives, image syntax, math typesetting, and CSS theming. The build pipeline must
+      convert Marp Markdown to HTML slides at build time using @marp-team/marp-cli or @marp-team/marp-core. Export to
+       PDF and PPTX must also happen at build time (requires Chromium).
+    status: done
+    completion: 100
+    difficulty: very_hard
+    priority: high
+    depends_on: []
+    effort: P4D
+    started_at: 2026-03-10
+    ended_at: 2026-03-10
+    constraints:
+      - Must integrate with Astro's build pipeline
+      - Must support both dark and light themes for slides
+      - Slide HTML output must be self-contained (no external dependencies at runtime)
+      - PDF/PPTX generation requires Chromium — must work in GitHub Actions CI
+      - Must coexist with regular Markdown/MDX posts without interference
+      - Download files (.md, .pdf, .pptx) must be generated at build time and served statically
+      - Embedded presentations must be responsive and not break page layout
+      - Must support Marp directives (theme, paginate, class, etc.)
+    forbidden:
+      - Do not use client-side Marp rendering — all conversion must be build-time
+      - Do not require users to install Marp CLI globally — use npm dependency
+      - Do not modify the Marp source files during build — treat them as read-only input
+    references:
+      - https://marp.app
+      - https://github.com/marp-team/marp-cli
+      - https://github.com/marp-team/marp-core
+      - https://marpit.marp.app/markdown
+      - https://marpit.marp.app/directives
+    notes:
+      - "2026-03-10: Soft dependency recommendation — implement after i18n-overhaul to avoid duplicating content type
+        definitions and routing for /it/ folder structure that will be eliminated."
+      - "2026-03-10: Feature added to backlog. Marp converts Markdown to HTML/PDF/PPTX slide decks. The site already has
+        a 'Talks' nav item commented out in site-config.ts — this feature could revive it. Build-time PDF/PPTX export
+        requires Chromium (available in GitHub Actions ubuntu runners)."
+      - "2026-03-10: Implementation started. Completed 5/6 subtasks: content type (extended blog schema with marp
+        fields), build pipeline (Astro integration using marp-core Node API), standalone viewer (MarpViewer.vue with
+        keyboard/touch/fullscreen), embeddable component (MarpSlides.astro for MDX), download buttons (MarpDownloads.vue
+        with format badges). Only marp-theme-integration remains (low priority). Build passes with 0 errors. PDF/PPTX
+        export gracefully skips on Node 23+ (works in CI with LTS)."
+      - "2026-03-10: Major rewrite to component-centric architecture. MarpSlides.astro is now the sole interface (no
+        marp frontmatter coupling, no separate src/marp/ directory). Marp .md files co-located with posts using _
+        prefix. Inline marp-core compilation with content-hashed deduplication. PDF export via playwright chromium (not
+        puppeteer — broken under Bun). PdfViewer.vue using pdfjs-dist. Iframe isolation for Marp CSS. Migrated from
+        pnpm/Node.js to Bun. Deploy workflow updated for Bun + playwright."
+      - "2026-03-10: Phase 2 complete. Added PPTX-to-PDF conversion at build time via LibreOffice CLI (soffice
+        --headless --convert-to pdf) with graceful fallback if LibreOffice not installed. Created custom Marp CSS theme
+        (src/styles/marp-theme.css) matching site design system: light/dark mode, Inter/Roboto/Fira Code fonts, brand
+        colors (#380541/#9b7ba3), lead/invert/highlight slide classes. Theme registered with marp-core via
+        themeSet.add(). Sample slides updated to use custom theme. All 6 subtasks complete. Build passes with 0 errors."
+    subtasks:
+      - id: marp-content-type
+        title: Define Marp content type and frontmatter schema
+        description: >
+          Add a 'presentation' or 'talk' content type (or extend the existing blog collection with a 'marp: true'
+          frontmatter flag). Define the schema to include: marp theme, slide aspect ratio, export formats to generate,
+          and whether the post is a pure presentation or an article with embedded slides. Consider reviving the
+          commented-out 'Talks' nav category.
+        status: done
+        completion: 100
+        difficulty: medium
+        priority: high
+        depends_on: []
+        effort: PT3H
+        started_at: 2026-03-10
+        ended_at: 2026-03-10
+        constraints:
+          - Must be backward-compatible with existing blog posts
+          - Must work with the content collection system in src/content/config.ts
+        forbidden: []
+        references:
+          - src/content/config.ts
+          - src/site-config.ts
+        notes:
+          - "2026-03-10: Extended blog schema with marp (boolean), marpTheme (string), marpAspectRatio (enum).
+            Uncommented Talks nav links in site-config.ts. Added nav.talks + marp.* i18n keys for en/it/nl. Created
+            sample talk MDX in src/content/blog/talks/."
+          - "2026-03-10: Revised — removed marp fields from blog schema in favor of component-centric architecture.
+            MarpSlides component is now self-contained; no frontmatter coupling needed. Talks nav and i18n keys remain."
+        subtasks: []
+      - id: marp-build-pipeline
+        title: Build-time Marp compilation pipeline
+        description: >
+          Create a build step (Astro integration or npm script) that finds all Marp content files, compiles them to
+          self-contained HTML using @marp-team/marp-core, and generates PDF and PPTX exports using @marp-team/marp-cli
+          (which uses Puppeteer/Chromium). Output files must be placed in the static output directory. Must be
+          incremental (skip unchanged presentations).
+        status: done
+        completion: 100
+        difficulty: hard
+        priority: high
+        depends_on:
+          - marp-content-type
+        effort: P1D
+        started_at: 2026-03-10
+        ended_at: 2026-03-10
+        constraints:
+          - Must install Chromium in CI (GitHub Actions has it pre-installed)
+          - Must handle Chromium sandbox issues in CI environments
+          - Must cache results to avoid re-rendering unchanged slides
+        forbidden:
+          - Do not shell out to marp-cli binary — use the Node.js API
+        references:
+          - https://github.com/marp-team/marp-cli
+        notes:
+          - "2026-03-10: Created Astro integration src/integrations/marp-build.ts. Uses marp-core Node API for HTML
+            compilation. PDF/PPTX via marp-cli child process (graceful skip on Node 23+ due to yargs ESM bug). Outputs
+            to public/marp/. Note: marp-cli Node API is broken on Node 23+ so we use execFile as fallback — this works
+            in CI with LTS Node."
+          - "2026-03-10: Revised — deleted marp-build.ts integration. Compilation now happens inline in MarpSlides.astro
+            using marp-core Node API. PDF export via playwright chromium (page.pdf()). Content-hashed output files
+            (_compiled-{hash}.html, _compiled-{hash}.pdf, _source-{hash}.md) in public/marp/ (gitignored). Graceful
+            fallback if playwright/chromium unavailable."
+        subtasks: []
+      - id: marp-standalone-viewer
+        title: Standalone presentation viewer page
+        description: >
+          Create a page template for pure presentation posts. The page shows the Marp HTML slides in a full-viewport
+          viewer with navigation controls (arrow keys, click, swipe). Include a toolbar with download buttons for .md,
+          .pdf, and .pptx formats. Include a fullscreen toggle. Must support keyboard navigation and touch gestures.
+        status: done
+        completion: 100
+        difficulty: hard
+        priority: high
+        depends_on:
+          - marp-build-pipeline
+        effort: PT6H
+        started_at: 2026-03-10
+        ended_at: 2026-03-10
+        constraints:
+          - Must work on mobile (touch swipe for slide navigation)
+          - Must support keyboard shortcuts (left/right arrows, Escape for fullscreen)
+          - Download buttons must show file sizes
+        forbidden: []
+        references: []
+        notes:
+          - "2026-03-10: Built MarpViewer.vue with keyboard nav (arrows, Home/End, Space, F, Escape), touch swipe,
+            fullscreen toggle, slide counter, loading/error states, dark mode. Integrated into posts/[...slug].astro
+            with marp-conditional rendering."
+          - "2026-03-10: Revised — removed all marp-conditional rendering from post template. MarpViewer now uses src
+            URL prop and iframe sandbox with allow-popups. Overlay click handler removed (was blocking links); touch
+            swipe via pointer:coarse media query. Links inside slides forced to target=_blank."
+        subtasks: []
+      - id: marp-embedded-component
+        title: Embeddable slide deck component for articles
+        description: >
+          Create a Vue or Astro component that embeds a Marp slide deck within a regular blog post. The component
+          renders the slides in a contained area (not full-page) with navigation controls and download buttons. Should
+          support a configurable aspect ratio (16:9, 4:3) and height. Authors use it in MDX like: <MarpSlides
+          src="./my-deck.md" />
+        status: done
+        completion: 100
+        difficulty: medium
+        priority: medium
+        depends_on:
+          - marp-build-pipeline
+        effort: PT4H
+        started_at: 2026-03-10
+        ended_at: 2026-03-10
+        constraints:
+          - Must not break the surrounding article layout
+          - Must be lazy-loaded (don't load slide HTML until visible)
+          - Must respect the site's dark/light theme for the container chrome
+        forbidden: []
+        references: []
+        notes:
+          - "2026-03-10: Built MarpSlides.astro wrapper using client:visible for lazy loading. Wraps MarpViewer.vue
+            (embedded mode) + MarpDownloads.vue. Usage: <MarpSlides src='name' aspectRatio='16:9' showDownloads={true}
+            />"
+          - "2026-03-10: Revised — MarpSlides.astro is now the universal interface. Accepts md prop (?raw import) for
+            inline compilation, or src prop for pre-built files (HTML/PDF/PPTX). Auto-detects format by extension.
+            Co-located Marp .md files use _ prefix to avoid content collection validation. Usage: import slides from
+            './_deck.slides.md?raw'; <MarpSlides md={slides} />"
+        subtasks: []
+      - id: marp-download-buttons
+        title: Download buttons component (md/pdf/pptx)
+        description: >
+          Create a reusable download button group component that provides download links for .md (source), .pdf, and
+          .pptx versions of a presentation. Must show file format icons and file sizes. Must be i18n-aware (button
+          labels translated).
+        status: done
+        completion: 100
+        difficulty: easy
+        priority: medium
+        depends_on:
+          - marp-build-pipeline
+        effort: PT2H
+        started_at: 2026-03-10
+        ended_at: 2026-03-10
+        constraints:
+          - File sizes must be calculated at build time and embedded in the component
+          - Must handle missing formats gracefully (e.g. if PPTX generation failed)
+        forbidden: []
+        references: []
+        notes:
+          - "2026-03-10: Built MarpDownloads.vue. Fetches metadata JSON at runtime, shows available formats
+            (MD/PDF/PPTX) with file sizes and color-coded badges. i18n-aware labels. Gracefully handles missing
+            formats."
+          - "2026-03-10: Revised — MarpDownloads.vue now accepts items prop array directly (no JSON fetch). Download
+            items generated by MarpSlides.astro at build time with HTML/PDF/MD labels."
+        subtasks: []
+      - id: marp-theme-integration
+        title: Marp theme matching site dark/light mode
+        description: >
+          Create or customize a Marp CSS theme that visually matches the site's design system (colors, fonts, spacing).
+          The theme should have light and dark variants that respect the site's theme toggle. For standalone
+          presentations, the slides themselves should switch themes. For embedded presentations, at minimum the
+          container chrome should match.
+        status: done
+        completion: 100
+        difficulty: medium
+        priority: low
+        depends_on:
+          - marp-build-pipeline
+        effort: PT4H
+        started_at: 2026-03-10
+        ended_at: 2026-03-10
+        constraints:
+          - Must use the same font stack as the site (or a complementary one)
+          - Slide content must be readable in both themes
+        forbidden: []
+        references:
+          - https://marpit.marp.app/theme-css
+          - uno.config.ts
+        notes:
+          - "2026-03-10: Dark mode sync already implemented via MutationObserver watching :root.dark class and
+            postMessage to iframe. Custom Marp CSS theme to match site design is Phase 2."
+          - "2026-03-10: Custom Marp CSS theme created at src/styles/marp-theme.css. Uses @theme site metadata for
+            Marpit registration. Features: light mode (bg #eef5fc, text #555555, brand #380541), dark mode via .invert
+            (bg #0d1117, text #bbbbbb, brand #9b7ba3), Inter for titles, Roboto for body, Fira Code for code. Includes
+            lead (centered titles), invert (dark mode), and highlight (brand accent bg) slide classes. Registered with
+            marp-core via themeSet.add() in MarpSlides.astro. Also added PPTX-to-PDF conversion via LibreOffice CLI with
+            graceful fallback."
         subtasks: []
   - id: pwa-offline-support
     title: Progressive Web App with offline support
@@ -2192,209 +3455,6 @@ features:
           - src/pages/it/posts/[...slug].astro
         notes: []
         subtasks: []
-  - id: og-image-enhancements
-    title: Enhance Open Graph image generation
-    description: >
-      Improve the Satori-generated OG cards with richer visual content. Currently the cards are text-only on a hardcoded
-      purple gradient. Enhancements: (1) add the site logo to the card, (2) incorporate the post's hero/cover image if
-      available, (3) display tags or category, (4) improve description truncation to respect word boundaries instead of
-      cutting mid-word at 140 characters.
-    status: backlog
-    completion: 0
-    difficulty: medium
-    priority: low
-    depends_on: []
-    effort: PT6H
-    started_at: null
-    ended_at: null
-    constraints:
-      - Must keep the card at 1200x630 (standard OG dimensions)
-      - Must maintain fast build times — image generation is already the slowest build step
-      - Satori does not support all CSS — must work within its subset
-    forbidden:
-      - Do not use external image CDN — all images must be generated at build time
-    references:
-      - src/utils/og.ts
-      - https://github.com/vercel/satori
-    notes:
-      - "2026-03-11: Feature added to backlog. Current OG images use a fixed purple gradient with text only. Satori has
-        limited CSS support (no background-image from URL, but supports base64-encoded images). Hero image integration
-        may require converting the cover image to base64 at build time."
-    subtasks:
-      - id: og-add-logo
-        title: Add site logo to OG cards
-        description: >
-          Embed the site logo (public/img/logo.svg or a PNG version) into the OG card template. Position it in the
-          top-left or top-right corner. Satori supports SVG rendering directly.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: medium
-        depends_on: []
-        effort: PT1H
-        started_at: null
-        ended_at: null
-        constraints:
-          - Logo must be clearly visible but not dominate the card
-        forbidden: []
-        references:
-          - public/img/logo.svg
-          - src/utils/og.ts
-        notes: []
-        subtasks: []
-      - id: og-hero-image
-        title: Incorporate post hero image into OG card
-        description: >
-          If a post has a cover/hero image, include it in the OG card (e.g., as a background or a side panel). This
-          requires reading the image at build time and encoding it for Satori. Handle posts without images gracefully
-          (use the current text-only design as fallback).
-        status: backlog
-        completion: 0
-        difficulty: hard
-        priority: low
-        depends_on: []
-        effort: PT3H
-        started_at: null
-        ended_at: null
-        constraints:
-          - Must handle posts without images (fallback to current design)
-          - Image must be resized/cropped to fit the card without distortion
-          - Must not significantly increase build time
-        forbidden: []
-        references:
-          - src/utils/og.ts
-        notes:
-          - "2026-03-11: Satori does not support CSS background-image from URLs. Images must be base64-encoded and
-            passed as <img> src. Sharp can handle the resizing."
-        subtasks: []
-      - id: og-display-tags
-        title: Show tags or category on OG card
-        description: >
-          Display the first 2-3 tags as small badges on the OG card. This helps with visual identification of post
-          topics when shared on social media.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: low
-        depends_on: []
-        effort: PT1H
-        started_at: null
-        ended_at: null
-        constraints:
-          - Limit to 3 tags maximum to avoid clutter
-          - Must be readable at small sizes (social media thumbnails)
-        forbidden: []
-        references:
-          - src/utils/og.ts
-        notes: []
-        subtasks: []
-      - id: og-word-truncation
-        title: Improve description truncation at word boundaries
-        description: >
-          The current truncation cuts descriptions at exactly 140 characters, potentially mid-word. Improve to truncate
-          at the nearest word boundary and add an ellipsis. Consider using a slightly higher limit if the last word
-          would bring it close to 140.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: low
-        depends_on: []
-        effort: PT20M
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - src/utils/og.ts
-        notes: []
-        subtasks: []
-  - id: footer-enhancements
-    title: Enhanced site footer with social links and RSS
-    description: >
-      Improve the site footer (FooterComponent.vue) by adding: (1) a row of social media icons from siteConfig (GitHub,
-      LinkedIn, etc.), (2) a visible RSS feed link, (3) a copyright year range showing the start year through the
-      current year (e.g., "2024-2026" instead of just "2026"). The footer currently only has nav text links and the CC
-      license notice.
-    status: backlog
-    completion: 0
-    difficulty: easy
-    priority: low
-    depends_on: []
-    effort: PT3H
-    started_at: null
-    ended_at: null
-    constraints:
-      - Must use social links from siteConfig (single source of truth)
-      - Must be responsive and look good on mobile
-      - Must remain hidden in print mode (existing behavior)
-    forbidden: []
-    references:
-      - src/components/FooterComponent.vue
-      - src/site-config.ts
-    notes:
-      - "2026-03-11: Feature added to backlog. FooterComponent.vue currently renders nav links from
-        siteConfig.footer.navLinks, CC license, and copyright year. Social links exist in siteConfig.socialLinks but are
-        only shown in the header."
-    subtasks:
-      - id: footer-social-links
-        title: Add social media icon row to footer
-        description: >
-          Render social media icons (from siteConfig.socialLinks) in the footer. Use the same icon set as the header but
-          with footer- appropriate sizing and spacing.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: medium
-        depends_on: []
-        effort: PT1H
-        started_at: null
-        ended_at: null
-        constraints:
-          - Must use siteConfig.socialLinks as data source
-          - Must include aria-labels for accessibility
-        forbidden: []
-        references:
-          - src/site-config.ts
-        notes: []
-        subtasks: []
-      - id: footer-rss-link
-        title: Add RSS feed link to footer
-        description: >
-          Add a visible RSS feed link (or icon) to the footer. Should point to the language-appropriate RSS feed
-          (/rss.xml for EN, /it/rss.xml for IT).
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: PT30M
-        started_at: null
-        ended_at: null
-        constraints:
-          - Must be language-aware (link to correct language RSS feed)
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: footer-copyright-range
-        title: Show copyright year range
-        description: >
-          Change the copyright notice from showing only the current year to showing a range (e.g., "2024-2026"). The
-          start year should be configurable in siteConfig or hardcoded to the site's launch year.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: low
-        depends_on: []
-        effort: PT15M
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - src/components/FooterComponent.vue
-        notes: []
-        subtasks: []
   - id: dead-code-cleanup
     title: Remove unused components and stale assets
     description: >
@@ -2666,117 +3726,6 @@ features:
         references: []
         notes: []
         subtasks: []
-  - id: content-linting-ci
-    title: Frontmatter validation and content linting in CI
-    description: >
-      Add automated content linting to the CI pipeline that validates blog post frontmatter completeness and
-      consistency. Check that required fields exist (title, pubDate, description), lang is set, images have alt text,
-      dates parse correctly, tags follow naming conventions (kebab-case), and series posts have sequential seriesOrder
-      values. Catches content issues before they reach production.
-    status: backlog
-    completion: 0
-    difficulty: medium
-    priority: low
-    depends_on: []
-    effort: PT4H
-    started_at: null
-    ended_at: null
-    constraints:
-      - Must validate all posts in src/content/blog/
-      - Must catch missing required fields that Zod does not enforce (e.g., lang)
-      - Must be runnable locally and in CI
-    forbidden:
-      - Do not duplicate Zod schema validation — focus on what Zod does not check
-    references:
-      - src/content/config.ts
-      - src/content/blog/
-    notes:
-      - "2026-03-11: Feature added to backlog. Zod validates the core schema, but many fields are optional. This linter
-        checks for best practices: every post should have a description, a lang field, image alt text if an image is
-        provided, etc."
-    subtasks:
-      - id: content-lint-rules
-        title: Define frontmatter validation rules
-        description: >
-          Document and implement the validation rules: (1) every post must have a description, (2) every post must have
-          a lang field, (3) images must have imageAlt, (4) tags must be kebab-case, (5) pubDate must be a valid date,
-          (6) series posts must have sequential seriesOrder, (7) Italian posts must have a matching English post (or be
-          explicitly marked as untranslated).
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on: []
-        effort: PT2H
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - src/content/config.ts
-        notes: []
-        subtasks: []
-      - id: content-lint-script
-        title: Write validation script
-        description: >
-          Create a Node.js/TypeScript script that reads all MDX/MD files in src/content/blog/, parses their frontmatter,
-          and validates against the rules. Output clear error messages with file paths and line numbers. Exit with
-          non-zero code on violations.
-        status: backlog
-        completion: 0
-        difficulty: medium
-        priority: high
-        depends_on:
-          - content-lint-rules
-        effort: PT1H30M
-        started_at: null
-        ended_at: null
-        constraints:
-          - Must be runnable with 'node' or 'tsx' without special setup
-          - Must parse YAML frontmatter correctly (handle multiline values)
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: content-lint-ci-integration
-        title: Add content linting to CI pipeline
-        description: >
-          Add the validation script as a step in the GitHub Actions workflow, running before the build step. Violations
-          should fail the build.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: medium
-        depends_on:
-          - content-lint-script
-        effort: PT15M
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - .github/workflows/deploy.yml
-        notes: []
-        subtasks: []
-      - id: content-lint-fix-existing
-        title: Fix existing frontmatter issues
-        description: >
-          Run the linter against current content and fix any violations found. This may include adding missing
-          descriptions, lang fields, imageAlt values, or normalizing tag naming.
-        status: backlog
-        completion: 0
-        difficulty: easy
-        priority: medium
-        depends_on:
-          - content-lint-rules
-        effort: PT1H
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
   - id: tarpit-analytics
     title: Track honeypot/tarpit effectiveness with analytics
     description: >
@@ -2940,952 +3889,3 @@ features:
             GitHub Pages cannot serve custom headers, or it may need to use HTML meta http-equiv as a workaround (which
             does not work for Cache-Control). Investigate feasibility."
         subtasks: []
-archive:
-  - id: splathash-integration
-    title: SplatHash integration for ultrafast TTFF
-    description: >
-      Integrated splathash-ts (zero-dep, 16-byte image hashes) for blur placeholders. At build time, each image is
-      encoded to a 16-byte hash stored in data-splat attribute (~24 chars base64). Client-side decoder renders hash to
-      canvas and sets blob: URL as background-image on <img>. No-JS fallback uses average color from hash as
-      background-color. Applied to post templates (EN/IT), ListPosts, and PokerPic.
-    status: done
-    completion: 100
-    difficulty: hard
-    priority: high
-    started_at: 2026-03-10
-    ended_at: 2026-03-10
-    notes:
-      - "2026-03-10: Second bugfix — removed format=webp from SplatImage callers (caused 404s due to Astro cache),
-        replaced canvas.toDataURL() base64 with toBlob()+createObjectURL() blob: URLs, fixed variable shadowing in
-        decoder."
-      - "2026-03-10: Bugfix fix-splathash merged — replaced useless encode→decode→sharp→PNG round-trip with true 16-byte
-        SplatHash: data-splat contains base64 of 16-byte hash (~24 chars), client-side decoder renders to canvas, no-JS
-        fallback uses average color extracted from hash. Reduces per-image placeholder from ~1-3KB to 24 chars."
-      - "2026-03-10: All 5 subtasks completed. splathash-ts v1.3.0 added as dependency. SplatImage.astro is a drop-in
-        <Image> replacement. Hashes cached in-memory during build (~25ms/image). No persistent disk cache yet."
-    subtasks:
-      - id: splathash-research
-        title: Research and prototype
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: splathash-build-pipeline
-        title: Build-time hash generation pipeline
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: splathash-client-decoder
-        title: Client-side decoder component (SplatImage.astro)
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: splathash-post-images
-        title: Apply to blog post cover images
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: splathash-all-images
-        title: Apply to all site images
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-    depends_on: []
-    constraints: []
-    forbidden: []
-    references: []
-  - id: search-improvements
-    title: Search UX improvements with URL query parameter
-    description: >
-      Improved Pagefind search with URL ?s= parameter support (read on load, write on type via replaceState), keyboard
-      navigation (ArrowUp/Down/Enter/ Escape with aria-activedescendant combobox pattern), and result type badges
-      (Blog/Project/Tag/Page) with color-coded borders. Applied to both EN and IT search pages.
-    status: done
-    completion: 100
-    difficulty: medium
-    priority: high
-    started_at: 2026-03-10
-    ended_at: 2026-03-10
-    notes:
-      - "2026-03-10: All 4 subtasks completed. URL param uses ?s= format. Keyboard nav uses ARIA combobox pattern. Type
-        badges inferred from URL patterns. Date display skipped (no pagefind metadata)."
-    subtasks:
-      - id: search-url-param-read
-        title: Read search query from URL parameter on page load
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: search-url-param-write
-        title: Update URL parameter as user types
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: search-keyboard-navigation
-        title: Add keyboard navigation to search results
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: search-result-improvements
-        title: Improve search result presentation
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-    depends_on: []
-    constraints: []
-    forbidden: []
-    references: []
-  - id: mastodon-share-button
-    title: Official Mastodon share icon among sharing options
-    description: >
-      Added official Mastodon share button to SharePost.vue using share.joinmastodon.org endpoint. Uses
-      i-ri-mastodon-line icon, placed after Bluesky before Twitter/X. i18n labels for en/it/nl.
-    status: done
-    completion: 100
-    difficulty: easy
-    priority: high
-    started_at: 2026-03-10
-    ended_at: 2026-03-10
-    notes:
-      - "2026-03-10: All 4 subtasks completed. Official share tool, no tracking, browser-only."
-    subtasks:
-      - id: mastodon-icon-sourcing
-        title: Source or create Mastodon icon
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: mastodon-share-url
-        title: Implement share URL logic
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: mastodon-i18n-labels
-        title: Add i18n labels for Mastodon share
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: mastodon-button-placement
-        title: Decide button placement order
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-    depends_on: []
-    constraints: []
-    forbidden: []
-    references: []
-  - id: torinojs-projects
-    title: Add TorinoJS organizer role to projects section
-    description: >
-      Add a new project group in the projects section to highlight the role as co-organizer at TorinoJS. Entry added to
-      both EN and IT project data.
-    status: done
-    completion: 100
-    difficulty: trivial
-    priority: high
-    depends_on: []
-    effort: PT30M
-    started_at: 2026-03-10
-    ended_at: 2026-03-10
-    notes:
-      - "2026-03-10: Added 'Community' group with TorinoJS entry to both EN and IT project data files. Merged into
-        develop via git flow feature finish. Moved to archive."
-    subtasks:
-      - id: torinojs-data-en
-        title: Add TorinoJS entry to EN project data
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: torinojs-data-it
-        title: Add TorinoJS entry to IT project data
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-    constraints: []
-    forbidden: []
-    references: []
-  - id: accessibility-pass
-    title: Comprehensive accessibility pass (WCAG 2.1 AA)
-    description: >
-      Perform a full accessibility audit and remediation across the entire site targeting WCAG 2.1 AA compliance. Known
-      issues include: no skip-to-content link, a malformed tag in Header.astro (line 34: <i> closed with </span>), no
-      aria-expanded on toggle buttons (mobile nav, theme toggle, language dropdown), no aria-current="page" on active
-      nav links, no keyboard Escape key handler to dismiss drawers/dropdowns, no focus trap on the mobile navigation
-      drawer, no :focus-visible audit across components, and unverified color contrast ratios (especially the purple
-      #380541 used in accents). This feature covers structural HTML semantics, ARIA attributes, keyboard navigation,
-      focus management, and color contrast.
-    status: done
-    completion: 100
-    difficulty: hard
-    priority: critical
-    depends_on: []
-    effort: P2D
-    started_at: 2026-03-10
-    ended_at: 2026-03-10
-    constraints:
-      - Must achieve WCAG 2.1 AA compliance as verified by axe-core or Lighthouse accessibility audit
-      - Must not break existing visual design
-      - Must work with View Transitions (focus management after navigation)
-      - All interactive elements must be keyboard-operable
-      - Color contrast must meet 4.5:1 for normal text, 3:1 for large text (WCAG AA)
-      - Must test with at least one screen reader (NVDA, VoiceOver, or ORCA)
-    forbidden:
-      - Do not add ARIA attributes where native HTML semantics suffice (use <button> not <div role=button>)
-      - Do not use tabindex values greater than 0
-      - Do not disable outline/focus styles without providing a visible alternative
-    references:
-      - https://www.w3.org/WAI/WCAG21/quickref/?levels=aaa
-      - https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA
-      - src/components/Header.astro
-      - src/components/Header.vue
-      - src/components/ThemeToggle.vue
-      - src/components/LanguageDropdown.vue
-      - src/layouts/BaseLayout.astro
-    notes:
-      - "2026-03-10: Feature added to backlog at critical priority. Accessibility gaps identified during codebase audit:
-        missing skip-to-content, malformed HTML in Header.astro:34, missing ARIA attributes on toggles, no focus trap on
-        mobile nav, no keyboard dismiss, color contrast unverified."
-      - "2026-03-10: All 9 subtasks completed. Merged into develop via git flow feature finish. Moved to archive."
-    subtasks:
-      - id: a11y-skip-to-content
-        title: Add skip-to-content link
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: a11y-fix-malformed-html
-        title: Fix malformed tag in Header.astro
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: a11y-aria-expanded-toggles
-        title: Add aria-expanded to all toggle buttons
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: a11y-aria-current-page
-        title: Add aria-current=page to active nav links
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: a11y-keyboard-dismiss
-        title: Add keyboard Escape to dismiss drawers and dropdowns
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: a11y-focus-trap-mobile-nav
-        title: Add focus trap to mobile navigation drawer
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: a11y-focus-visible-audit
-        title: Audit and fix :focus-visible styles across all components
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: a11y-color-contrast-audit
-        title: Audit and fix color contrast ratios
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: a11y-landmark-semantics
-        title: Verify HTML landmark semantics
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-  - id: bug-fixes-batch
-    title: Fix known bugs discovered during codebase audit
-    description: >
-      Fix all 7 concrete bugs discovered during the comprehensive codebase audit. These range from string immutability
-      errors in utility code to HTML tag mismatches, incorrect RSS self-references, missing RSS elements, hardcoded
-      language values, stray console.log statements in production, and CI/CD pipeline ordering issues.
-    status: done
-    completion: 100
-    difficulty: easy
-    priority: critical
-    depends_on: []
-    effort: PT4H
-    started_at: 2026-03-10T13:06:00+01:00
-    ended_at: 2026-03-10T15:35:00+01:00
-    constraints:
-      - Each fix must be verified by running the build successfully
-      - Fixes must not introduce regressions in other functionality
-      - All RSS/Atom feeds must validate after fixes
-    forbidden:
-      - Do not refactor beyond the minimal fix needed for each bug
-      - Do not introduce new dependencies to fix these bugs
-    references:
-      - src/utils/posts.ts
-      - src/components/Header.astro
-      - src/pages/it/rss.xml.ts
-      - src/pages/last-ten.xml.ts
-      - src/components/GiscusComments.vue
-      - .github/workflows/deploy.yml
-    notes:
-      - "2026-03-10: Feature added to backlog at critical priority. 7 bugs identified during comprehensive codebase
-        audit. All are concrete, reproducible issues with clear fixes."
-      - "2026-03-10: All 16 subtask bugs fixed and build verified. Committed on feature/bug-fixes-batch branch
-        (5c872eb). bug-string-immutability was N/A (code already correct). 3 console.logs found in posts.ts (not 1). IT
-        post template had additional parity issues fixed."
-      - "2026-03-10: Merged into develop via git flow feature finish. Moved to archive."
-    subtasks:
-      - id: bug-string-immutability
-        title: Fix string immutability bug in posts.ts
-        description: >
-          In src/utils/posts.ts line 55, path.replace() result is never reassigned. JavaScript strings are immutable, so
-          .replace() returns a new string but the original variable is unchanged. Fix by reassigning: path =
-          path.replace(...).
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: critical
-        depends_on: []
-        effort: PT10M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T13:30:00+01:00
-        constraints: []
-        forbidden: []
-        references:
-          - src/utils/posts.ts:55
-        notes:
-          - "2026-03-10: N/A — path.replace() does not exist in current getPosts function. Bug was either already fixed
-            or line numbers shifted. No action needed."
-        subtasks: []
-      - id: bug-header-tag-mismatch
-        title: Fix <i> closed with </span> in Header.astro
-        description: >
-          In src/components/Header.astro line 34, an <i> element used for social link icons is incorrectly closed with
-          </span>. Change </span> to </i> to fix the HTML validity error.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: critical
-        depends_on: []
-        effort: PT5M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T13:15:00+01:00
-        constraints: []
-        forbidden: []
-        references:
-          - src/components/Header.astro:34
-        notes:
-          - "2026-03-10: DUPLICATE — this is the exact same fix as a11y-fix-malformed-html in accessibility-pass
-            (Header.astro line 34: <i> closed with </span>). Completing either one resolves both. Coordinate to avoid
-            double work."
-          - "2026-03-10: Fixed — changed </span> to </i> on line 34."
-        subtasks: []
-      - id: bug-it-rss-self-ref
-        title: Fix Italian RSS atom:link self-reference
-        description: >
-          In src/pages/it/rss.xml.ts, the atom:link self-reference points to /rss.xml instead of /it/rss.xml. This means
-          the Italian RSS feed claims to live at the English feed URL. Fix the href to point to the correct /it/rss.xml
-          path.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: PT10M
-        started_at: 2026-03-10T13:15:00+01:00
-        ended_at: 2026-03-10T13:25:00+01:00
-        constraints:
-          - Must validate as valid Atom/RSS after fix
-        forbidden: []
-        references:
-          - src/pages/it/rss.xml.ts
-        notes:
-          - "2026-03-10: Fixed — changed 'rss.xml' to 'it/rss.xml' in atom:link href."
-        subtasks: []
-      - id: bug-last-ten-missing-elements
-        title: Add missing atom:link and XSL stylesheet to last-ten.xml
-        description: >
-          The src/pages/last-ten.xml.ts feed is missing an atom:link self-reference (required by Atom spec) and an XSL
-          stylesheet reference (present in other feeds for browser rendering). Add both to match the structure of
-          rss.xml.ts.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: PT15M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T15:30:00+01:00
-        constraints:
-          - Must validate as valid RSS/Atom after fix
-          - XSL stylesheet path must match the existing pattern used by rss.xml.ts
-        forbidden: []
-        references:
-          - src/pages/last-ten.xml.ts
-          - src/pages/rss.xml.ts
-        notes:
-          - "2026-03-10: Fixed — added atom:link self-reference and XSL stylesheet to match rss.xml.ts structure."
-        subtasks: []
-      - id: bug-giscus-hardcoded-lang
-        title: Fix Giscus hardcoded data-lang=en
-        description: >
-          In src/components/GiscusComments.vue line 29, data-lang is hardcoded to "en". This means Italian pages show
-          English Giscus UI. Fix by accepting a lang prop or detecting the current language from the URL and passing it
-          to the Giscus script configuration.
-        status: done
-        completion: 100
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: PT30M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T15:30:00+01:00
-        constraints:
-          - Must map site language codes to Giscus-supported language codes
-          - Must update when language changes (if applicable via View Transitions)
-        forbidden: []
-        references:
-          - src/components/GiscusComments.vue:29
-          - https://giscus.app
-        notes:
-          - "2026-03-10: Note: This overlaps with feature J (giscus-i18n). This subtask covers the minimal bug fix;
-            feature J covers the full i18n integration."
-          - "2026-03-10: Fixed — added lang prop and detectLang() function that reads language from URL path."
-        subtasks: []
-      - id: bug-console-log-production
-        title: Remove stray console.log in posts.ts
-        description: >
-          In src/utils/posts.ts line 59, there is a console.log statement that logs all returned post slugs. This runs
-          in production and clutters the build output. Remove it or guard it behind an environment check.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: PT5M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T15:30:00+01:00
-        constraints:
-          - Must not break the getPosts function
-        forbidden:
-          - Do not add a logging framework just for this
-        references:
-          - src/utils/posts.ts:59
-        notes:
-          - "2026-03-10: Fixed — removed 3 console.log statements (lines 42, 59, 71), not just 1 as originally
-            described."
-        subtasks: []
-      - id: bug-ci-test-ordering
-        title: Fix test ordering in deploy workflow
-        description: >
-          In .github/workflows/deploy.yml, tests run after the build artifact is uploaded. This means a failing test
-          does not prevent deployment. Reorder the steps so that tests run before the artifact upload step.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: PT15M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T15:30:00+01:00
-        constraints:
-          - Tests must complete successfully before artifact upload
-          - Must not break the GitHub Actions workflow syntax
-        forbidden: []
-        references:
-          - .github/workflows/deploy.yml
-        notes:
-          - "2026-03-10: Fixed — restructured workflow to run tests before build/upload step."
-        subtasks: []
-      - id: bug-trans-hardcoded-url
-        title: Fix Trans.astro hardcoded URL with typo
-        description: >
-          In src/components/Trans.astro line 17, getLangFromUrl() is called with a hardcoded string "/it/blogss" (note
-          the typo "blogss") instead of using Astro.url. This means the component always detects Italian language
-          regardless of the actual page URL. Fix to use the actual page URL from Astro.url.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: PT10M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T15:30:00+01:00
-        constraints: []
-        forbidden: []
-        references:
-          - src/components/Trans.astro:17
-        notes:
-          - "2026-03-10: Fixed — replaced hardcoded '/it/blogss' with Astro.url."
-        subtasks: []
-      - id: bug-trans-console-log
-        title: Remove console.log from Trans.astro
-        description: >
-          In src/components/Trans.astro line 20, there is a debug console.log("Received key:", key) statement that runs
-          in production on every use of the Trans component.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: PT5M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T15:30:00+01:00
-        constraints: []
-        forbidden: []
-        references:
-          - src/components/Trans.astro:20
-        notes:
-          - "2026-03-10: Fixed — removed console.log('Received key:', key)."
-        subtasks: []
-      - id: bug-it-posts-console-log
-        title: Remove console.log from Italian posts template
-        description: >
-          In src/pages/it/posts/[...slug].astro lines 32-35, there is a console.log that dumps all Italian post slugs
-          during build. This debug logging should be removed.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: PT5M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T15:30:00+01:00
-        constraints: []
-        forbidden: []
-        references:
-          - src/pages/it/posts/[...slug].astro:32-35
-        notes:
-          - "2026-03-10: Fixed — removed console.log dumping post slugs."
-        subtasks: []
-      - id: bug-tags-semantic-html
-        title: Fix tags page content wrapped inside <a> tag
-        description: >
-          In src/pages/tags/[tag]/[...page].astro (both EN and IT), the entire content section (h1, post list,
-          paginator) is wrapped inside an <a> tag that serves as the "Back" button link. This is semantically invalid
-          HTML — block-level content should not be inside an anchor element. It likely causes accessibility issues with
-          screen readers. Restructure so the back link is separate from the content.
-        status: done
-        completion: 100
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: PT20M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T15:30:00+01:00
-        constraints:
-          - Must fix both EN and IT versions
-          - Must preserve the back navigation functionality
-        forbidden: []
-        references:
-          - src/pages/tags/[tag]/[...page].astro
-          - src/pages/it/tags/[tag]/[...page].astro
-        notes:
-          - "2026-03-10: Fixed — extracted h1, section, Paginator out of <a> tag; back link is now a separate element."
-        subtasks: []
-      - id: bug-header-astro-noscript
-        title: Fix Header.astro noscript fallback issues
-        description: >
-          Header.astro (the noscript fallback header) has multiple issues: (1) Line 15 uses :href (Vue bind syntax)
-          instead of href — in an Astro template this renders literally as a :href attribute, not as a dynamic binding.
-          (2) The <style> block at the bottom (lines 49-75) appears truncated — .social-links ul rule has 'gap:' with no
-          value and no closing brace.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: PT15M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T15:30:00+01:00
-        constraints:
-          - Must use standard href= attribute syntax in Astro templates
-        forbidden: []
-        references:
-          - src/components/Header.astro:15
-          - src/components/Header.astro:49-75
-        notes:
-          - "2026-03-10: Fixed — corrected :href to href on line 15; fixed truncated CSS (.social-links ul now has gap:
-            0.5rem and closing brace)."
-        subtasks: []
-      - id: bug-postpreview-i18n
-        title: Fix PostPreview.astro hardcoded English URLs
-        description: >
-          In src/components/PostPreview.astro line 34, the post link href is hardcoded as /posts/${post.slug}/ without
-          language prefix. Italian tag pages that use this component will link to /posts/... instead of /it/posts/...,
-          sending Italian users to the English version of the post. Must use translatePath or a language-aware href
-          construction.
-        status: done
-        completion: 100
-        difficulty: easy
-        priority: high
-        depends_on: []
-        effort: PT20M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T15:30:00+01:00
-        constraints:
-          - Must work for all languages
-          - Must use the existing i18n utilities
-        forbidden: []
-        references:
-          - src/components/PostPreview.astro:34
-          - src/i18n/utils.ts
-        notes:
-          - "2026-03-10: Fixed — added language detection from slug; builds href with lang prefix using getLangFromSlug
-            and removeLangFromSlug."
-        subtasks: []
-      - id: bug-it-unlisted-noindex
-        title: Fix Italian unlisted posts not set as noindex
-        description: >
-          In src/pages/it/posts/[...slug].astro, the unlisted property is never destructured from post.data and noindex
-          is never passed to BaseLayout for unlisted posts. The English version correctly passes noindex={unlisted} to
-          prevent search engine indexing of unlisted posts. The Italian version must do the same.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: high
-        depends_on: []
-        effort: PT10M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T15:30:00+01:00
-        constraints: []
-        forbidden: []
-        references:
-          - src/pages/it/posts/[...slug].astro
-          - src/pages/posts/[...slug].astro
-        notes:
-          - "2026-03-10: Fixed — added unlisted to destructured props and noindex={unlisted} to BaseLayout."
-        subtasks: []
-      - id: bug-it-unlisted-comments
-        title: Fix Italian unlisted/draft posts showing comments
-        description: >
-          In src/pages/it/posts/[...slug].astro, Giscus comments are shown even for unlisted and draft posts. The
-          English version conditionally hides comments when !draft && !unlisted. The Italian version must apply the same
-          conditional logic.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: PT10M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T15:30:00+01:00
-        constraints: []
-        forbidden: []
-        references:
-          - src/pages/it/posts/[...slug].astro
-          - src/pages/posts/[...slug].astro
-        notes:
-          - "2026-03-10: Fixed — changed condition to {!draft && !unlisted && <GiscusComments>} and same for
-            RelatedPosts."
-        subtasks: []
-      - id: bug-link-mailto-target
-        title: Fix link.ts incorrectly targeting mailto/tel as _blank
-        description: >
-          In src/utils/link.ts, isExternalLink() uses a regex that matches any URL with a protocol prefix (including
-          mailto: and tel:). This causes getLinkTarget() to return _blank for mailto and tel links, which is incorrect —
-          these should open in _self (the current window). Fix the regex to exclude mailto: and tel: protocols.
-        status: done
-        completion: 100
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: PT10M
-        started_at: 2026-03-10T13:06:00+01:00
-        ended_at: 2026-03-10T15:30:00+01:00
-        constraints:
-          - Must still correctly identify http:// and https:// as external
-        forbidden: []
-        references:
-          - src/utils/link.ts
-        notes:
-          - "2026-03-10: Fixed — added isNonNavigableProtocol() function checking mailto:, tel:, sms:, geo:, data:
-            before regex check. Note: existing regex /^[a-z0-9-]+:\\/\\//i already excludes mailto/tel since they lack
-            ://, but guard added for robustness."
-        subtasks: []
-  - id: i18n-overhaul
-    title: Redo i18n for easier language management
-    description: >
-      Redesigned the internationalization system to solve three pain points: language switching, shared resources across
-      translations, and page folder duplication. Enabled Astro built-in i18n, converted pubDate to Date objects,
-      translated hardcoded strings, shared images across language versions (32 duplicate images eliminated), added
-      lang/translationOf to content schema, eliminated page folder duplication via dynamic [...lang] routing (11 page
-      pairs to 9 parameterized pages), upgraded language switcher to build-time translation map, and fixed sitemap
-      hreflang codes.
-    status: done
-    completion: 100
-    difficulty: very_hard
-    priority: high
-    started_at: 2026-03-10
-    ended_at: 2026-03-11
-    notes:
-      - "2026-03-11: All 15 subtasks completed. 10 commits merged (102 files changed, 1117 insertions, 1294 deletions,
-        32 image files deleted). ADR-001 written. Full regression testing passed (6 PASS, 0 FAIL)."
-      - "2026-03-10: Astro built-in i18n re-enabled — old config had buggy array indexing. Works with
-        prefixDefaultLocale: false."
-      - "2026-03-10: SplatImage approach uses background-image CSS on <img> — no wrapper div, no client-side JS."
-    subtasks:
-      - id: i18n-audit-current
-        title: Audit current i18n implementation
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-investigate-astro-builtin
-        title: Investigate Astro built-in i18n
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-design-new-architecture
-        title: Design new i18n architecture (ADR-001)
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-shared-resources
-        title: Shared static resources across languages
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-eliminate-folder-duplication
-        title: Eliminate /it/ page folder duplication
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-language-switcher-upgrade
-        title: Upgrade language switcher (build-time map)
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-content-collection-refactor
-        title: Refactor content collections (lang/translationOf)
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-migration-testing
-        title: Full regression testing
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-series-navigation
-        title: Translate SeriesNavigation.astro strings
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-it-page-meta
-        title: Translate Italian page meta descriptions
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-it-projects-page
-        title: Translate Italian projects page chrome
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-date-locale
-        title: Language-aware date formatting
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-related-posts
-        title: Replace RelatedPosts hardcoded language check
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-scroll-to-top
-        title: Translate ScrollToTop.vue aria-label
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-      - id: i18n-dynamic-routing
-        title: Dynamic [...lang] routing
-        status: done
-        completion: 100
-        depends_on: []
-        constraints: []
-        forbidden: []
-        references: []
-        notes: []
-        subtasks: []
-    depends_on: []
-    constraints: []
-    forbidden: []
-    references: []
