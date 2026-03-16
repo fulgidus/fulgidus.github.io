@@ -1,0 +1,19 @@
+id: content-lint-script
+title: Write validation script
+description: Create a Node.js/TypeScript script that reads all MDX/MD files in src/content/blog/, parses their
+  frontmatter, and validates against the rules. Output clear error messages with file paths and line numbers. Exit with
+  non-zero code on violations.
+status: backlog
+completion: 0
+difficulty: medium
+priority: high
+depends_on:
+  - content-lint-rules
+effort: PT1H30M
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

@@ -1,0 +1,17 @@
+id: pwa-offline-support
+title: Progressive Web App with offline support
+description: "Add PWA capabilities: web app manifest, service worker for offline support, installability. Cache-first
+  for static assets, stale-while-revalidate for pages, offline fallback page for uncached pages."
+status: done
+completion: 100
+difficulty: hard
+priority: medium
+depends_on: []
+effort: P1DT4H
+started_at: null
+ended_at: 2026-03-16T10:30:19.580Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

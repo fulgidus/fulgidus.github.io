@@ -1,0 +1,17 @@
+id: og-add-logo
+title: Add site logo to OG cards
+description: Embed the site logo (public/img/logo.svg or PNG version) into the OG card template. Position in top-left or
+  top-right corner. Satori supports SVG rendering directly.
+status: backlog
+completion: 0
+difficulty: easy
+priority: medium
+depends_on: []
+effort: PT1H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

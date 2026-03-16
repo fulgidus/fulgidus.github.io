@@ -1,0 +1,18 @@
+id: security-testing
+title: Test security headers with securityheaders.com
+description: After deploying, test the site with securityheaders.com and Mozilla Observatory. Document results and fix
+  remaining issues. Target grade A or higher.
+status: backlog
+completion: 0
+difficulty: easy
+priority: medium
+depends_on:
+  - security-meta-tags
+effort: PT1H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

@@ -1,0 +1,19 @@
+id: security-csp-audit
+title: Audit all external resources for CSP whitelist
+description: "Identify every external resource loaded by the site: scripts, styles, fonts, iframes, images, connections.
+  Build a complete whitelist for the CSP. Known externals: giscus.app (iframe + script), Umami analytics, Pagefind
+  (self-hosted), any CDN fonts, share button targets."
+status: backlog
+completion: 0
+difficulty: easy
+priority: high
+depends_on:
+  - pgp-openpgpjs-integration
+effort: PT1H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

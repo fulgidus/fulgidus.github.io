@@ -1,0 +1,18 @@
+id: og-hero-image
+title: Incorporate post hero image into OG card
+description: If a post has a cover/hero image, include it in the OG card (e.g. as background or side panel). Requires
+  reading image at build time and encoding for Satori. Handle posts without images gracefully (fallback to text-only
+  design). Satori needs base64-encoded img src.
+status: backlog
+completion: 0
+difficulty: hard
+priority: low
+depends_on: []
+effort: PT3H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

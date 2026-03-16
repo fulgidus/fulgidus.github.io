@@ -1,0 +1,18 @@
+id: giscus-i18n
+title: Full Giscus i18n integration
+description: "Make Giscus comments fully language-aware: auto language detection from page URL, language update on View
+  Transitions navigation, proper Giscus locale mapping, and comment isolation strategy (shared vs per-language)."
+status: done
+completion: 100
+difficulty: easy
+priority: medium
+depends_on:
+  - bug-fixes-batch
+effort: PT2H
+started_at: null
+ended_at: 2026-03-16T10:30:28.788Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

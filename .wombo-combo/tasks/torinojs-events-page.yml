@@ -1,0 +1,19 @@
+id: torinojs-events-page
+title: Create /events page
+description: Create dedicated /events page (all languages) listing TorinoJS events. Upcoming events at top with full
+  details and RSVP buttons, past events below in condensed list. Include event descriptions, dates, locations, speaker
+  info. Use site's existing layout and styling. Past events visually distinct from upcoming.
+status: backlog
+completion: 0
+difficulty: medium
+priority: medium
+depends_on:
+  - torinojs-event-data-model
+effort: PT4H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

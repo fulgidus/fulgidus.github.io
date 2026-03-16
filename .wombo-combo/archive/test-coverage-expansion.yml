@@ -1,0 +1,17 @@
+id: test-coverage-expansion
+title: Expand test coverage for critical paths
+description: "Expand tests to cover critical functionality: i18n utils, post fetching/filtering, RSS feed validation,
+  build output validation, component rendering, and accessibility assertions. Use Vitest for unit tests."
+status: done
+completion: 100
+difficulty: medium
+priority: medium
+depends_on: []
+effort: P2D
+started_at: null
+ended_at: 2026-03-16T10:30:41.504Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

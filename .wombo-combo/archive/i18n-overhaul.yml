@@ -1,0 +1,18 @@
+id: i18n-overhaul
+title: Redo i18n for easier language management
+description: "Redesigned i18n system: enabled Astro built-in i18n, converted pubDate to Date objects, translated
+  hardcoded strings, shared images across languages (32 duplicates eliminated), added lang/translationOf to content
+  schema, eliminated page folder duplication via dynamic routing, upgraded language switcher."
+status: done
+completion: 100
+difficulty: very_hard
+priority: high
+depends_on: []
+effort: P2D
+started_at: null
+ended_at: 2026-03-16T10:28:53.460Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

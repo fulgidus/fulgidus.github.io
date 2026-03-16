@@ -1,0 +1,17 @@
+id: dead-code-cleanup
+title: Remove unused components and stale assets
+description: "Clean up dead code: PokerPic.vue, PokerPicNoUno.vue (never imported, have defineProps bugs),
+  public/img/logo copy.svg (duplicate with space in filename), public/img/lighthouse.jpg (appears unused)."
+status: done
+completion: 100
+difficulty: trivial
+priority: medium
+depends_on: []
+effort: PT1H
+started_at: null
+ended_at: 2026-03-16T10:30:59.639Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

@@ -1,0 +1,17 @@
+id: llms-txt-improvements
+title: Improve llms.txt and llms-full.txt endpoints
+description: "Enhance LLM-readable content endpoints: include pages collection content, add word count and estimated
+  token count metadata, add Cache-Control and ETag headers for efficient re-fetching by LLM crawlers."
+status: done
+completion: 100
+difficulty: easy
+priority: low
+depends_on: []
+effort: PT2H
+started_at: null
+ended_at: 2026-03-16T10:31:09.257Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

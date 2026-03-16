@@ -1,0 +1,17 @@
+id: performance-ci-lighthouse
+title: Lighthouse CI performance monitoring in deploy workflow
+description: Add Lighthouse CI checks to GitHub Actions deploy workflow. Audit performance, accessibility, SEO, and best
+  practices on every deployment. Set budgets, test key pages (homepage, blog post, search, 404).
+status: done
+completion: 100
+difficulty: medium
+priority: medium
+depends_on: []
+effort: PT4H
+started_at: null
+ended_at: 2026-03-16T10:31:02.076Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

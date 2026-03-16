@@ -1,0 +1,17 @@
+id: mastodon-share-button
+title: Official Mastodon share icon among sharing options
+description: Added official Mastodon share button to SharePost.vue using share.joinmastodon.org endpoint. Uses
+  i-ri-mastodon-line icon, placed after Bluesky before Twitter/X. i18n labels for en/it/nl.
+status: done
+completion: 100
+difficulty: easy
+priority: high
+depends_on: []
+effort: PT2H
+started_at: null
+ended_at: 2026-03-16T10:28:34.111Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

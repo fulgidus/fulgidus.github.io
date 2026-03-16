@@ -1,0 +1,17 @@
+id: footer-rss-link
+title: Add RSS feed link to footer
+description: Add a visible RSS feed link (or icon) to the footer. Should point to the language-appropriate RSS feed
+  (/rss.xml for EN, /it/rss.xml for IT).
+status: backlog
+completion: 0
+difficulty: trivial
+priority: medium
+depends_on: []
+effort: PT30M
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

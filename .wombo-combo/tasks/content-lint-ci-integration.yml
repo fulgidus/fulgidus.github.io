@@ -1,0 +1,18 @@
+id: content-lint-ci-integration
+title: Add content linting to CI pipeline
+description: Add the validation script as a step in the GitHub Actions workflow, running before the build step.
+  Violations should fail the build.
+status: backlog
+completion: 0
+difficulty: trivial
+priority: medium
+depends_on:
+  - content-lint-script
+effort: PT15M
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

@@ -1,0 +1,17 @@
+id: syntax-audit-languages
+title: Audit supported languages in current Shiki config
+description: Test code blocks with all commonly used languages (json, yaml, ts, js, rust, shell/bash, python, go, html,
+  css, toml, dockerfile, markdown, diff, sql). Document which work and which need attention.
+status: backlog
+completion: 0
+difficulty: trivial
+priority: high
+depends_on: []
+effort: PT1H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

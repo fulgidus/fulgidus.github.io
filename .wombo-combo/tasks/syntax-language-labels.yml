@@ -1,0 +1,18 @@
+id: syntax-language-labels
+title: Add language labels to code blocks
+description: "Add a small visual label (e.g. TypeScript, JSON, Rust) in the corner of fenced code blocks. Implement via
+  Shiki transformer or CSS/remark plugin. Label must not be selectable/copyable (CSS user-select: none). Must work in
+  both light/dark themes. Must be build-time only."
+status: backlog
+completion: 0
+difficulty: medium
+priority: medium
+depends_on: []
+effort: PT3H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

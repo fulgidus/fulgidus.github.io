@@ -1,0 +1,19 @@
+id: security-meta-tags
+title: Implement security meta tags in BaseHead.astro
+description: "Add meta tags to BaseHead.astro: Content-Security-Policy with directives for default-src, script-src,
+  style-src, img-src, font-src, frame-src, connect-src. Also X-Content-Type-Options nosniff, Referrer-Policy
+  strict-origin-when-cross-origin, and Permissions-Policy."
+status: backlog
+completion: 0
+difficulty: medium
+priority: high
+depends_on:
+  - security-csp-audit
+effort: PT2H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

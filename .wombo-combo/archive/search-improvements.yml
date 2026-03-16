@@ -1,0 +1,17 @@
+id: search-improvements
+title: Search UX improvements with URL query parameter
+description: Improved Pagefind search with URL ?s= parameter support, keyboard navigation (ArrowUp/Down/Enter/Escape
+  with ARIA combobox pattern), and result type badges (Blog/Project/Tag/Page) with color-coded borders.
+status: done
+completion: 100
+difficulty: medium
+priority: high
+depends_on: []
+effort: PT6H
+started_at: null
+ended_at: 2026-03-16T10:28:31.125Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

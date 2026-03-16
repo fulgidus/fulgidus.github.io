@@ -1,0 +1,17 @@
+id: post-nav-prev-next
+title: Next/Previous post navigation on blog posts
+description: Add chronological prev/next navigation links at bottom of each blog post. Language-aware (Italian posts
+  navigate to other Italian posts). Excludes draft and unlisted posts. Complements existing RelatedPosts component.
+status: done
+completion: 100
+difficulty: easy
+priority: medium
+depends_on: []
+effort: PT4H
+started_at: null
+ended_at: 2026-03-16T10:30:48.764Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []
