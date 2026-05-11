@@ -38,6 +38,12 @@ jobs:
       - name: Build site
         run: pnpm run build
 
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install chromium --with-deps
+
+      - name: Generate PDFs
+        run: pnpm run generate-pdfs
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

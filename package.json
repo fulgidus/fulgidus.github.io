@@ -15,6 +15,7 @@
     "node": ">=v18.17.1 || >=v20.3.0 || >=21"
   },
   "scripts": {
+    "generate-pdfs": "node scripts/generate-pdfs.mjs",
     "dev": "astro dev --host",
     "build": "astro check && astro build && pagefind --site dist",
     "preview": "astro preview",
@@ -67,6 +68,7 @@
     "pagefind": "^1.4.0",
     "prettier-plugin-astro": "^0.13.0",
     "typescript-eslint": "^8.16.0",
-    "vitest": "^2.1.6"
+    "vitest": "^2.1.6",
+    "playwright": "^1.50.0"
   }
 }
