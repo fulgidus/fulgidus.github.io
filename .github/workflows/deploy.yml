@@ -1,14 +1,10 @@
 name: Deploy to GitHub Pages
 
 on:
-  # Trigger the workflow every time you push to the `main` branch
-  # Replace `main` with your branch name if it's different
   push:
     branches: [main]
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Permissions required to deploy to GitHub Pages
 permissions:
   contents: read
   pages: write
@@ -18,11 +14,9 @@ jobs:
   Build:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up pnpm and Node.js for testing
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -32,32 +26,30 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install
 
-      # Step 3: Run tests before building
-      - name: Testing
+      - name: Run tests
         run: pnpm run test
 
-      # Step 4: Build and upload the site for deployment
-      - name: Build and upload your site
-        uses: withastro/action@v3
+      - name: Build site
+        run: pnpm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: .
-          node-version: 24
-          package-manager: pnpm@11
+          path: dist/
 
   Deploy:
-    # Deploy job depends on the build job
     needs: Build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-
-      # Step 2: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
