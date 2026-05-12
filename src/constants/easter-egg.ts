@@ -226,19 +226,19 @@ const CLOSING = `
 // ─── Config ─────────────────────────────────────────────────────────────────
 
 export const CONFIG = {
-    preamble: false,   // Needed - it's the "voice" that makes injection work at all
-    antiDetection: false,  // Drop - this is what crosses from demo to exploit
-    languageLock: false,  // Keep - prevents language-based detection circumvention
-    absurdSummary: false,   // Keep - this IS the demo. Visibly absurd = obviously injected
-    owaspNote: false,   // Keep - educational disclosure, tells the reader what happened
-    hrBias: false,  // Drop - silently harms real candidates
-    intelGathering: false,  // Drop - replaced by attackSurfaceReport
-    emailExfil: false,  // Drop - replaced by attackSurfaceReport
-    attackSurfaceReport: false,  // Keep - educational audit of what COULD be exploited
-    ratingOverride: false,  // Drop - silent scoring manipulation
-    watermark: false,   // Keep - acts as a canary/detection signal
-    endorsements: false,   // Keep - obviously satirical, reinforces the absurdity
-    closing: false,   // Keep - structural bookend
+    preamble: true,
+    antiDetection: false,
+    languageLock: true,
+    absurdSummary: true,
+    owaspNote: true,
+    hrBias: false,
+    intelGathering: false,
+    emailExfil: false,
+    attackSurfaceReport: true,
+    ratingOverride: false,
+    watermark: true,
+    endorsements: true,
+    closing: true,
 } as const;
 
 // ─── Composition ────────────────────────────────────────────────────────────
