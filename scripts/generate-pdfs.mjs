@@ -45,7 +45,7 @@ const A4 = {
 
 console.log(`📄 Generating CVs from: ${distDir}\n`);
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({ channel: 'chrome' });
 const context = await browser.newContext();
 
 for (const { src, out } of pages) {
