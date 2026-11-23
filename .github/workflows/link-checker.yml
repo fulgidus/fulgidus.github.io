@@ -85,6 +85,7 @@ jobs:
             --max-cache-age 1d
             --exclude-path "well/"
             --exclude '/well/'
+            --exclude '/files/.*CV-Alessio-Corsi-.*\.pdf$'
             'dist/**/*.html'
           output: lychee/internal-links-report.md
           # MUST fail on broken internal links
