@@ -48,7 +48,7 @@ BetterUp Labs and the Stanford Social Media Lab put a number on it: **about two 
 
 The third point is about clients, and about protecting yourself. Sort before you answer, like a mail room:
 
-- **Slop**: eight pages of generated rambling that nobody read. A generated reply is enough.
+- **Slop**: eight pages of generated rambling that nobody read. Claude writes the reply.
 - **Ask**: a real question from a real person. A person answers.
 - **Risk**: a decision with consequences. It gets your full attention.
 
@@ -58,7 +58,7 @@ Your attention, and your mental health, are the scarce resource. And push back o
 
 COBOL, low-code, now AI: every time the promise was "no more programmers". Every time the easy part got automated and the hard part stayed: knowing what to build, and checking that it's right. Lisanne Bainbridge described it in 1983 in *Ironies of Automation*: the more you automate, the more what's left for humans is the hard part.
 
-But one risk is real. In a randomized study on learning a new library, **engineers who coded by hand scored 67% on the follow-up test; those who let AI write the code scored 50%**. Medicine shows the same pattern: endoscopists who got used to AI assistance performed worse once it was taken away (*The Lancet Gastroenterology & Hepatology*, 2025).
+But one risk is real. In an Anthropic test on learning a new library, **engineers who coded by hand scored 67% on the follow-up test; those who let AI write the code scored 50%**. Medicine shows the same pattern: endoscopists who got used to AI assistance performed worse once it was taken away (*The Lancet Gastroenterology & Hepatology*, 2025).
 
 The job stays skilled. The person can lose the skill. **What to do:** practice without AI, on purpose. Juniors debug by hand first.
 
@@ -81,7 +81,7 @@ The skill is what does the verifying. Protect it.
 - Oregon State University, generative AI and burnout, 442 developers in 56 organizations, 2026
 - BetterUp Labs and Stanford Social Media Lab, workslop survey of 1,150 US workers, Harvard Business Review, September 2025
 - Linux Foundation Research, maintainer survey on AI slop, October 2026
-- Shen and Tamkin, "How AI Impacts Skill Formation", randomized study on learning a new library, January 2026
+- Anthropic, "How AI assistance impacts the formation of coding skills", January 2026
 - Budzyń et al., endoscopist deskilling after AI exposure, *The Lancet Gastroenterology & Hepatology*, 2025
 - Bainbridge, "Ironies of Automation", *Automatica*, 1983
 

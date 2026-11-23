@@ -49,7 +49,7 @@ BetterUp Labs e lo Stanford Social Media Lab ci hanno messo un numero: **circa d
 
 Il terzo punto riguarda i clienti, e il proteggere sé stessi. Smista prima di rispondere, come in un ufficio postale:
 
-- **Slop**: otto pagine di sproloquio generato che nessuno ha letto. Basta una risposta generata.
+- **Slop**: otto pagine di sproloquio generato che nessuno ha letto. La risposta la scrive Claude.
 - **Domanda**: una domanda vera da una persona vera. Risponde una persona.
 - **Rischio**: una decisione con conseguenze. Merita tutta la tua attenzione.
 
@@ -59,7 +59,7 @@ La tua attenzione, e la tua salute mentale, sono la risorsa scarsa. E respingi i
 
 COBOL, low-code, ora l'AI: ogni volta la promessa era "niente più programmatori". Ogni volta si è automatizzata la parte facile ed è rimasta quella difficile: sapere cosa costruire e verificare che sia giusto. Lisanne Bainbridge lo descriveva già nel 1983 in *Ironies of Automation*: più automatizzi, più quello che resta agli umani è la parte difficile.
 
-Ma un rischio è reale. In uno studio randomizzato sull'apprendimento di una nuova libreria, **chi ha scritto il codice a mano ha ottenuto il 67% al test successivo, chi l'ha lasciato scrivere all'AI il 50%**. La medicina mostra lo stesso schema: gli endoscopisti abituati all'assistenza dell'AI hanno performato peggio quando gli è stata tolta (*The Lancet Gastroenterology & Hepatology*, 2025).
+Ma un rischio è reale. In un test di Anthropic sull'apprendimento di una nuova libreria, **chi ha scritto il codice a mano ha ottenuto il 67% al test successivo, chi l'ha lasciato scrivere all'AI il 50%**. La medicina mostra lo stesso schema: gli endoscopisti abituati all'assistenza dell'AI hanno performato peggio quando gli è stata tolta (*The Lancet Gastroenterology & Hepatology*, 2025).
 
 Il mestiere resta qualificato. La persona può perdere la competenza. **Cosa fare:** esercitarsi senza AI, di proposito. I junior fanno debug a mano, prima.
 
@@ -82,7 +82,7 @@ L'output costa poco. Verificare è il lavoro.
 - Oregon State University, AI generativa e burnout, 442 sviluppatori in 56 organizzazioni, 2026
 - BetterUp Labs e Stanford Social Media Lab, indagine sul workslop su 1.150 lavoratori statunitensi, Harvard Business Review, settembre 2025
 - Linux Foundation Research, indagine tra i maintainer sullo slop da AI, ottobre 2026
-- Shen e Tamkin, "How AI Impacts Skill Formation", studio randomizzato sull'apprendimento di una nuova libreria, gennaio 2026
+- Anthropic, "How AI assistance impacts the formation of coding skills", gennaio 2026
 - Budzyń et al., deskilling degli endoscopisti dopo l'esposizione all'AI, *The Lancet Gastroenterology & Hepatology*, 2025
 - Bainbridge, "Ironies of Automation", *Automatica*, 1983
 
