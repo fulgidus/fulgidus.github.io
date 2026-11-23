@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
+// Makes the deck embedded in the post sticky: as soon as its top reaches the top
+// of the viewport, the same iframe pins itself (top bar on small screens, bottom-left
+// corner on xl+) and follows the section being read, with a 300ms fade between slides.
 const props = defineProps<{
   src: string
   byHeading: number[]
@@ -8,20 +11,26 @@ const props = defineProps<{
 }>()
 
 const STORAGE_KEY = 'slide-dock-state'
+const FADE_MS = 300
 type DockState = 'open' | 'min' | 'closed'
 
 const slide = ref(1)
 const total = ref(props.byHeading.length ? Math.max(1, ...props.byHeading) : 1)
-const visible = ref(false)
+const docked = ref(false)
 const state = ref<DockState>('open')
-const frame = ref<HTMLIFrameElement | null>(null)
+const head = ref<HTMLElement | null>(null)
 
 const base = computed(() => props.src.replace(/#.*$/, ''))
 const fullUrl = computed(() => `${base.value}#${slide.value}`)
 
+let article: HTMLElement | null = null
 let headings: HTMLElement[] = []
-let embed: HTMLIFrameElement | null = null
+let frame: HTMLIFrameElement | null = null
+let holder: HTMLElement | null = null
+let stage: HTMLElement | null = null
 let raf = 0
+let fadeTimer = 0
+let shown = 1
 
 function readState(): DockState {
   try {
@@ -37,19 +46,35 @@ function setState(next: DockState) {
   try {
     localStorage.setItem(STORAGE_KEY, next)
   } catch {}
+  render()
+}
+
+function setHash(n: number) {
+  shown = n
+  if (!frame) return
+  try {
+    if (frame.contentWindow) {
+      frame.contentWindow.location.hash = String(n)
+      return
+    }
+  } catch {}
+  frame.src = `${base.value}#${n}`
 }
 
 function goTo(n: number) {
   if (n === slide.value) return
   slide.value = n
-  const win = frame.value?.contentWindow
-  try {
-    if (win) {
-      win.location.hash = String(n)
-      return
-    }
-  } catch {}
-  if (frame.value) frame.value.src = fullUrl.value
+  if (!stage || state.value !== 'open') {
+    setHash(n)
+    return
+  }
+  // Fade out, switch slide at the midpoint, fade back in: 300ms in total.
+  clearTimeout(fadeTimer)
+  stage.classList.add('sd-fading')
+  fadeTimer = window.setTimeout(() => {
+    if (shown !== slide.value) setHash(slide.value)
+    stage?.classList.remove('sd-fading')
+  }, FADE_MS / 2)
 }
 
 function currentSlide(): number {
@@ -63,11 +88,20 @@ function currentSlide(): number {
   return idx < 0 ? 1 : props.byHeading[Math.min(idx, props.byHeading.length - 1)] ?? 1
 }
 
+function render() {
+  if (!stage) return
+  stage.classList.toggle('sd-docked', docked.value && state.value !== 'closed')
+  stage.classList.toggle('sd-min', state.value === 'min')
+}
+
 function update() {
   raf = 0
-  // Show the dock only once the full embedded deck has scrolled out of view above.
-  visible.value = embed ? embed.getBoundingClientRect().bottom < 0 : true
-  goTo(currentSlide())
+  if (!holder || !article) return
+  const top = holder.getBoundingClientRect().top
+  const articleBottom = article.getBoundingClientRect().bottom
+  docked.value = top <= 0 && articleBottom > window.innerHeight / 3
+  render()
+  if (docked.value && state.value !== 'closed') goTo(currentSlide())
 }
 
 function schedule() {
@@ -76,10 +110,22 @@ function schedule() {
 
 onMounted(() => {
   state.value = readState()
-  const article = document.querySelector('article')
+  article = document.querySelector('article')
   if (!article) return
   headings = Array.from(article.querySelectorAll<HTMLElement>('h2'))
-  embed = article.querySelector<HTMLIFrameElement>(`iframe[src^="${base.value}"]`)
+  frame = article.querySelector<HTMLIFrameElement>(`iframe[src^="${base.value}"]`)
+  if (!frame || !frame.parentNode) return
+
+  // holder keeps the deck's place in the text; stage is what pins to the viewport.
+  holder = document.createElement('div')
+  holder.className = 'sd-holder'
+  stage = document.createElement('div')
+  stage.className = 'sd-stage'
+  frame.parentNode.insertBefore(holder, frame)
+  holder.appendChild(stage)
+  if (head.value) stage.appendChild(head.value)
+  stage.appendChild(frame)
+
   window.addEventListener('scroll', schedule, { passive: true })
   window.addEventListener('resize', schedule, { passive: true })
   update()
@@ -87,54 +133,119 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (raf) cancelAnimationFrame(raf)
+  clearTimeout(fadeTimer)
   window.removeEventListener('scroll', schedule)
   window.removeEventListener('resize', schedule)
 })
 </script>
 
 <template>
-  <!-- Mobile/tablet: pinned to the top while reading. xl+: floating mini deck bottom-left. -->
-  <aside
-    v-show="visible && state !== 'closed'"
-    class="slide-dock fixed z-40 top-0 inset-x-0 xl:inset-x-auto xl:top-auto xl:left-4 xl:bottom-4"
-    :aria-label="labels.label"
-  >
-    <div
-      v-show="state === 'open'"
-      class="w-full max-w-md mx-auto xl:w-64 overflow-hidden shadow-xl border-b xl:border xl:rounded-lg border-main bg-main"
-    >
-      <div class="flex items-center gap-3 px-3 py-1.5 text-xs text-main">
-        <span class="font-semibold">{{ labels.label }} {{ slide }}/{{ total }}</span>
-        <a class="ml-auto opacity-70 hover:opacity-100" :href="fullUrl" target="_blank" rel="noopener" :title="labels.open" :aria-label="labels.open">
-          <span class="i-ri-fullscreen-line block text-base xl:text-xs" />
-        </a>
-        <button class="opacity-70 hover:opacity-100" type="button" :title="labels.minimize" :aria-label="labels.minimize" @click="setState('min')">
-          <span class="i-ri-subtract-line block text-base xl:text-xs" />
-        </button>
-        <button class="opacity-70 hover:opacity-100" type="button" :title="labels.close" :aria-label="labels.close" @click="setState('closed')">
-          <span class="i-ri-close-line block text-base xl:text-xs" />
-        </button>
-      </div>
-      <!-- Always landscape, so the deck stays in single-slide mode even on portrait phones. -->
-      <iframe
-        ref="frame"
-        :src="`${base}#1`"
-        :title="labels.label"
-        tabindex="-1"
-        class="block w-full aspect-video border-0"
-      />
-    </div>
+  <div ref="head" class="sd-head" :aria-label="labels.label">
     <button
-      v-show="state === 'min'"
+      v-if="state === 'min'"
       type="button"
-      class="flex items-center gap-2 px-3 py-2 w-full xl:w-auto justify-center xl:rounded-full shadow-xl border-b xl:border border-main bg-main text-main text-sm"
+      class="sd-expand"
       :title="labels.expand"
       :aria-label="labels.expand"
       @click="setState('open')"
     >
-      <span class="i-ri-slideshow-line block" />
+      <span class="i-ri-slideshow-line inline-block align-middle" />
       {{ labels.label }} {{ slide }}/{{ total }}
-      <span class="i-ri-arrow-down-s-line block xl:hidden" />
     </button>
-  </aside>
+    <template v-else>
+      <span class="font-semibold">{{ labels.label }} {{ slide }}/{{ total }}</span>
+      <a class="sd-btn ml-auto" :href="fullUrl" target="_blank" rel="noopener" :title="labels.open" :aria-label="labels.open">
+        <span class="i-ri-fullscreen-line block" />
+      </a>
+      <button class="sd-btn" type="button" :title="labels.minimize" :aria-label="labels.minimize" @click="setState('min')">
+        <span class="i-ri-subtract-line block" />
+      </button>
+      <button class="sd-btn" type="button" :title="labels.close" :aria-label="labels.close" @click="setState('closed')">
+        <span class="i-ri-close-line block" />
+      </button>
+    </template>
+  </div>
 </template>
+
+<style>
+.sd-holder {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin: 1.25em 0;
+}
+.sd-stage iframe {
+  display: block;
+  width: 100% !important;
+  margin: 0 !important;
+  transition: opacity 150ms ease;
+}
+.sd-stage.sd-fading iframe {
+  opacity: 0;
+}
+.sd-head {
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+.sd-btn {
+  opacity: 0.7;
+}
+.sd-btn:hover {
+  opacity: 1;
+}
+.sd-expand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Docked, small screens: pinned to the top as a compact 16:9 */
+.sd-stage.sd-docked {
+  position: fixed;
+  z-index: 40;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: 28rem;
+  margin: 0 auto;
+  background: #eef5fc;
+  color: #555;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  overflow: hidden;
+}
+.dark .sd-stage.sd-docked {
+  background: #0d1117;
+  color: #bbb;
+}
+.sd-stage.sd-docked .sd-head {
+  display: flex;
+}
+.sd-stage.sd-docked iframe {
+  border-radius: 0 !important;
+}
+.sd-stage.sd-docked.sd-min iframe {
+  display: none;
+}
+
+/* Docked, xl+: the same element moves to the bottom-left corner, clear of the text */
+@media (min-width: 1280px) {
+  .sd-stage.sd-docked {
+    top: auto;
+    right: auto;
+    left: 1rem;
+    bottom: 1rem;
+    width: 16rem;
+    max-width: none;
+    margin: 0;
+    border-radius: 0.5rem;
+  }
+}
+</style>
