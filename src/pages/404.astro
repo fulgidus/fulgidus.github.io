@@ -1,13 +1,53 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { getLangFromUrl, translateFrom, translatePath } from "@/i18n/utils";
+import { getActiveLanguages, getLangFromUrl, translateFrom, translatePath } from "@/i18n/utils";
 import { getLastTenPosts, getHref, removeLangFromSlug } from "@/utils/posts";
+import { getFormattedDate } from "@/utils/date";
+import { siteConfig } from "@/site-config";
+import type { Languages } from "@/i18n/ui";
 
+// GitHub Pages serves this single 404.html for every missing path, so at build
+// time Astro.url is always the default-language URL. We render the default
+// language here and ship a small per-language JSON blob that the inline script
+// below uses to switch the terminal to the visitor's language (from the URL).
 const currentLang = getLangFromUrl(Astro.url);
 const t = (key: Parameters<typeof translateFrom>[1]) => translateFrom(currentLang, key);
 
-const recentPosts = await getLastTenPosts({ lang: currentLang });
-const postsToShow = recentPosts.slice(0, 5);
+const dateOptions: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+
+async function getListing(lang: Languages) {
+  const recent = await getLastTenPosts({ lang });
+  return recent.slice(0, 5).map((post) => ({
+    href: translatePath(getHref(post), lang),
+    date: getFormattedDate(post.data.pubDate, dateOptions, lang),
+    name: `${removeLangFromSlug(post.slug)}/`,
+  }));
+}
+
+const postsToShow = await getListing(currentLang);
+
+const i18nData: Record<string, {
+  title: string;
+  error: string;
+  hint: string;
+  help: string;
+  back: string;
+  home: string;
+  posts: Awaited<ReturnType<typeof getListing>>;
+}> = {};
+for (const lang of getActiveLanguages()) {
+  i18nData[lang] = {
+    title: [translateFrom(lang, '404.title'), siteConfig.title].join(' | '),
+    error: translateFrom(lang, '404.terminalError'),
+    hint: translateFrom(lang, '404.terminalHint'),
+    help: translateFrom(lang, '404.terminalHelp'),
+    back: translateFrom(lang, '404.backButtonLabel'),
+    home: translatePath('/', lang),
+    posts: lang === currentLang ? postsToShow : await getListing(lang),
+  };
+}
+// Safe to inline inside <script type="application/json">
+const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
 ---
 
 <BaseLayout
@@ -34,9 +74,7 @@ const postsToShow = recentPosts.slice(0, 5);
         <span class="terminal-cursor">_</span>
       </div>
 
-      <div class="terminal-line terminal-error">
-        {t('404.terminalError')}
-      </div>
+      <div class="terminal-line terminal-error" data-i18n="error">{t('404.terminalError')}</div>
 
       <div class="terminal-line terminal-empty"></div>
 
@@ -48,23 +86,17 @@ const postsToShow = recentPosts.slice(0, 5);
       </div>
 
       <div class="terminal-line terminal-hint">
-        # {t('404.terminalHint')}
+        # <span data-i18n="hint">{t('404.terminalHint')}</span>
       </div>
 
-      <div class="terminal-ls">
-        {postsToShow.map((post) => {
-          const date = new Date(post.data.pubDate);
-          const dateStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-          const slug = removeLangFromSlug(post.slug);
-          const href = translatePath(getHref(post), currentLang);
-          return (
-            <a href={href} class="terminal-file" data-astro-prefetch>
-              <span class="file-permissions">-rw-r--r--</span>
-              <span class="file-date">{dateStr}</span>
-              <span class="file-name">{slug}/</span>
-            </a>
-          );
-        })}
+      <div class="terminal-ls" id="terminal-ls">
+        {postsToShow.map((post) => (
+          <a href={post.href} class="terminal-file" data-astro-prefetch>
+            <span class="file-permissions">-rw-r--r--</span>
+            <span class="file-date">{post.date}</span>
+            <span class="file-name">{post.name}</span>
+          </a>
+        ))}
       </div>
 
       <div class="terminal-line terminal-empty"></div>
@@ -73,11 +105,11 @@ const postsToShow = recentPosts.slice(0, 5);
         <span class="terminal-prompt">
           <span class="prompt-user">visitor</span><span class="prompt-at">@</span><span class="prompt-host">fulgidus.github.io</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-dollar">$</span>
         </span>
-        <span class="terminal-command">cd <a href={translatePath('/', currentLang)} class="terminal-link" data-astro-prefetch>~/{t('404.backButtonLabel')}</a></span>
+        <span class="terminal-command">cd <a href={translatePath('/', currentLang)} class="terminal-link" id="terminal-home" data-astro-prefetch>~/<span data-i18n="back">{t('404.backButtonLabel')}</span></a></span>
       </div>
 
       <div class="terminal-line terminal-help">
-        # {t('404.terminalHelp')}
+        # <span data-i18n="help">{t('404.terminalHelp')}</span>
       </div>
 
       <div class="terminal-line">
@@ -88,15 +120,54 @@ const postsToShow = recentPosts.slice(0, 5);
       </div>
     </div>
   </div>
+  <script type="application/json" id="not-found-i18n" set:html={i18nJson} />
+  
+  <script is:inline>
+    (function () {
+      // Show the attempted path in the first command
+      var pathEl = document.getElementById('typed-path');
+      if (pathEl) {
+        pathEl.textContent = 'open ' + window.location.pathname;
+      }
+  
+      // Switch the terminal to the language in the requested URL (e.g. /it/...).
+      // Runs synchronously right after the markup, before first paint.
+      var dataEl = document.getElementById('not-found-i18n');
+      if (!dataEl) return;
+      var data;
+      try { data = JSON.parse(dataEl.textContent || '{}'); } catch (e) { return; }
+      var lang = window.location.pathname.split('/')[1];
+      var d = data[lang];
+      if (!d || lang === document.documentElement.lang) return;
+  
+      document.documentElement.lang = lang;
+      document.title = d.title;
+      var nodes = document.querySelectorAll('[data-i18n]');
+      for (var i = 0; i < nodes.length; i++) {
+        var key = nodes[i].getAttribute('data-i18n');
+        if (d[key]) nodes[i].textContent = d[key];
+      }
+      var home = document.getElementById('terminal-home');
+      if (home) home.setAttribute('href', d.home);
+  
+      var ls = document.getElementById('terminal-ls');
+      var template = ls && ls.querySelector('.terminal-file');
+      if (ls && template) {
+        var fragment = document.createDocumentFragment();
+        d.posts.forEach(function (post) {
+          var row = template.cloneNode(true);
+          row.setAttribute('href', post.href);
+          row.querySelector('.file-date').textContent = post.date;
+          row.querySelector('.file-name').textContent = post.name;
+          fragment.appendChild(row);
+        });
+        ls.replaceChildren(fragment);
+      }
+    })();
+  </script>
 </BaseLayout>
 
-<script is:inline>
-  // Show the attempted path in the first command
-  var pathEl = document.getElementById('typed-path');
-  if (pathEl) {
-    pathEl.textContent = 'open ' + window.location.pathname;
-  }
-</script>
+
 
 <style>
   .terminal-wrapper {
@@ -157,7 +228,7 @@ const postsToShow = recentPosts.slice(0, 5);
     min-height: 20rem;
   }
 
-  :global(:not(.dark)) .terminal-body {
+  :global(html:not(.dark)) .terminal-body {
     background: #f5f5f5;
     color: #333;
   }
@@ -185,19 +256,19 @@ const postsToShow = recentPosts.slice(0, 5);
   .prompt-path { color: #569cd6; }
   .prompt-dollar { color: #d4d4d4; margin-left: 0.15rem; }
 
-  :global(:not(.dark)) .prompt-user { color: #098658; }
-  :global(:not(.dark)) .prompt-at { color: #333; }
-  :global(:not(.dark)) .prompt-host { color: #0451a5; }
-  :global(:not(.dark)) .prompt-colon { color: #333; }
-  :global(:not(.dark)) .prompt-path { color: #0000ff; }
-  :global(:not(.dark)) .prompt-dollar { color: #333; }
+  :global(html:not(.dark)) .prompt-user { color: #098658; }
+  :global(html:not(.dark)) .prompt-at { color: #333; }
+  :global(html:not(.dark)) .prompt-host { color: #0451a5; }
+  :global(html:not(.dark)) .prompt-colon { color: #333; }
+  :global(html:not(.dark)) .prompt-path { color: #0000ff; }
+  :global(html:not(.dark)) .prompt-dollar { color: #333; }
 
   /* Command text */
   .terminal-command {
     color: #ce9178;
   }
 
-  :global(:not(.dark)) .terminal-command {
+  :global(html:not(.dark)) .terminal-command {
     color: #a31515;
   }
 
@@ -207,7 +278,7 @@ const postsToShow = recentPosts.slice(0, 5);
     font-weight: 500;
   }
 
-  :global(:not(.dark)) .terminal-error {
+  :global(html:not(.dark)) .terminal-error {
     color: #cd3131;
   }
 
@@ -218,8 +289,8 @@ const postsToShow = recentPosts.slice(0, 5);
     font-style: italic;
   }
 
-  :global(:not(.dark)) .terminal-hint,
-  :global(:not(.dark)) .terminal-help {
+  :global(html:not(.dark)) .terminal-hint,
+  :global(html:not(.dark)) .terminal-help {
     color: #008000;
   }
 
@@ -245,7 +316,7 @@ const postsToShow = recentPosts.slice(0, 5);
     background: rgba(255, 255, 255, 0.06);
   }
 
-  :global(:not(.dark)) .terminal-file:hover {
+  :global(html:not(.dark)) .terminal-file:hover {
     background: rgba(0, 0, 0, 0.06);
   }
 
@@ -254,7 +325,7 @@ const postsToShow = recentPosts.slice(0, 5);
     flex-shrink: 0;
   }
 
-  :global(:not(.dark)) .file-permissions {
+  :global(html:not(.dark)) .file-permissions {
     color: #999;
   }
 
@@ -264,7 +335,7 @@ const postsToShow = recentPosts.slice(0, 5);
     flex-shrink: 0;
   }
 
-  :global(:not(.dark)) .file-date {
+  :global(html:not(.dark)) .file-date {
     color: #999;
   }
 
@@ -273,7 +344,7 @@ const postsToShow = recentPosts.slice(0, 5);
     font-weight: 500;
   }
 
-  :global(:not(.dark)) .file-name {
+  :global(html:not(.dark)) .file-name {
     color: #0451a5;
   }
 
@@ -292,7 +363,7 @@ const postsToShow = recentPosts.slice(0, 5);
     text-decoration: underline;
   }
 
-  :global(:not(.dark)) .terminal-link {
+  :global(html:not(.dark)) .terminal-link {
     color: #0451a5;
   }
 
@@ -301,7 +372,7 @@ const postsToShow = recentPosts.slice(0, 5);
     color: #d4d4d4;
   }
 
-  :global(:not(.dark)) .terminal-cursor {
+  :global(html:not(.dark)) .terminal-cursor {
     color: #333;
   }
 

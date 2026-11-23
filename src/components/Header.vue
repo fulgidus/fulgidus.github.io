@@ -64,6 +64,9 @@ onMounted(() => {
     document.addEventListener('astro:page-load', updateLangFromUrl);
 
     useEventListener('scroll', () => {
+        // Page scroll is locked while the drawer is open; ignore stray events
+        // (e.g. iOS rubber-banding) so they don't close the drawer mid-animation.
+        if (navDrawerOpen.value) return;
         const currentScrollPosition = scroll.value;
         amAtTopScrollPosition.value = currentScrollPosition === 0;
         const isScrollingDown = currentScrollPosition > previousScrollPosition.value;
@@ -72,10 +75,8 @@ onMounted(() => {
         // Adjust threshold as needed
         if (isScrollingDown && currentScrollPosition > 150) {
             isHeaderHidden.value = true; // Hide when scrolling down
-            navDrawerOpen.value = false; // Close drawer when scrolling down
         } else if (!isScrollingDown) { //Show when scrolling up and below threshold
             isHeaderHidden.value = false; // Show when scrolling up
-            navDrawerOpen.value = false; // Close drawer when scrolling up
         }
         previousScrollPosition.value = currentScrollPosition;
     });
@@ -83,6 +84,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     document.removeEventListener('astro:page-load', updateLangFromUrl);
+    document.documentElement.classList.remove('nav-drawer-open');
 })
 
 
@@ -123,6 +125,9 @@ function handleFocusTrap(event: KeyboardEvent) {
 }
 
 watch(navDrawerOpen, (isOpen) => {
+    // Lock page scroll behind the drawer so touch-dragging the mask doesn't
+    // scroll the page (which used to close the drawer and hide the header).
+    document.documentElement.classList.toggle('nav-drawer-open', isOpen);
     if (isOpen) {
         document.addEventListener('keydown', handleNavDrawerEscape);
         document.addEventListener('keydown', handleFocusTrap);
@@ -149,7 +154,7 @@ function isCurrentPage(linkHref: string): boolean {
 
 <template>
     <Transition name="slide-fade">
-        <header v-if="!isHeaderHidden" id="header" :class="{ 'header-bg-blur': scroll > 20, '!hidden': isHeaderHidden }"
+        <header v-if="!isHeaderHidden" id="header" :class="{ 'header-bg-blur': scroll > 20 }"
             class="slide-fade !fixed bg-transparent z-899 w-screen h-20 px-6 flex justify-between items-center relative print:hidden">
             <div class="flex items-center h-full">
                 <!-- Logo -->
@@ -260,6 +265,7 @@ function isCurrentPage(linkHref: string): boolean {
     top: 0;
     left: 0;
     height: 100vh;
+    height: 100dvh;
     min-width: 32vw;
     max-width: 50vw;
     display: flex;
@@ -273,39 +279,46 @@ function isCurrentPage(linkHref: string): boolean {
 }
 
 .nav-drawer-enter-active {
-    transition: all 0.3s ease-out;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .nav-drawer-leave-active {
-    transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 1, 1);
 }
 
 .nav-drawer-enter-from,
 .nav-drawer-leave-to {
     transform: translateX(-100%);
-    opacity: 0;
 }
 
 .nav-drawer-mask {
     display: block;
-    --at-apply: transition-all;
     content: '';
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     background: rgba(0, 0, 0, 0.5);
     z-index: 998;
+    touch-action: none;
 }
 
-.nav-drawer-mask-enter-active,
+.nav-drawer-mask-enter-active {
+    transition: opacity 0.3s ease-out;
+}
+
 .nav-drawer-mask-leave-active {
-    transition: display 0.3s ease-out;
+    transition: opacity 0.25s ease-in;
 }
 
 .nav-drawer-mask-enter-from,
 .nav-drawer-mask-leave-to {
-    display: none;
+    opacity: 0;
+}
+
+:global(html.nav-drawer-open) {
+    overflow: hidden;
 }
 </style>
