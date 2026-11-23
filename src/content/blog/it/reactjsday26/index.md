@@ -6,6 +6,7 @@ imageAlt: "Lewis Hine, meccanico di una centrale al lavoro su una pompa a vapore
 imageSize: md
 pubDate: 2026-11-23T19:00:00
 tags:
+  - made-with-ai
   - talks
   - reactjsday
   - generative-ai

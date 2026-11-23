@@ -6,6 +6,7 @@ imageAlt: "Lewis Hine, Power house mechanic working on steam pump, 1920. Public 
 imageSize: md
 pubDate: 2026-11-23T19:00:00
 tags:
+  - made-with-ai
   - talks
   - reactjsday
   - generative-ai
