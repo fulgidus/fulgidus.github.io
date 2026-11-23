@@ -78,7 +78,6 @@ jobs:
           args: >-
             --offline
             --root-dir dist
-            --base "https://fulgidus.github.io"
             --include-fragments
             --no-progress
             --format markdown
@@ -136,7 +135,6 @@ jobs:
           # Check external links only, with tolerant settings
           args: >-
             --root-dir dist
-            --base "https://fulgidus.github.io"
             --no-progress
             --format markdown
             --cache

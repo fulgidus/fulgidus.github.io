@@ -57,7 +57,7 @@ accept = ["100..=103", "200..=299", "403", "429"]
 require_https = false
 
 # Enable fragment/anchor checking for internal links
-include_fragments = true
+include_fragments = "anchor-only"
 
 # Fallback extensions for URLs without extensions
 fallback_extensions = ["html"]
