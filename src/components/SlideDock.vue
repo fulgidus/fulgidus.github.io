@@ -178,8 +178,16 @@ onUnmounted(() => {
   aspect-ratio: 16 / 9;
   margin: 1.25em 0;
 }
+.dark .sd-holder {
+  /* dark backdrop while the deck loads or fades, instead of a white flash */
+  background: #0d1117;
+  border-radius: 8px;
+}
 .sd-stage iframe {
   display: block;
+  /* match the deck's own (light) scheme so the browser never paints an opaque white canvas behind it */
+  color-scheme: light;
+  background: transparent;
   width: 100% !important;
   margin: 0 !important;
   transition: opacity 150ms ease;
