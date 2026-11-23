@@ -79,7 +79,7 @@ version: "1.0"
 # Metadata about this tracking file
 meta:
   created_at: "2026-03-10T00:00:00+01:00"
-  updated_at: "2026-03-11T00:00:00+01:00"
+  updated_at: "2026-11-23T00:00:00+01:00"
   project: "fulgidus.github.io"
   generator: "Astro 4.x"
   maintainer: "fulgidus"
@@ -1650,6 +1650,7 @@ features:
       - "src/pages/cv/index.astro"
       - "uno.config.ts"
     notes:
+      - "2026-11-23: Still open. The <script src=cdn.tailwindcss.com> is gone, but src/pages/cv/index.astro and cv/safe.astro (plus the it/ copies) now load Tailwind 2.2.19 as a stylesheet from cdnjs.cloudflare.com. The migration to UnoCSS has not happened yet."
       - "2026-03-10: Feature added to backlog. The CV page is the only page loading external Tailwind CSS. UnoCSS already supports Tailwind utility classes, so migration should be mostly removing the CDN script and ensuring UnoCSS generates the needed classes."
     subtasks:
 
@@ -2702,111 +2703,6 @@ features:
         forbidden: []
         references:
           - "src/components/FooterComponent.vue"
-        notes: []
-        subtasks: []
-
-  # ---------------------------------------------------------------------------
-  # FEATURE 27: Dead code cleanup
-  # ---------------------------------------------------------------------------
-  - id: dead-code-cleanup
-    title: "Remove unused components and stale assets"
-    description: >
-      Clean up dead code and stale assets discovered during codebase
-      analysis. Includes: (1) PokerPic.vue — never imported, has
-      defineProps bugs and undefined {{ span }} variable; (2)
-      PokerPicNoUno.vue — never imported, same defineProps bugs;
-      (3) public/img/logo copy.svg — duplicate of logo.svg with space
-      in filename; (4) public/img/lighthouse.jpg — appears unused by
-      any page or component.
-    status: backlog
-    completion: 0
-    difficulty: trivial
-    priority: medium
-    depends_on: []
-    effort: "PT1H"
-    started_at: null
-    ended_at: null
-    constraints:
-      - "Must verify each file is truly unused before deletion"
-      - "Must search all .astro, .vue, .ts, .tsx files for imports"
-    forbidden:
-      - "Do not remove PokerPic.astro — that IS the active version"
-    references:
-      - "src/components/PokerPic.vue"
-      - "src/components/PokerPicNoUno.vue"
-      - "public/img/logo copy.svg"
-      - "public/img/lighthouse.jpg"
-    notes:
-      - "2026-03-11: Feature added to backlog. Only PokerPic.astro (the Astro variant with <Image> optimization) is imported — by src/pages/index.astro and src/pages/it/index.astro. The Vue variants were likely earlier experiments."
-    subtasks:
-
-      - id: dead-code-pokerpic-vue
-        title: "Remove unused PokerPic.vue and PokerPicNoUno.vue"
-        description: >
-          Delete src/components/PokerPic.vue and
-          src/components/PokerPicNoUno.vue after confirming no imports
-          exist. Both have defineProps bugs (src: { src: String } instead
-          of type: String) and PokerPic.vue references undefined {{ span }},
-          confirming they are not in active use.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: "PT15M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Grep all source files for 'PokerPic.vue' and 'PokerPicNoUno' imports first"
-        forbidden:
-          - "Do not remove PokerPic.astro"
-        references:
-          - "src/components/PokerPic.vue"
-          - "src/components/PokerPicNoUno.vue"
-        notes: []
-        subtasks: []
-
-      - id: dead-code-logo-copy
-        title: "Remove duplicate logo copy.svg"
-        description: >
-          Delete public/img/logo copy.svg — it is a duplicate of
-          public/img/logo.svg with a space in the filename. Verify
-          no references exist before deletion.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: medium
-        depends_on: []
-        effort: "PT10M"
-        started_at: null
-        ended_at: null
-        constraints: []
-        forbidden: []
-        references:
-          - "public/img/logo copy.svg"
-          - "public/img/logo.svg"
-        notes: []
-        subtasks: []
-
-      - id: dead-code-lighthouse-img
-        title: "Verify and remove unused lighthouse.jpg"
-        description: >
-          Verify that public/img/lighthouse.jpg is not referenced by any
-          source file, blog post, or page. If unused, delete it. If used,
-          document where.
-        status: backlog
-        completion: 0
-        difficulty: trivial
-        priority: low
-        depends_on: []
-        effort: "PT10M"
-        started_at: null
-        ended_at: null
-        constraints:
-          - "Must search blog post content (MDX/MD) in addition to source code"
-        forbidden: []
-        references:
-          - "public/img/lighthouse.jpg"
         notes: []
         subtasks: []
 
@@ -4086,3 +3982,109 @@ archive:
         title: "Dynamic [...lang] routing"
         status: done
         completion: 100
+
+  # ---------------------------------------------------------------------------
+  # FEATURE 27: Dead code cleanup (DONE 2026-11-23)
+  # ---------------------------------------------------------------------------
+  - id: dead-code-cleanup
+    title: "Remove unused components and stale assets"
+    description: >
+      Clean up dead code and stale assets discovered during codebase
+      analysis. Includes: (1) PokerPic.vue — never imported, has
+      defineProps bugs and undefined {{ span }} variable; (2)
+      PokerPicNoUno.vue — never imported, same defineProps bugs;
+      (3) public/img/logo copy.svg — duplicate of logo.svg with space
+      in filename; (4) public/img/lighthouse.jpg — appears unused by
+      any page or component.
+    status: done
+    completion: 100
+    difficulty: trivial
+    priority: medium
+    depends_on: []
+    effort: "PT1H"
+    started_at: "2026-11-23"
+    ended_at: "2026-11-23"
+    constraints:
+      - "Must verify each file is truly unused before deletion"
+      - "Must search all .astro, .vue, .ts, .tsx files for imports"
+    forbidden:
+      - "Do not remove PokerPic.astro — that IS the active version"
+    references:
+      - "src/components/PokerPic.vue"
+      - "src/components/PokerPicNoUno.vue"
+      - "public/img/logo copy.svg"
+      - "public/img/lighthouse.jpg"
+    notes:
+      - "2026-11-23: Done. Re-verified with grep across src/, public/, scripts/ and config: no references to PokerPic.vue, PokerPicNoUno.vue, logo copy.svg or lighthouse.jpg. All four deleted. Also removed the stale `// temp TODO remove export` and commented-out useTranslations import in ListPosts.astro (Props no longer exported). Tests and build pass."
+      - "2026-03-11: Feature added to backlog. Only PokerPic.astro (the Astro variant with <Image> optimization) is imported — by src/pages/index.astro and src/pages/it/index.astro. The Vue variants were likely earlier experiments."
+    subtasks:
+
+      - id: dead-code-pokerpic-vue
+        title: "Remove unused PokerPic.vue and PokerPicNoUno.vue"
+        description: >
+          Delete src/components/PokerPic.vue and
+          src/components/PokerPicNoUno.vue after confirming no imports
+          exist. Both have defineProps bugs (src: { src: String } instead
+          of type: String) and PokerPic.vue references undefined {{ span }},
+          confirming they are not in active use.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT15M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Grep all source files for 'PokerPic.vue' and 'PokerPicNoUno' imports first"
+        forbidden:
+          - "Do not remove PokerPic.astro"
+        references:
+          - "src/components/PokerPic.vue"
+          - "src/components/PokerPicNoUno.vue"
+        notes: []
+        subtasks: []
+
+      - id: dead-code-logo-copy
+        title: "Remove duplicate logo copy.svg"
+        description: >
+          Delete public/img/logo copy.svg — it is a duplicate of
+          public/img/logo.svg with a space in the filename. Verify
+          no references exist before deletion.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: medium
+        depends_on: []
+        effort: "PT10M"
+        started_at: null
+        ended_at: null
+        constraints: []
+        forbidden: []
+        references:
+          - "public/img/logo copy.svg"
+          - "public/img/logo.svg"
+        notes: []
+        subtasks: []
+
+      - id: dead-code-lighthouse-img
+        title: "Verify and remove unused lighthouse.jpg"
+        description: >
+          Verify that public/img/lighthouse.jpg is not referenced by any
+          source file, blog post, or page. If unused, delete it. If used,
+          document where.
+        status: done
+        completion: 100
+        difficulty: trivial
+        priority: low
+        depends_on: []
+        effort: "PT10M"
+        started_at: null
+        ended_at: null
+        constraints:
+          - "Must search blog post content (MDX/MD) in addition to source code"
+        forbidden: []
+        references:
+          - "public/img/lighthouse.jpg"
+        notes: []
+        subtasks: []
