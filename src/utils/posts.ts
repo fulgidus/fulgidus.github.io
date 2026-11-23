@@ -9,7 +9,11 @@ export function sortPostsByDate(params: SortParams): CollectionPost[] | Collecti
     const { elements } = params;
     // Check for pubDate property before sorting by date
     if (isPostArray(elements)) {
-        return elements.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
+        // Same date: fall back to file path so the order is stable (getCollection order isn't guaranteed)
+        return elements.sort((a, b) =>
+            new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+            || ((a.filePath ?? a.id) < (b.filePath ?? b.id) ? -1 : 1)
+        );
     } else {
         // If pubDate isn't available, sort alphabetically by title.
         return elements.sort((a, b) =>
@@ -37,6 +41,14 @@ type GetPostsReturnType =
     GetPostsParams['collection'] extends PageKey ? Array<CollectionPages> :
     Array<CollectionPost> // fallback if collection is not PostKey or PageKey
 
+/** Was a Zod refine on image(); the content layer resolves images after validation, so check here. */
+function assertCoverImageSize(post: CollectionPost) {
+    const img = post.data.image
+    if (img && img.format !== 'svg' && img.width < 800) {
+        throw new Error(`[${post.id}] image: Image must be at least 800 pixels wide (or .svg), got ${img.width}px`)
+    }
+}
+
 export async function getPosts(params: GetPostsParams = {}): Promise<GetPostsReturnType> {
     const { path, lang = defaultLang, collection = POST_KEY, withUnlisted = false, withDrafts = true } = params;
     if (!isPostKey(collection) && !isPages(collection)) {
@@ -45,11 +57,12 @@ export async function getPosts(params: GetPostsParams = {}): Promise<GetPostsRet
     if (isPostKey(collection)) {
         const returned = sortPostsByDate({
             elements: await getCollection(collection, (post) => {
+                assertCoverImageSize(post)
                 if ((import.meta.env.PROD && post.data.draft)
                     || (!withDrafts && post.data.draft) // FAIL when wihtout draft and it's a draft
-                || (getLangFromSlug(post.slug) !== lang)
+                || (getLangFromSlug(post.id) !== lang)
                 || (!withUnlisted && post.data.unlisted) // FAIL if unlisted
-                || (path && !post.slug.includes(path))) { // Fail if it doesn't match search
+                || (path && !post.id.includes(path))) { // Fail if it doesn't match search
                     return false
                 }
                 return true
@@ -59,8 +72,8 @@ export async function getPosts(params: GetPostsParams = {}): Promise<GetPostsRet
     }
     if (isPages(collection)) {
         const pages = await getCollection(collection, (page) => {
-            if ((getLangFromSlug(page.slug) !== lang)
-                || (path && !page.slug.includes(path))) {
+            if ((getLangFromSlug(page.id) !== lang)
+                || (path && !page.id.includes(path))) {
                 return false
             }
             return true
@@ -78,7 +91,7 @@ export async function getLastTenPosts(params: GetPostsParams = {}) {
 /** Note: this function filters out draft posts based on the environment */
 export async function getAllPosts(lang: Languages = defaultLang) {
     return await getCollection(POST_KEY, (item) => {
-        if (getLangFromSlug(item.slug) !== lang) { // FAIL when post has language different from either default or specified
+        if (getLangFromSlug(item.id) !== lang) { // FAIL when post has language different from either default or specified
             return false
         }
         if (item.data.unlisted) { // FAIL when post is unlisted
@@ -138,7 +151,7 @@ export function getAdjacentPosts(
     allPosts: CollectionPost[],
 ): { previous: CollectionPost | null; next: CollectionPost | null } {
     // allPosts should already be sorted newest-first and filtered by language/draft/unlisted
-    const currentIndex = allPosts.findIndex(p => p.slug === currentPost.slug)
+    const currentIndex = allPosts.findIndex(p => p.id === currentPost.id)
 
     if (currentIndex === -1) {
         return { previous: null, next: null }
@@ -163,7 +176,7 @@ export function getHref(post: CollectionPost): string {
     if (post.data.redirect) {
         return post.data.redirect;
     }
-    return `/posts/${removeLangFromSlug(post.slug)}`;
+    return `/posts/${removeLangFromSlug(post.id)}`;
 }
 
 export function removeLangFromSlug(slug: string): string {
@@ -192,7 +205,7 @@ export function getRelatedPosts(
 
     const scored = allPosts
         .filter(post =>
-            post.slug !== currentPost.slug
+            post.id !== currentPost.id
             && !post.data.unlisted
             && !(import.meta.env.PROD && post.data.draft)
         )

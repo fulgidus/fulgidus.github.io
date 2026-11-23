@@ -13,9 +13,9 @@ type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
 
 const { as: Tag = "div", post, withDesc = false } = Astro.props;
 const postDate = post.data.pubDate;
-const lang = getLangFromSlug(post.slug);
+const lang = getLangFromSlug(post.id);
 const langPrefix = lang === defaultLang ? '' : `/${lang}`;
-const postHref = `${langPrefix}/posts/${removeLangFromSlug(post.slug)}/`;
+const postHref = `${langPrefix}/posts/${removeLangFromSlug(post.id)}/`;
 ---
 
 <li class="flex flex-col gap-2 sm:flex-row sm:gap-x-4 [&_q]:basis-full">

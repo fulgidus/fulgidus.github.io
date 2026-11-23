@@ -39,7 +39,7 @@ export async function GET(context: APIContext) {
             },
         ],
         items: posts.map((item) => {
-            const slug = lang === defaultLang ? item.slug : removeLangFromSlug(item.slug)
+            const slug = lang === defaultLang ? item.id : removeLangFromSlug(item.id)
             const postUrl = `${siteUrl}/${prefix}posts/${slug}`
 
             const feedItem: Record<string, unknown> = {

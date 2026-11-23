@@ -23,14 +23,14 @@ const seriesPosts = allPosts
     return orderA - orderB;
   });
 
-const currentIndex = seriesPosts.findIndex((p: CollectionPost) => p.slug === currentSlug);
+const currentIndex = seriesPosts.findIndex((p: CollectionPost) => p.id === currentSlug);
 const prevPost = currentIndex > 0 ? seriesPosts[currentIndex - 1] : null;
 const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentIndex + 1] : null;
 const totalParts = seriesPosts.length;
 const currentPart = currentIndex + 1;
 
 function getPostHref(post: CollectionPost): string {
-  const slug = post.slug;
+  const slug = post.id;
   if (slug.startsWith("it/")) {
     return `/it/posts/${slug.replace(/^it\//, "")}`;
   }

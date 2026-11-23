@@ -22,8 +22,8 @@ async function getSlugsByLang(): Promise<Map<string, Set<string>>> {
     // Skip drafts in production
     if (import.meta.env.PROD && post.data.draft) continue
 
-    const lang = getLangFromSlug(post.slug)
-    const baseSlug = removeLangFromSlug(post.slug)
+    const lang = getLangFromSlug(post.id)
+    const baseSlug = removeLangFromSlug(post.id)
 
     if (!slugCacheByLang.has(lang)) {
       slugCacheByLang.set(lang, new Set())

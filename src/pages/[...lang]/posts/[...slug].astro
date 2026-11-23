@@ -1,4 +1,5 @@
 ---
+import { render } from 'astro:content';
 import GoBackToBlog from "@/components/GoBackToBlog.vue";
 import GiscusComments from "@/components/GiscusComments.vue";
 import LanguageFlag from "@/components/LanguageFlags.vue";
@@ -32,7 +33,7 @@ export async function getStaticPaths() {
     });
 
     for (const post of posts) {
-      const slugParam = lang === defaultLang ? post.slug : removeLangFromSlug(post.slug);
+      const slugParam = lang === defaultLang ? post.id : removeLangFromSlug(post.id);
       paths.push({
         params: {
           lang: lang === defaultLang ? undefined : lang,
@@ -63,9 +64,9 @@ const {
   series,
   slides,
 } = post.data;
-const { slug } = post;
+const slug = post.id;
 
-const { Content, remarkPluginFrontmatter } = await post.render();
+const { Content, remarkPluginFrontmatter } = await render(post);
 
 // Use remark-computed reading time, with manual duration as fallback/override
 const readingTime = duration || remarkPluginFrontmatter?.duration;

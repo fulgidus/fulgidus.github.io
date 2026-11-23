@@ -148,7 +148,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd({
     .map((lang) => {
       if (lang !== defaultLang) {
         return (
-          <>
+          <Fragment>
             <link
               rel="alternate"
               type="application/rss+xml"
@@ -170,7 +170,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd({
               title={`${translateFrom(lang, "rss.titleAll")} (JSON Feed)`}
               lang={lang}
             />
-          </>
+          </Fragment>
         );
       }
     })

@@ -372,6 +372,8 @@ watch(() => props.headings, () => {
   list-style: none;
   margin: 0;
   padding: 0;
+  /* Matches the spacing the article's prose list styles used to give the ToC */
+  line-height: 1.75;
 }
 
 .toc-sublist {

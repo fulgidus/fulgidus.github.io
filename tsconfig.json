@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "jsx": "preserve",
+        "jsxImportSource": "astro",
         "baseUrl": ".",
         "paths": {
             "@/*": [
@@ -9,8 +10,10 @@
         },
         "strictNullChecks": true,
         "exactOptionalPropertyTypes": false,
-        "module": "es2022",
-        "moduleResolution": "Node",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
         "allowSyntheticDefaultImports": true,
-    }
+    },
+    "include": [".astro/types.d.ts", "**/*"],
+    "exclude": ["dist"]
 }

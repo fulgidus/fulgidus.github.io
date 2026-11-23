@@ -46,7 +46,7 @@ for (const lang of activeLanguages) {
   const postsToShow = recentPosts.slice(0, 5);
   postsData[lang] = postsToShow.map((post) => ({
     href: translatePath(getHref(post), lang),
-    slug: removeLangFromSlug(post.slug),
+    slug: removeLangFromSlug(post.id),
     dateISO: new Date(post.data.pubDate).toISOString(),
   }));
 }
@@ -206,7 +206,7 @@ const t = (key: Parameters<typeof translateFrom>[1]) => translateFrom(currentLan
         html += '<a href="' + post.href + '" class="terminal-file" data-astro-prefetch>'
           + '<span class="file-permissions">-rw-r--r--</span>'
           + '<span class="file-date">' + dateStr + '</span>'
-          + '<span class="file-name">' + post.slug + '/</span>'
+          + '<span class="file-name">' + post.id + '/</span>'
           + '</a>';
       }
       postsContainer.innerHTML = html;

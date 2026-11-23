@@ -38,7 +38,7 @@ export async function GET(context: Context) {
         description: siteConfig.description,
         site: context.site,
         items: posts.map((item) => {
-            const slug = lang === defaultLang ? item.slug : removeLangFromSlug(item.slug)
+            const slug = lang === defaultLang ? item.id : removeLangFromSlug(item.id)
             return {
                 ...item.data,
                 link: `${context.site}${prefix}posts/${slug}`,

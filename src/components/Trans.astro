@@ -15,17 +15,17 @@ type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
 };
 
 const currentLang = getLangFromUrl(Astro.url);
-const { key, lang = currentLang, ...props }: Props<"span"> = Astro.props;
+const { key, lang = currentLang, ...props } = Astro.props as Props<"span">;
 ---
 
 <span {...props}>
   {
     !key ? (
-      <>#key not provided#</>
+      <Fragment>#key not provided#</Fragment>
     ) : (
-      <>
+      <Fragment>
         {translateFrom(lang, key)}
-      </>
+      </Fragment>
     )
   }
 </span>

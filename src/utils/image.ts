@@ -1,4 +1,4 @@
-import type { ImageSize } from '@/content/config'
+import type { ImageSize } from '@/content.config'
 
 export function composeImageSizeClasses(size: ImageSize): string {
     const r = Math.random()

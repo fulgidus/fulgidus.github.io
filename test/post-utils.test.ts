@@ -22,7 +22,7 @@ import { POST_KEY, PAGE_KEY } from '../src/types'
 
 function makePost(overrides: Record<string, any> = {}) {
     return {
-        id: overrides.id ?? 'en/test-post',
+        id: overrides.id ?? overrides.slug ?? 'en/test-post', // content layer: id replaces slug
         slug: overrides.slug ?? 'en/test-post',
         collection: POST_KEY as typeof POST_KEY,
         body: overrides.body ?? 'Test body content',
@@ -42,7 +42,7 @@ function makePost(overrides: Record<string, any> = {}) {
 
 function makePage(overrides: Record<string, any> = {}) {
     return {
-        id: overrides.id ?? 'en/test-page',
+        id: overrides.id ?? overrides.slug ?? 'en/test-page',
         slug: overrides.slug ?? 'en/test-page',
         collection: PAGE_KEY as typeof PAGE_KEY,
         body: overrides.body ?? 'Test page content',
@@ -81,9 +81,9 @@ describe('utils/posts', () => {
                 makePost({ slug: 'en/mid', pubDate: '2024-06-15' }),
             ]
             const sorted = sortPostsByDate({ elements: posts as any }) as any[]
-            expect(sorted[0].slug).toBe('en/new')
-            expect(sorted[1].slug).toBe('en/mid')
-            expect(sorted[2].slug).toBe('en/old')
+            expect(sorted[0].id).toBe('en/new')
+            expect(sorted[1].id).toBe('en/mid')
+            expect(sorted[2].id).toBe('en/old')
         })
 
         it('sorts pages alphabetically by title', () => {
@@ -147,7 +147,7 @@ describe('utils/posts', () => {
 
             const result = await getPosts({ lang: 'it' })
             expect(result).toHaveLength(1)
-            expect((result[0] as any).slug).toBe('it/post-2')
+            expect((result[0] as any).id).toBe('it/post-2')
         })
 
         it('filters out unlisted posts by default', async () => {
@@ -161,7 +161,7 @@ describe('utils/posts', () => {
 
             const result = await getPosts()
             expect(result).toHaveLength(1)
-            expect((result[0] as any).slug).toBe('en/listed')
+            expect((result[0] as any).id).toBe('en/listed')
         })
 
         it('includes unlisted posts when withUnlisted is true', async () => {
@@ -201,7 +201,7 @@ describe('utils/posts', () => {
 
             const result = await getPosts({ withDrafts: false })
             expect(result).toHaveLength(1)
-            expect((result[0] as any).slug).toBe('en/published')
+            expect((result[0] as any).id).toBe('en/published')
         })
 
         it('filters by path when specified', async () => {
@@ -215,7 +215,7 @@ describe('utils/posts', () => {
 
             const result = await getPosts({ path: 'notes' })
             expect(result).toHaveLength(1)
-            expect((result[0] as any).slug).toBe('en/notes/note-1')
+            expect((result[0] as any).id).toBe('en/notes/note-1')
         })
 
         it('returns empty array for invalid collection key', async () => {
@@ -246,8 +246,8 @@ describe('utils/posts', () => {
             })
 
             const result = await getPosts()
-            expect((result[0] as any).slug).toBe('en/new')
-            expect((result[1] as any).slug).toBe('en/old')
+            expect((result[0] as any).id).toBe('en/new')
+            expect((result[1] as any).id).toBe('en/old')
         })
     })
 
@@ -292,7 +292,7 @@ describe('utils/posts', () => {
 
             const result = await getAllPosts('en')
             expect(result).toHaveLength(1)
-            expect(result[0].slug).toBe('en/post-1')
+            expect(result[0].id).toBe('en/post-1')
         })
 
         it('filters out unlisted posts', async () => {
@@ -319,7 +319,7 @@ describe('utils/posts', () => {
 
             const result = await getAllPosts()
             expect(result).toHaveLength(1)
-            expect(result[0].slug).toBe('en/post-1')
+            expect(result[0].id).toBe('en/post-1')
         })
     })
 
@@ -442,19 +442,19 @@ describe('utils/posts', () => {
 
         it('returns previous and next for middle post', () => {
             const result = getAdjacentPosts(posts[1] as any, posts as any)
-            expect(result.previous?.slug).toBe('en/oldest')
-            expect(result.next?.slug).toBe('en/newest')
+            expect(result.previous?.id).toBe('en/oldest')
+            expect(result.next?.id).toBe('en/newest')
         })
 
         it('returns null for previous when at the oldest post', () => {
             const result = getAdjacentPosts(posts[2] as any, posts as any)
             expect(result.previous).toBeNull()
-            expect(result.next?.slug).toBe('en/middle')
+            expect(result.next?.id).toBe('en/middle')
         })
 
         it('returns null for next when at the newest post', () => {
             const result = getAdjacentPosts(posts[0] as any, posts as any)
-            expect(result.previous?.slug).toBe('en/middle')
+            expect(result.previous?.id).toBe('en/middle')
             expect(result.next).toBeNull()
         })
 
@@ -587,7 +587,7 @@ describe('utils/posts', () => {
 
             const result = getRelatedPosts(current as any, allPosts as any)
             expect(result).toHaveLength(1)
-            expect(result[0].slug).toBe('en/related')
+            expect(result[0].id).toBe('en/related')
         })
 
         it('sorts by tag overlap count descending', () => {
@@ -599,8 +599,8 @@ describe('utils/posts', () => {
             ]
 
             const result = getRelatedPosts(current as any, allPosts as any)
-            expect(result[0].slug).toBe('en/two-matches')
-            expect(result[1].slug).toBe('en/one-match')
+            expect(result[0].id).toBe('en/two-matches')
+            expect(result[1].id).toBe('en/one-match')
         })
 
         it('limits results to maxResults', () => {
@@ -656,8 +656,8 @@ describe('utils/posts', () => {
             ]
 
             const result = getRelatedPosts(current as any, allPosts as any)
-            expect(result[0].slug).toBe('en/newer')
-            expect(result[1].slug).toBe('en/older')
+            expect(result[0].id).toBe('en/newer')
+            expect(result[1].id).toBe('en/older')
         })
 
         it('defaults to 3 max results', () => {

@@ -1,6 +1,6 @@
 ---
 import { fade } from "astro:transitions";
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 import BaseHead from "@/components/BaseHead.astro";
 import Header from "@/components/Header.vue";
 import HeaderAstro from "@/components/Header.astro";
@@ -48,7 +48,7 @@ const pageTranslations = await getPageTranslations(Astro.url, postSlug);
         document.addEventListener('astro:before-swap', function (e) { tag(e.newDocument); });
       })();
     </script>
-    <ViewTransitions />
+    <ClientRouter />
     <!-- Inline blocking script: apply dark class before first paint to prevent FOUC.
          Reads the same localStorage key that @vueuse/core useDark() uses. -->
     <script is:inline>

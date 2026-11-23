@@ -30,11 +30,11 @@ export async function getPostTranslationMap(): Promise<Record<string, Translatio
     if (import.meta.env.PROD && post.data.draft) continue
     if (post.data.unlisted) continue
 
-    const lang = post.data.lang ?? getLangFromSlug(post.slug)
-    const baseSlug = post.data.translationOf ?? removeLangFromSlug(post.slug)
+    const lang = post.data.lang ?? getLangFromSlug(post.id)
+    const baseSlug = post.data.translationOf ?? removeLangFromSlug(post.id)
     const url = lang === defaultLang
-      ? `/posts/${removeLangFromSlug(post.slug)}/`
-      : `/${lang}/posts/${removeLangFromSlug(post.slug)}/`
+      ? `/posts/${removeLangFromSlug(post.id)}/`
+      : `/${lang}/posts/${removeLangFromSlug(post.id)}/`
 
     if (!map[baseSlug]) map[baseSlug] = {}
     map[baseSlug][lang] = url

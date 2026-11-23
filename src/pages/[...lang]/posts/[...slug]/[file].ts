@@ -1,3 +1,4 @@
+import { render } from 'astro:content'
 import type { CollectionPost } from '@/types'
 import { getPosts, removeLangFromSlug } from '@/utils/posts'
 import type { APIContext, GetStaticPaths } from 'astro'
@@ -14,7 +15,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
             paths.push({
                 params: {
                     lang: lang === defaultLang ? undefined : lang,
-                    slug: removeLangFromSlug(post.slug),
+                    slug: removeLangFromSlug(post.id),
                     file: 'index.html.md',
                 },
                 props: { post },
@@ -27,7 +28,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export async function GET(_context: APIContext) {
     const { post } = _context.props as { post: CollectionPost }
-    const { remarkPluginFrontmatter } = await post.render()
+    const { remarkPluginFrontmatter } = await render(post)
     const duration = post.data.duration || remarkPluginFrontmatter?.duration
 
     const esc = (s: string) => s.replace(/"/g, '\\"')

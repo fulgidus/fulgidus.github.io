@@ -9,7 +9,7 @@ interface Context {
 export async function generateDisallowedPaths() {
     const blogPosts = await getCollection('blog', p => p.data.unlisted);
     const base = siteConfig.basePath ?? '/'
-    return blogPosts.map(p => `Disallow: ${base}posts/${p.slug}`).join('\n');
+    return blogPosts.map(p => `Disallow: ${base}posts/${p.id}`).join('\n');
 }
 
 export async function GET(context: Context) {

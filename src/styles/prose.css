@@ -1,5 +1,41 @@
 .prose {
-  --at-apply: text-base lh-1.75 mb-16 max-w-none sm: min-h-50vh min-h-38vh;
+  --at-apply: text-base lh-[1.75] mb-16 max-w-none sm: min-h-50vh min-h-38vh;
+}
+/* UnoCSS 66 typography ships a gray palette; the site's colors come from the theme, so leave these unset (as before) */
+:root .prose {
+  --un-prose-body: initial;
+  --un-prose-bold: initial;
+  --un-prose-bullets: initial;
+  --un-prose-captions: initial;
+  --un-prose-code: initial;
+  --un-prose-counters: initial;
+  --un-prose-headings: initial;
+  --un-prose-hr: initial;
+  --un-prose-kbd-shadows: initial;
+  --un-prose-kbd: initial;
+  --un-prose-lead: initial;
+  --un-prose-links: initial;
+  --un-prose-pre-bg: initial;
+  --un-prose-pre-code: initial;
+  --un-prose-quote-borders: initial;
+  --un-prose-quotes: initial;
+  --un-prose-td-borders: initial;
+  --un-prose-th-borders: initial;
+}
+/* Kept from the UnoCSS 0.61 typography preset, which 66 dropped */
+.prose :where(pre, code):not(:where(.not-prose, .not-prose *)) {
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  tab-size: 4;
+  hyphens: none;
+}
+.prose :where(table):not(:where(.not-prose, .not-prose *)) {
+  display: block;
+  margin: 1em 0;
+  border-collapse: collapse;
+  overflow-x: auto;
 }
 .prose a {
   --at-apply: prose-link;
@@ -260,11 +296,13 @@
   margin-top: 1.25em;
   margin-bottom: 1.25em;
   list-style-type: none;
+  padding-inline-start: 1.25em;
 }
 .prose ul {
   margin-top: 1.25em;
   margin-bottom: 1.25em;
   list-style-type: none;
+  padding-inline-start: 1.25em;
 }
 .prose li {
   margin-top: 0.5em;

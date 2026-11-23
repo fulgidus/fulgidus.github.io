@@ -10,13 +10,13 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
     const paths: Array<{ params: { slug: string }; props: { post: CollectionPost } }> = []
     for (const post of allPosts) {
-        const { hash } = await getOgImageData(post.slug, {
+        const { hash } = await getOgImageData(post.id, {
             title: post.data.title,
             description: post.data.description,
             pubDate: post.data.pubDate,
         })
         paths.push({
-            params: { slug: `${post.slug}-${hash}` },
+            params: { slug: `${post.id}-${hash}` },
             props: { post },
         })
     }
@@ -26,7 +26,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const GET: APIRoute = async ({ props }) => {
     const post = props.post as CollectionPost
-    const { png } = await getOgImageData(post.slug, {
+    const { png } = await getOgImageData(post.id, {
         title: post.data.title,
         description: post.data.description,
         pubDate: post.data.pubDate,

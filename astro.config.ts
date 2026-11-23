@@ -9,6 +9,7 @@ import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import { remarkReadingTime } from './src/plugins/remark-reading-time'
 import { rehypeTocHeadings } from './src/plugins/rehype-toc-headings'
+import { unified } from '@astrojs/markdown-remark'
 import nodePath from 'node:path'
 
 
@@ -92,6 +93,8 @@ export default defineConfig({
         })
     ],
     markdown: {
+        // Astro 7 defaults to the Sätteri processor; keep unified so our remark/rehype plugins run
+        processor: unified({
         remarkPlugins: [remarkReadingTime],
         rehypePlugins: [
             rehypeSlug,
@@ -138,6 +141,7 @@ export default defineConfig({
             }],
             rehypeTocHeadings,
         ],
+        }),
         shikiConfig: {
             themes: {
                 light: 'github-light-default',
