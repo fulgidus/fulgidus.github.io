@@ -93,28 +93,29 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <!-- Desktop: floating mini deck -->
+  <!-- Mobile/tablet: pinned to the top while reading. xl+: floating mini deck bottom-left. -->
   <aside
     v-show="visible && state !== 'closed'"
-    class="slide-dock hidden xl:block fixed left-4 bottom-4 z-40"
+    class="slide-dock fixed z-40 top-0 inset-x-0 xl:inset-x-auto xl:top-auto xl:left-4 xl:bottom-4"
     :aria-label="labels.label"
   >
     <div
       v-show="state === 'open'"
-      class="w-64 rounded-lg overflow-hidden shadow-xl border border-main bg-main"
+      class="w-full max-w-md mx-auto xl:w-64 overflow-hidden shadow-xl border-b xl:border xl:rounded-lg border-main bg-main"
     >
-      <div class="flex items-center gap-2 px-3 py-1.5 text-xs text-main">
+      <div class="flex items-center gap-3 px-3 py-1.5 text-xs text-main">
         <span class="font-semibold">{{ labels.label }} {{ slide }}/{{ total }}</span>
         <a class="ml-auto opacity-70 hover:opacity-100" :href="fullUrl" target="_blank" rel="noopener" :title="labels.open" :aria-label="labels.open">
-          <span class="i-ri-fullscreen-line block" />
+          <span class="i-ri-fullscreen-line block text-base xl:text-xs" />
         </a>
         <button class="opacity-70 hover:opacity-100" type="button" :title="labels.minimize" :aria-label="labels.minimize" @click="setState('min')">
-          <span class="i-ri-subtract-line block" />
+          <span class="i-ri-subtract-line block text-base xl:text-xs" />
         </button>
         <button class="opacity-70 hover:opacity-100" type="button" :title="labels.close" :aria-label="labels.close" @click="setState('closed')">
-          <span class="i-ri-close-line block" />
+          <span class="i-ri-close-line block text-base xl:text-xs" />
         </button>
       </div>
+      <!-- Always landscape, so the deck stays in single-slide mode even on portrait phones. -->
       <iframe
         ref="frame"
         :src="`${base}#1`"
@@ -126,26 +127,14 @@ onUnmounted(() => {
     <button
       v-show="state === 'min'"
       type="button"
-      class="flex items-center gap-2 px-3 py-2 rounded-full shadow-xl border border-main bg-main text-main text-sm"
+      class="flex items-center gap-2 px-3 py-2 w-full xl:w-auto justify-center xl:rounded-full shadow-xl border-b xl:border border-main bg-main text-main text-sm"
       :title="labels.expand"
       :aria-label="labels.expand"
       @click="setState('open')"
     >
       <span class="i-ri-slideshow-line block" />
       {{ labels.label }} {{ slide }}/{{ total }}
+      <span class="i-ri-arrow-down-s-line block xl:hidden" />
     </button>
   </aside>
-
-  <!-- Mobile: bottom bar -->
-  <a
-    v-show="visible && state !== 'closed'"
-    class="slide-dock-bar xl:hidden fixed left-0 right-0 bottom-0 z-40 flex items-center gap-2 px-4 py-2 border-t border-main bg-main text-main text-sm"
-    :href="fullUrl"
-    target="_blank"
-    rel="noopener"
-  >
-    <span class="i-ri-slideshow-line block" />
-    <span class="font-semibold">{{ labels.label }} {{ slide }}/{{ total }}</span>
-    <span class="ml-auto underline">{{ labels.open }}</span>
-  </a>
 </template>
