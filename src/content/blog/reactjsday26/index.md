@@ -2,9 +2,9 @@
 title: "Cheap Output, Expensive Judgment"
 description: "Slides and write-up of my reactjsday 2026 talk: AI made output nearly free, but not judgment. What that does to the people doing the work, to the people receiving it, to our clients, and to the old dream of not needing skilled people."
 image: ./cover.jpg
-imageAlt: "Lewis Hine, Power house mechanic working on steam pump, 1920. Public domain."
+imageAlt: "Title slide of the talk Cheap Output, Expensive Judgment, with Lewis Hine's 1920 photo of a power house mechanic working on a steam pump"
 imageSize: md
-pubDate: 2026-11-23T19:00:00
+pubDate: 2026-11-19T19:00:00
 tags:
   - made-with-ai
   - talks
@@ -19,60 +19,70 @@ draft: false
 lang: en
 redirect: ""
 unlisted: false
-video: false
+video: true
 ---
-This is the written version of the lightning talk I gave at **reactjsday 2026**. Five minutes, four problems, four things to try on Monday.
+This is the written version of the lightning talk I gave at **reactjsday 2026**. Five minutes on stage, and a deck I put together on a split-second decision that same day. So no, it wasn't the best presentation you'll see this year. It's mostly made of my recent observations and opinions, and me being the person I am, you probably won't agree with all of it. That's fine: come and argue with me.
+
+<iframe src="https://www.youtube-nocookie.com/embed/ErRX5rcoSMc" title="Cheap Output, Expensive Judgment: talk recording" loading="lazy" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 **[Open the slides full screen](/talks/reactjsday26/)**
 
 <iframe src="/talks/reactjsday26/" title="Cheap Output, Expensive Judgment: slides" loading="lazy" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;" allowfullscreen></iframe>
 
-The whole talk fits in one sentence: **AI made output nearly free. It did not make judgment free.** Everything else follows from that.
+We are always talking about AI and the unimaginable advantages we're going to get out of it. And we keep forgetting that the center of the whole process is still us. People. And people have limitations. Not as many as AI, but close.
 
-## 1. AI burnout: we work more, not less
+I'm not anti-AI. I just want to sensitize you about a mindset that is being created and encouraged in companies right now, and about how to react to it.
 
-AI was sold as less work. What we got is more work, of a different kind. Writing turned into checking, and checking now happens on five threads at once, like the switchboard operators of the fifties.
+## Cap the threads: "you'll work less" is a hoax
 
-One number is enough: according to the LeadDev Engineering Leadership Report 2026, **53% of senior engineers work longer hours than before AI**. A year earlier it was 28%. Research from UC Berkeley, BCG ("AI brain fry") and Oregon State University points the same way: more parallel streams, more context switching, more fatigue.
+AI was sold as less work. It has been proven, by more than a few studies, that people work **more**, not less. More than half of senior engineers now work longer hours than before AI; a year earlier it was 28%. Writing became checking, and checking now happens on five threads at once.
 
-**What to do:** run fewer agents at once, and count review as real work, in estimates and in planning. If checking is the job, it has to show up on the board.
+This is one of the biggest hoaxes of the decade. So when someone promises you that you'll work less, you can just say no. If you ask me, I'll give you the data.
 
-## 2. Slop: work that looks finished and isn't
+What to do: don't split your attention too much. Fewer agents in parallel, and review counts as real work.
 
-Slop is output that looks done and isn't. Making it costs nothing. Checking it costs a lot. So the cost doesn't disappear: it moves to whoever receives it.
+## Gate the slop: it costs more than its author thinks
 
-BetterUp Labs and the Stanford Social Media Lab put a number on it: **about two hours** lost for every piece of "workslop" received, to verify it, fix it or redo it. In open source the effect is even more visible: maintainers are closing contributions because they can't keep up with generated PRs and reports (Linux Foundation Research, October 2026).
+Slop is mostly what gets thrown our way. It's expensive to review, fix and manage, way more expensive than the people who produce it realize. Each piece costs the person receiving it about two hours.
 
-**What to do:** the sender pays. *If you send it, you must be able to explain it.* Every line. Proof comes before review, not during it.
+The typical case: non-technical people produce pseudo-technical solutions, throw them your way and expect them to scale and perform as advertised. They don't. Not even close.
 
-## 3. Effort stratification: give back the effort you were given
+What to do: the cost goes back to the sender. If you send it, you must be able to explain it, every line.
 
-The third point is about clients, and about protecting yourself. Sort before you answer, like a mail room:
+## Match the effort: slop gets slop
 
-- **Slop**: eight pages of generated rambling that nobody read. Claude writes the reply.
-- **Ask**: a real question from a real person. A person answers.
-- **Risk**: a decision with consequences. It gets your full attention.
+This one is very close to me.
 
-Your attention, and your mental health, are the scarce resource. And push back on "with AI it should be easy, why isn't it ready yet?". Generating was never the slow part. **"With AI it should be easy" is not a deadline.**
+There has always been a feud between middle management and technical folks. Managers wonder why they have to deal with us and our quirks; technical people usually think they could do the manager's job better. It's a long war.
 
-## 4. Deskilling: the job keeps its skill, the person can lose it
+But now enter the client, and the client is not on our side. They'll throw long documents in your face, produced with little effort, and demand your attention to every detail. And they expect things to work the way the AI promised them.
 
-COBOL, low-code, now AI: every time the promise was "no more programmers". Every time the easy part got automated and the hard part stayed: knowing what to build, and checking that it's right. Lisanne Bainbridge described it in 1983 in *Ironies of Automation*: the more you automate, the more what's left for humans is the hard part.
+That's why you should **triage every communication you receive**, from management and from clients, if you have the unfortunate fate of having to deal with them:
 
-But one risk is real. In an Anthropic test on learning a new library, **engineers who coded by hand scored 67% on the follow-up test; those who let AI write the code scored 50%**. Medicine shows the same pattern: endoscopists who got used to AI assistance performed worse once it was taken away (*The Lancet Gastroenterology & Hepatology*, 2025).
+- **Slop gets slop.** If you throw 80 pages of pure experiment my way, I'll use the same tool to deal with you. That's my god-given right to self-defense.
+- **A real question gets a real answer.** If a real person has a real, or at least justified, worry or question, then you start addressing it, with the bare minimum of CPU you can spare.
+- **Consequences get you.** When the stakes are real, it's a cost-benefit calculation. Nothing new: you can handle that yourself.
 
-The job stays skilled. The person can lose the skill. **What to do:** practice without AI, on purpose. Juniors debug by hand first.
+The point is: triage first. And treat these behaviors for what they are, involuntary but malicious, because they will erode your mental health, your ability to stay concentrated, and your ability to stay technically relevant in your role. "With AI it should be easy" is not a deadline.
+
+## Keep the skill: they pay for your judgment
+
+None of this is new. The race to deskill the worker began a long time ago. The problem for them is that the job is still built on the skill.
+
+They are not paying for lines of code (whoever has seen that metric knows). They are paying for your judgment: for how many slaps in the face you've taken from production on a Friday evening over your career, and how many lessons you've learned the hard way.
+
+So keep training, on your own time. In an Anthropic study, people who coded by hand scored **67%** when tested; people who routinely let AI do it scored **50%**. In a short time span. It's very important that you stay trained.
 
 ## For Monday
 
-Output is cheap. Verification is the job.
+Output is cheap. Judgment is expensive. Four things:
 
-1. **Cap the threads.** Limit parallel agents. Count review as work.
-2. **Gate the slop.** The author explains every line. Proof before review.
-3. **Match the effort.** Triage first. Slop gets slop. Attention goes to people.
-4. **Keep the skill.** AI-off practice. Juniors debug by hand first.
+1. **Cap the threads.** Don't split your attention too much.
+2. **Gate the slop.** The author explains every line.
+3. **Match the effort.** Triage first. Slop gets slop.
+4. **Keep the skill.** Practice without AI.
 
-The skill is what does the verifying. Protect it.
+And good luck. It's not going to be pleasant. For me it hasn't been, lately. If you have more practical needs or questions, write to me: I'll give you my two cents.
 
 ## Sources
 

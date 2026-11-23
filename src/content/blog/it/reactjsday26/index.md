@@ -2,9 +2,9 @@
 title: "Cheap Output, Expensive Judgment"
 description: "Slide e resoconto del mio talk a reactjsday 2026: l'AI ha reso l'output quasi gratuito, ma non il giudizio. Cosa significa per chi fa il lavoro, per chi lo riceve, per i nostri clienti e per il vecchio sogno di non aver più bisogno di persone competenti."
 image: "../../reactjsday26/cover.jpg"
-imageAlt: "Lewis Hine, meccanico di una centrale al lavoro su una pompa a vapore, 1920. Pubblico dominio."
+imageAlt: "Slide del titolo del talk Cheap Output, Expensive Judgment, con la foto di Lewis Hine del 1920 di un meccanico al lavoro su una pompa a vapore"
 imageSize: md
-pubDate: 2026-11-23T19:00:00
+pubDate: 2026-11-19T19:00:00
 tags:
   - made-with-ai
   - talks
@@ -20,60 +20,70 @@ lang: it
 translationOf: "reactjsday26"
 redirect: ""
 unlisted: false
-video: false
+video: true
 ---
-Questa è la versione scritta del lightning talk che ho tenuto a **reactjsday 2026**. Cinque minuti, quattro problemi, quattro cose da provare lunedì.
+Questa è la versione scritta del lightning talk che ho tenuto a **reactjsday 2026**. Cinque minuti sul palco, e una presentazione decisa su due piedi quel giorno stesso. Quindi no, non è stata la presentazione migliore che vedrete quest'anno. È fatta soprattutto di osservazioni e opinioni recenti, e conoscendomi probabilmente non sarete d'accordo su tutto. Va benissimo: venite a discuterne.
 
-**[Apri le slide a schermo intero](/talks/reactjsday26/)** (le slide sono in inglese)
+<iframe src="https://www.youtube-nocookie.com/embed/ErRX5rcoSMc" title="Cheap Output, Expensive Judgment: registrazione del talk" loading="lazy" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+**[Apri le slide a schermo intero](/talks/reactjsday26/)** (talk e slide sono in inglese)
 
 <iframe src="/talks/reactjsday26/" title="Cheap Output, Expensive Judgment: slide" loading="lazy" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;" allowfullscreen></iframe>
 
-Tutto il talk sta in una frase: **l'AI ha reso l'output quasi gratuito. Non ha reso gratuito il giudizio.** Il resto viene da lì.
+Parliamo sempre di AI e degli inimmaginabili vantaggi che ne otterremo. E continuiamo a dimenticare che al centro di tutto il processo ci siamo ancora noi. Le persone. E le persone hanno dei limiti. Non quanti l'AI, ma quasi.
 
-## 1. Burnout da AI: lavoriamo di più, non di meno
+Non sono contro l'AI. Voglio solo sensibilizzarvi su una mentalità che si sta creando e incoraggiando nelle aziende in questo periodo, e su come reagire.
 
-L'AI ci è stata venduta come meno lavoro. Quello che abbiamo ottenuto è più lavoro, di un altro tipo. Scrivere è diventato controllare, e il controllo ora avviene su cinque fili contemporaneamente, come le centraliniste degli anni Cinquanta.
+## Limita i thread: "lavorerai di meno" è una bufala
 
-Basta un numero: secondo il LeadDev Engineering Leadership Report 2026, **il 53% degli ingegneri senior lavora più ore di prima dell'AI**. Un anno prima era il 28%. Le ricerche di UC Berkeley, BCG ("AI brain fry") e Oregon State University vanno nella stessa direzione: più flussi in parallelo, più cambi di contesto, più fatica.
+L'AI ci è stata venduta come meno lavoro. È stato dimostrato, da più di qualche studio, che le persone lavorano **di più**, non di meno. Più della metà degli ingegneri senior oggi lavora più ore di prima dell'AI; un anno prima era il 28%. Scrivere è diventato controllare, e il controllo ora avviene su cinque thread contemporaneamente.
 
-**Cosa fare:** meno agenti in parallelo, e la review conta come lavoro vero, nelle stime e nella pianificazione. Se controllare è il lavoro, deve comparire sulla board.
+È una delle più grandi bufale del decennio. Quindi quando qualcuno vi promette che lavorerete di meno, potete semplicemente dire di no. Se me li chiedete, i dati ve li do.
 
-## 2. Slop: lavoro che sembra finito e non lo è
+Cosa fare: non dividete troppo la vostra attenzione. Meno agenti in parallelo, e la review conta come lavoro vero.
 
-Lo slop è output che sembra fatto e non lo è. Produrlo non costa niente. Verificarlo costa parecchio. Quindi il costo non sparisce: si sposta su chi lo riceve.
+## Filtra lo slop: costa più di quanto pensa chi lo produce
 
-BetterUp Labs e lo Stanford Social Media Lab ci hanno messo un numero: **circa due ore** perse per ogni pezzo di "workslop" ricevuto, per verificarlo, correggerlo o rifarlo. Nell'open source l'effetto è ancora più visibile: i maintainer chiudono le contribuzioni perché non riescono a stare dietro a PR e segnalazioni generate (Linux Foundation Research, ottobre 2026).
+Lo slop è la maggior parte di quello che ci viene lanciato addosso. È costoso da revisionare, correggere e gestire, molto più costoso di quanto si rendano conto le persone che lo producono. Ogni pezzo costa a chi lo riceve circa due ore.
 
-**Cosa fare:** paga chi manda. *Se lo mandi, devi saperlo spiegare.* Ogni riga. Le prove arrivano prima della review, non durante.
+Il caso tipico: persone non tecniche producono soluzioni pseudo-tecniche, ve le buttano addosso e pretendono che scalino e funzionino come promesso. Non lo fanno. Nemmeno lontanamente.
 
-## 3. Stratificare l'effort: restituisci l'impegno che ti è stato dato
+Cosa fare: il costo torna a chi lo manda. Se lo mandi, devi saperlo spiegare, riga per riga.
 
-Il terzo punto riguarda i clienti, e il proteggere sé stessi. Smista prima di rispondere, come in un ufficio postale:
+## Adegua l'impegno: allo slop si risponde con lo slop
 
-- **Slop**: otto pagine di sproloquio generato che nessuno ha letto. La risposta la scrive Claude.
-- **Domanda**: una domanda vera da una persona vera. Risponde una persona.
-- **Rischio**: una decisione con conseguenze. Merita tutta la tua attenzione.
+Questo punto mi sta molto a cuore.
 
-La tua attenzione, e la tua salute mentale, sono la risorsa scarsa. E respingi il "con l'AI dovrebbe essere facile, perché non è ancora pronto?". Generare non è mai stata la parte lenta. **"Con l'AI dovrebbe essere facile" non è una scadenza.**
+C'è sempre stata una faida tra middle management e tecnici. I manager si chiedono perché debbano avere a che fare con noi e le nostre stranezze; i tecnici di solito pensano di poter fare il lavoro del manager meglio di lui. È una guerra lunga.
 
-## 4. Deskilling: il mestiere resta qualificato, la persona può perdere la competenza
+Ma ora entra in scena il cliente, e il cliente non è dalla nostra parte. Vi tirerà in faccia documenti lunghissimi, prodotti con poco sforzo, e pretenderà la vostra attenzione su ogni dettaglio. E si aspetterà che le cose funzionino come gliel'ha promesso l'AI.
 
-COBOL, low-code, ora l'AI: ogni volta la promessa era "niente più programmatori". Ogni volta si è automatizzata la parte facile ed è rimasta quella difficile: sapere cosa costruire e verificare che sia giusto. Lisanne Bainbridge lo descriveva già nel 1983 in *Ironies of Automation*: più automatizzi, più quello che resta agli umani è la parte difficile.
+Per questo dovete **smistare ogni comunicazione che ricevete**, dal management e dai clienti, se avete la sfortuna di doverci avere a che fare:
 
-Ma un rischio è reale. In un test di Anthropic sull'apprendimento di una nuova libreria, **chi ha scritto il codice a mano ha ottenuto il 67% al test successivo, chi l'ha lasciato scrivere all'AI il 50%**. La medicina mostra lo stesso schema: gli endoscopisti abituati all'assistenza dell'AI hanno performato peggio quando gli è stata tolta (*The Lancet Gastroenterology & Hepatology*, 2025).
+- **Allo slop si risponde con lo slop.** Se mi mandate 80 pagine di puro esperimento, userò lo stesso strumento per rispondervi. È il mio sacrosanto diritto alla legittima difesa.
+- **A una domanda vera, una risposta vera.** Se una persona vera ha un dubbio o una domanda vera, o almeno giustificata, allora iniziate a occuparvene, con il minimo indispensabile di CPU che riuscite a dedicarle.
+- **Alle conseguenze, voi.** Quando la posta in gioco è reale, è un calcolo costi-benefici. Niente di nuovo: sapete gestirlo da soli.
 
-Il mestiere resta qualificato. La persona può perdere la competenza. **Cosa fare:** esercitarsi senza AI, di proposito. I junior fanno debug a mano, prima.
+Il punto è: prima si smista. E questi comportamenti vanno trattati per quello che sono, involontari ma malevoli, perché vi eroderanno la salute mentale, la capacità di restare concentrati e quella di restare tecnicamente rilevanti nel vostro ruolo. "Con l'AI dovrebbe essere facile" non è una scadenza.
+
+## Mantieni la competenza: pagano il tuo giudizio
+
+Niente di tutto questo è nuovo. La corsa a dequalificare il lavoratore è iniziata tanto tempo fa. Il problema, per loro, è che il mestiere è ancora costruito sulla competenza.
+
+Non vi pagano per le righe di codice (chi ha visto quella metrica lo sa). Vi pagano per il vostro giudizio: per quanti schiaffi in faccia avete preso dalla produzione di venerdì sera nel corso della carriera, e per quante lezioni avete imparato nel modo sbagliato.
+
+Quindi continuate ad allenarvi, nel vostro tempo. In uno studio di Anthropic, chi scriveva codice a mano ha ottenuto il **67%** al test; chi lasciava fare abitualmente all'AI il **50%**. In poco tempo. Restare allenati è fondamentale.
 
 ## Per lunedì
 
-L'output costa poco. Verificare è il lavoro.
+L'output costa poco. Il giudizio costa caro. Quattro cose:
 
-1. **Limita i thread.** Pochi agenti in parallelo. La review conta come lavoro.
-2. **Filtra lo slop.** L'autore spiega ogni riga. Prove prima della review.
-3. **Adegua l'impegno.** Prima lo smistamento. Allo slop si risponde con lo slop. L'attenzione va alle persone.
-4. **Mantieni la competenza.** Esercizio senza AI. I junior fanno debug a mano, prima.
+1. **Limita i thread.** Non dividere troppo l'attenzione.
+2. **Filtra lo slop.** L'autore spiega ogni riga.
+3. **Adegua l'impegno.** Prima si smista. Allo slop si risponde con lo slop.
+4. **Mantieni la competenza.** Esercitati senza AI.
 
-È la competenza che fa la verifica. Proteggila.
+E buona fortuna. Non sarà piacevole. Per me, ultimamente, non lo è stato. Se avete bisogni o domande più pratiche, scrivetemi: vi do volentieri i miei due centesimi.
 
 ## Fonti
 
