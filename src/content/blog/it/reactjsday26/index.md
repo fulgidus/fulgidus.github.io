@@ -21,6 +21,9 @@ translationOf: "reactjsday26"
 redirect: ""
 unlisted: false
 video: true
+slides:
+  src: /talks/reactjsday26/
+  byHeading: [2, 3, 4, 5, 6, 7]
 ---
 Questa è la versione scritta del lightning talk che ho tenuto a **reactjsday 2026**. Cinque minuti sul palco, e una presentazione decisa su due piedi quel giorno stesso. Quindi no, non è stata la presentazione migliore che vedrete quest'anno. È fatta soprattutto di osservazioni e opinioni recenti, e conoscendomi probabilmente non sarete d'accordo su tutto. Va benissimo: venite a discuterne.
 

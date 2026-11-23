@@ -16,6 +16,7 @@ import { getOgImagePath } from "@/utils/og";
 import { getFormattedDate } from "@/utils/date";
 import { composeImageSizeClasses } from "@/utils/image";
 import SplatImage from "@/components/SplatImage.astro";
+import SlideDock from "@/components/SlideDock.vue";
 
 export async function getStaticPaths() {
   const languages = getActiveLanguages();
@@ -58,6 +59,7 @@ const {
   draft,
   unlisted,
   series,
+  slides,
 } = post.data;
 const { slug } = post;
 
@@ -157,6 +159,21 @@ const t = useTranslate(lang);
   )}
 
   {!draft && !unlisted && <GiscusComments client:only="vue" />}
+
+  {slides && (
+    <SlideDock
+      client:only="vue"
+      src={slides.src}
+      byHeading={slides.byHeading}
+      labels={{
+        label: t("slideDock.label"),
+        open: t("slideDock.open"),
+        minimize: t("slideDock.minimize"),
+        expand: t("slideDock.expand"),
+        close: t("slideDock.close"),
+      }}
+    />
+  )}
 
   <GoBackToBlog client:only="vue" />
 </BaseLayout>

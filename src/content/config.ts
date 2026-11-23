@@ -53,6 +53,11 @@ const blog = defineCollection({
         video: z.boolean().default(false),
         series: z.string().optional(),
         seriesOrder: z.number().optional(),
+        slides: z.object({
+            src: z.string(),
+            // slide number shown for each h2 of the post, in order; before the first h2 the dock shows slide 1
+            byHeading: z.array(z.number().int().positive()).default([]),
+        }).optional(),
     }),
 })
 
