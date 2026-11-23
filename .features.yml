@@ -585,6 +585,7 @@ features:
       - "https://marpit.marp.app/markdown"
       - "https://marpit.marp.app/directives"
     notes:
+      - "2026-11-23: First talk published without Marp: the reactjsday 2026 deck is a self-contained HTML file served from public/talks/reactjsday26/ and embedded via iframe in the blog post src/content/blog/reactjsday26. Talks nav item still commented out."
       - "2026-03-10: Soft dependency recommendation — implement after i18n-overhaul to avoid duplicating content type definitions and routing for /it/ folder structure that will be eliminated."
       - "2026-03-10: Feature added to backlog. Marp converts Markdown to HTML/PDF/PPTX slide decks. The site already has a 'Talks' nav item commented out in site-config.ts — this feature could revive it. Build-time PDF/PPTX export requires Chromium (available in GitHub Actions ubuntu runners)."
     subtasks:
