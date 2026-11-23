@@ -36,6 +36,18 @@ const pageTranslations = await getPageTranslations(Astro.url, postSlug);
 <html lang={lang}>
   <head>
     <BaseHead {...head} />
+    <script is:inline>
+      // Tag the page with what the browser declares itself to be (mobile or not), before first paint.
+      (function () {
+        function tag(doc) {
+          var d = navigator.userAgentData;
+          var mobile = d && typeof d.mobile === 'boolean' ? d.mobile : /Mobi/i.test(navigator.userAgent);
+          doc.documentElement.classList.toggle('ua-mobile', mobile);
+        }
+        tag(document);
+        document.addEventListener('astro:before-swap', function (e) { tag(e.newDocument); });
+      })();
+    </script>
     <ViewTransitions />
   </head>
   <body class="bg-main text-main min-h-screen font-sans w-full bg-dot">
