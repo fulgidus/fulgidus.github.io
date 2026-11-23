@@ -1,0 +1,18 @@
+id: torinojs-event-data-model
+title: Define event data model and storage
+description: "Define data structure for TorinoJS events: id, title, date/time, location (physical + online),
+  description, speakers, RSVP URL, status (upcoming/past/cancelled). Store as TypeScript data file or content
+  collection. Must support i18n. Date must be ISO 8601."
+status: backlog
+completion: 0
+difficulty: easy
+priority: high
+depends_on: []
+effort: PT2H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

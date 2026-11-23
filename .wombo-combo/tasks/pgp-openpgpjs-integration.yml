@@ -1,0 +1,19 @@
+id: pgp-openpgpjs-integration
+title: Integrate OpenPGP.js for client-side encryption
+description: Add openpgp as dependency. Lazy-load via dynamic import() only when user clicks Send encrypted message.
+  Fetch .asc from /keys/pgp-pubkey.asc, read with openpgp.readKey(), encrypt with openpgp.encrypt(). Output
+  ASCII-armored ciphertext. OpenPGP.js (~160KB gzipped) MUST NOT be in main bundle.
+status: backlog
+completion: 0
+difficulty: medium
+priority: high
+depends_on:
+  - pgp-download-pubkey
+effort: PT4H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

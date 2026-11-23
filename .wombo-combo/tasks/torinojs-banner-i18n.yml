@@ -1,0 +1,18 @@
+id: torinojs-banner-i18n
+title: Add i18n keys for event banner and /events page
+description: "Add translation keys for: banner title, banner body template, dismiss button tooltip, acknowledge button
+  text, never show again text, /events page headings, upcoming/past labels, RSVP button text. Add to en, it in
+  src/i18n/ui.ts."
+status: backlog
+completion: 0
+difficulty: trivial
+priority: medium
+depends_on: []
+effort: PT30M
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

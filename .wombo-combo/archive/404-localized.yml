@@ -1,0 +1,17 @@
+id: 404-localized
+title: Make 404 page localized
+description: Client-side language detection from URL for the 404 page, embedded translations, language-appropriate post
+  list, localized home link. All i18n keys already existed in ui.ts.
+status: done
+completion: 100
+difficulty: medium
+priority: medium
+depends_on: []
+effort: PT6H
+started_at: null
+ended_at: 2026-03-16T10:28:56.230Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

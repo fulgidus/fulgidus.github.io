@@ -1,0 +1,18 @@
+id: pgp-compose-form
+title: Add message compose form to EmailObfuscator
+description: "Extend EmailObfuscator.vue with a collapsible compose form: subject field, message textarea, Encrypt &
+  Send button. Hidden by default, toggled by a Send encrypted message link. Include brief PGP explanation. Must validate
+  non-empty message and show loading state during encryption."
+status: backlog
+completion: 0
+difficulty: medium
+priority: high
+depends_on: []
+effort: PT3H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

@@ -1,0 +1,18 @@
+id: marp-presentations
+title: Marp presentation support with download buttons
+description: "Full Marp integration: content type definition, build pipeline (marp-core Node API + playwright PDF),
+  standalone viewer (MarpViewer.vue with keyboard/touch/fullscreen), embeddable component (MarpSlides.astro), download
+  buttons (MarpDownloads.vue), custom CSS theme matching site design."
+status: done
+completion: 100
+difficulty: very_hard
+priority: high
+depends_on: []
+effort: P4D
+started_at: null
+ended_at: 2026-03-16T10:29:01.545Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

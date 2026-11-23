@@ -1,0 +1,17 @@
+id: og-word-truncation
+title: Improve description truncation at word boundaries
+description: Current truncation cuts descriptions at exactly 140 characters, potentially mid-word. Improve to truncate
+  at nearest word boundary and add ellipsis.
+status: backlog
+completion: 0
+difficulty: trivial
+priority: low
+depends_on: []
+effort: PT20M
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

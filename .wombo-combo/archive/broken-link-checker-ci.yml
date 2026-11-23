@@ -1,0 +1,17 @@
+id: broken-link-checker-ci
+title: Automated broken link checker in CI pipeline
+description: Add automated link checker (lychee) to CI pipeline running after build. Validates all internal links,
+  handles hash fragments, tolerant of transient external failures. Excludes tarpit pages (/well/).
+status: done
+completion: 100
+difficulty: easy
+priority: medium
+depends_on: []
+effort: PT3H
+started_at: null
+ended_at: 2026-03-16T10:31:04.653Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

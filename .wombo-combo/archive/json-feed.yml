@@ -1,0 +1,17 @@
+id: json-feed
+title: Add JSON Feed alongside RSS
+description: Add JSON Feed (application/feed+json) as alternative feed format alongside existing RSS/Atom XML feeds.
+  Create feeds for both languages (en, it) mirroring existing RSS structure. Conform to JSON Feed Version 1.1 spec.
+status: done
+completion: 100
+difficulty: easy
+priority: medium
+depends_on: []
+effort: PT3H
+started_at: null
+ended_at: 2026-03-16T10:30:39.289Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

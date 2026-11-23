@@ -1,0 +1,173 @@
+name: Fulgidus Chronicles
+type: brownfield
+description: Personal site and blog
+vision: A good, accessible, performand, modern, cool, feature-rich, i18n-ed, and mobile-ready personal website to
+  promote myself (fulgidus) and my few articles
+objectives: []
+tech_stack:
+  runtime: ""
+  language: ""
+  frameworks: []
+  tools: []
+  notes: ""
+conventions:
+  commits: ""
+  branches: ""
+  testing: ""
+  coding_style: ""
+  naming: ""
+rules: []
+codebase_summary: |-
+  agent/ (1 files)
+    wave-worker.md
+  docs/ (2 files)
+    adr/ (2 files)
+      001-i18n-architecture-redesign.md
+      002-giscus-comment-isolation.md
+  public/ (2 files)
+    offline.html
+    sw.js
+  src/ (120 files)
+    components/ (32 files)
+      error-numbers/ (1 files)
+        LottieErrorNumber.vue
+      BaseHead.astro
+      DownloadFile.astro
+      EmailObfuscator.vue
+      FooterComponent.vue
+      FormattedDate.astro
+      GiscusComments.vue
+      GoBackToBlog.vue
+      Header.astro
+      Header.vue
+      LanguageDropdown.vue
+      LanguageFlags.vue
+      ListPosts.astro
+      ListProjects.vue
+      MarpDownloads.vue
+      MarpSlides.astro
+      MarpViewer.vue
+      Paginator.astro
+      PdfViewer.vue
+      PokerPic.astro
+      PostNavigation.astro
+      PostPreview.astro
+      ReadingProgress.vue
+      RelatedPosts.astro
+      ScrollToTop.vue
+      SeriesNavigation.astro
+      SharePost.vue
+      SplatImage.astro
+      TableOfContents.vue
+      TagsList.vue
+      ThemeToggle.vue
+      Trans.astro
+    constants/ (1 files)
+      easter-egg.ts [1]
+    content/ (37 files)
+      blog/ (30 files)
+        Address-obfuscator/ (1 files)
+          index.md
+        Advent 2024/ (1 files)
+          index.md
+        Auto-Dino/ (1 files)
+          index.md
+        i18n/ (1 files)
+          index.md
+        it/ (11 files)
+          Address-obfuscator/index.md
+          Advent 2024/index.md
+          Auto-Dino/index.md
+          i18n/index.md
+          Management/index.md
+          Multi-Platform Rust App/index.md
+          Project Management/index.md
+          Prompt Engineering/index.md
+          Rolldown/index.md
+          Testing/index.md
+          ZigNet/index.md
+        Management/ (1 files)
+          index.md
+        Multi-Platform Rust App/ (1 files)
+          index.md
+        notes/ (6 files)
+          Data Visualization/index.md
+          Google Data Analytics Certificate Program Module 1/index.md
+          Google Data Analytics Certificate Program Module 2/index.md
+          Google Data Analytics Certificate Program Module 3/index.md
+          Google Data Analytics Certificate Program Module/index.md
+          Project Management/index.md
+        Project Management/ (1 files)
+          index.md
+        Prompt Engineering/ (1 files)
+          index.md
+        Rolldown/ (1 files)
+          index.md
+        talks/ (1 files)
+          _introduction-to-marp.slides.md
+        Testing/ (1 files)
+          index.md
+        yarssg/ (1 files)
+          index.md
+        ZigNet/ (1 files)
+          index.md
+      pages/ (6 files)
+        it/ (3 files)
+          md-style.md
+          posts-props.md
+          uses.md
+        md-style.md
+        posts-props.md
+        uses.md
+      config.ts [4]
+    data/ (1 files)
+      projects.ts [1]
+    i18n/ (4 files)
+      ui.test.ts
+      ui.ts [10]
+      utils.test.ts
+      utils.ts [9]
+    layouts/ (1 files)
+      BaseLayout.astro
+    lib/ (1 files)
+      tarpit.ts [9]
+    pages/ (22 files)
+      [...lang]/ (10 files)
+        blog/ (1 files)
+          [...path].astro
+        posts/ (2 files)
+          [...slug].astro
+          [...slug]/[file].ts [2]
+        projects/ (1 files)
+          index.astro
+        tags/ (2 files)
+          [tag]/[...page].astro
+          index.astro
+        feed.json.ts [2]
+        last-ten.xml.ts [2]
+        rss.xml.ts [2]
+        search.astro
+      cv/ (1 files)
+        index.astro
+      it/ (2 files)
+        cv/ (1 files)
+          index.astro
+        index.astro
+      og/ (1 files)
+        [...slug].png.ts [2]
+      well/ (1 files)
+        [...path].astro
+      [...slug].astro
+      404.astro
+      ee.ts [1]
+      index.astro
+      llms-full.txt.ts [1]
+      llms.txt.ts [1]
+      robots.txt.ts [2]
+    plugins/ (2 files)
+      rehype-toc-headings.ts [2]
+      remark-reading-time.ts [1]
+    scripts/ (2 files)
+created_at: 2026-03-16T10:54:49.367Z
+updated_at: 2026-03-16T11:00:15.503Z
+genesis_count: 0

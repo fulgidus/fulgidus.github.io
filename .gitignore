@@ -5,7 +5,8 @@ node_modules
 .DS_Store
 .eslintcache
 *.log
-.opencode
-AGENTS.md
-*/AGENTS.md
-*/*/AGENTS.md
+public/marp/
+
+# Lychee link checker cache
+.lycheecache
+

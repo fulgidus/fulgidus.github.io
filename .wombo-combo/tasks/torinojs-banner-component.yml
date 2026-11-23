@@ -1,0 +1,21 @@
+id: torinojs-banner-component
+title: Create EventBanner.vue component
+description: "Vue component for event promotion banner. Shows next upcoming event with title, date, RSVP link. Three
+  dismissal tiers: X button (24h), Acknowledge (hide this event forever), Never show again (permanent opt-out). Check
+  localStorage on mount (no flash-then-hide). Must be accessible (keyboard dismissible, screen reader announcements).
+  Animation must respect prefers-reduced-motion. Do not use position:fixed overlay."
+status: backlog
+completion: 0
+difficulty: hard
+priority: high
+depends_on:
+  - torinojs-event-data-model
+  - torinojs-localstorage-logic
+effort: PT6H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

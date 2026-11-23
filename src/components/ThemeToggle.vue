@@ -7,19 +7,19 @@ const isDark = useDark()
 const toggleDark = useToggle(isDark)
 
 watchEffect(() => {
-  if (isDark.value) {
-    setDarkMode(document)
-  }
+  syncDarkMode(document)
 })
 
-function setDarkMode(doc: Document) {
+function syncDarkMode(doc: Document) {
   if (isDark.value) {
     doc.documentElement.classList.add('dark')
+  } else {
+    doc.documentElement.classList.remove('dark')
   }
 }
 
 function handleBeforeSwap(event: any) {
-  setDarkMode(event.newDocument)
+  syncDarkMode(event.newDocument)
 }
 
 onMounted(() => {

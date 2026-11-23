@@ -1,0 +1,18 @@
+id: seo-enhancements
+title: SEO metadata and structured data improvements
+description: Add JSON-LD structured data (Schema.org) for blog posts, person/profile page, projects, and breadcrumbs.
+  Improve Open Graph and Twitter Card metadata. Enhance sitemap.xml with hreflang alternates, lastmod dates, and
+  priority hints.
+status: done
+completion: 100
+difficulty: medium
+priority: medium
+depends_on: []
+effort: PT6H
+started_at: null
+ended_at: 2026-03-16T10:30:21.906Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

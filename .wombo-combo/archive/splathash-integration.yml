@@ -1,0 +1,17 @@
+id: splathash-integration
+title: SplatHash integration for ultrafast TTFF
+description: Integrated splathash-ts (zero-dep, 16-byte image hashes) for blur placeholders. Build-time hash encoding,
+  client-side canvas decoder, no-JS fallback with average color. Applied to post templates, ListPosts, and PokerPic.
+status: done
+completion: 100
+difficulty: hard
+priority: high
+depends_on: []
+effort: PT8H
+started_at: null
+ended_at: 2026-03-16T10:28:28.167Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

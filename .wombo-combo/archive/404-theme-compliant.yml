@@ -1,0 +1,17 @@
+id: 404-theme-compliant
+title: Make 404 page theme-compliant
+description: Fixed dark mode on 404 page. Debugged why dark class never activated, ensured early initialization,
+  verified ThemeToggle works interactively, audited all terminal color pairs for light/dark.
+status: done
+completion: 100
+difficulty: medium
+priority: medium
+depends_on: []
+effort: PT4H
+started_at: null
+ended_at: 2026-03-16T10:28:58.588Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

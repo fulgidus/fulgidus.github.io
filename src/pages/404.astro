@@ -1,53 +1,65 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { getActiveLanguages, getLangFromUrl, translateFrom, translatePath } from "@/i18n/utils";
+import { getLangFromUrl, translateFrom, translatePath, getActiveLanguages } from "@/i18n/utils";
 import { getLastTenPosts, getHref, removeLangFromSlug } from "@/utils/posts";
-import { getFormattedDate } from "@/utils/date";
-import { siteConfig } from "@/site-config";
-import type { Languages } from "@/i18n/ui";
+import { ui, defaultLang, type Languages } from "@/i18n/ui";
 
-// GitHub Pages serves this single 404.html for every missing path, so at build
-// time Astro.url is always the default-language URL. We render the default
-// language here and ship a small per-language JSON blob that the inline script
-// below uses to switch the terminal to the visitor's language (from the URL).
-const currentLang = getLangFromUrl(Astro.url);
-const t = (key: Parameters<typeof translateFrom>[1]) => translateFrom(currentLang, key);
+// Build-time: collect translations for all active languages (only 404.* keys)
+const activeLanguages = getActiveLanguages();
 
-const dateOptions: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+const translationKeys = [
+  '404.title',
+  '404.description',
+  '404.backButtonLabel',
+  '404.terminalError',
+  '404.terminalHint',
+  '404.terminalHelp',
+] as const;
 
-async function getListing(lang: Languages) {
-  const recent = await getLastTenPosts({ lang });
-  return recent.slice(0, 5).map((post) => ({
+type TranslationKey = typeof translationKeys[number];
+
+const i18nData: Record<string, Record<string, string>> = {};
+for (const lang of activeLanguages) {
+  i18nData[lang] = {};
+  for (const key of translationKeys) {
+    i18nData[lang][key] = translateFrom(lang, key);
+  }
+}
+
+// Locale map for date formatting (matches src/utils/date.ts)
+const localeMap: Record<string, string> = {
+  en: 'en-GB',
+  it: 'it-IT',
+  nl: 'nl-NL',
+};
+
+// Build-time: collect posts for each active language
+type PostData = {
+  href: string;
+  slug: string;
+  dateISO: string;
+};
+
+const postsData: Record<string, PostData[]> = {};
+for (const lang of activeLanguages) {
+  const recentPosts = await getLastTenPosts({ lang });
+  const postsToShow = recentPosts.slice(0, 5);
+  postsData[lang] = postsToShow.map((post) => ({
     href: translatePath(getHref(post), lang),
-    date: getFormattedDate(post.data.pubDate, dateOptions, lang),
-    name: `${removeLangFromSlug(post.slug)}/`,
+    slug: removeLangFromSlug(post.slug),
+    dateISO: new Date(post.data.pubDate).toISOString(),
   }));
 }
 
-const postsToShow = await getListing(currentLang);
-
-const i18nData: Record<string, {
-  title: string;
-  error: string;
-  hint: string;
-  help: string;
-  back: string;
-  home: string;
-  posts: Awaited<ReturnType<typeof getListing>>;
-}> = {};
-for (const lang of getActiveLanguages()) {
-  i18nData[lang] = {
-    title: [translateFrom(lang, '404.title'), siteConfig.title].join(' | '),
-    error: translateFrom(lang, '404.terminalError'),
-    hint: translateFrom(lang, '404.terminalHint'),
-    help: translateFrom(lang, '404.terminalHelp'),
-    back: translateFrom(lang, '404.backButtonLabel'),
-    home: translatePath('/', lang),
-    posts: lang === currentLang ? postsToShow : await getListing(lang),
-  };
+// Build-time: compute home paths for each language
+const homePaths: Record<string, string> = {};
+for (const lang of activeLanguages) {
+  homePaths[lang] = translatePath('/', lang);
 }
-// Safe to inline inside <script type="application/json">
-const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
+
+// Use default language for initial SSR render (will be swapped client-side)
+const currentLang = defaultLang;
+const t = (key: Parameters<typeof translateFrom>[1]) => translateFrom(currentLang, key);
 ---
 
 <BaseLayout
@@ -61,11 +73,11 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
         <span class="terminal-dot dot-minimize"></span>
         <span class="terminal-dot dot-maximize"></span>
       </div>
-      <span class="terminal-title">bash - 404</span>
+      <span class="terminal-title" data-i18n="titlebar">bash - 404</span>
       <div class="terminal-controls-spacer"></div>
     </div>
     <div class="terminal-body">
-      <h1 class="sr-only">{t('404.title')}</h1>
+      <h1 class="sr-only" data-i18n="404.title">{t('404.title')}</h1>
       <div class="terminal-line">
         <span class="terminal-prompt">
           <span class="prompt-user">visitor</span><span class="prompt-at">@</span><span class="prompt-host">fulgidus.github.io</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-dollar">$</span>
@@ -74,7 +86,9 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
         <span class="terminal-cursor">_</span>
       </div>
 
-      <div class="terminal-line terminal-error" data-i18n="error">{t('404.terminalError')}</div>
+      <div class="terminal-line terminal-error" data-i18n="404.terminalError">
+        {t('404.terminalError')}
+      </div>
 
       <div class="terminal-line terminal-empty"></div>
 
@@ -85,18 +99,12 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
         <span class="terminal-command">ls ./posts/</span>
       </div>
 
-      <div class="terminal-line terminal-hint">
-        # <span data-i18n="hint">{t('404.terminalHint')}</span>
+      <div class="terminal-line terminal-hint" data-i18n="404.terminalHint">
+        # {t('404.terminalHint')}
       </div>
 
-      <div class="terminal-ls" id="terminal-ls">
-        {postsToShow.map((post) => (
-          <a href={post.href} class="terminal-file" data-astro-prefetch>
-            <span class="file-permissions">-rw-r--r--</span>
-            <span class="file-date">{post.date}</span>
-            <span class="file-name">{post.name}</span>
-          </a>
-        ))}
+      <div class="terminal-ls" id="posts-listing">
+        {/* Posts will be rendered client-side from embedded JSON */}
       </div>
 
       <div class="terminal-line terminal-empty"></div>
@@ -105,11 +113,11 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
         <span class="terminal-prompt">
           <span class="prompt-user">visitor</span><span class="prompt-at">@</span><span class="prompt-host">fulgidus.github.io</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-dollar">$</span>
         </span>
-        <span class="terminal-command">cd <a href={translatePath('/', currentLang)} class="terminal-link" id="terminal-home" data-astro-prefetch>~/<span data-i18n="back">{t('404.backButtonLabel')}</span></a></span>
+        <span class="terminal-command">cd <a id="home-link" href={translatePath('/', currentLang)} class="terminal-link" data-astro-prefetch>~/<span data-i18n="404.backButtonLabel">{t('404.backButtonLabel')}</span></a></span>
       </div>
 
-      <div class="terminal-line terminal-help">
-        # <span data-i18n="help">{t('404.terminalHelp')}</span>
+      <div class="terminal-line terminal-help" data-i18n="404.terminalHelp">
+        # {t('404.terminalHelp')}
       </div>
 
       <div class="terminal-line">
@@ -120,54 +128,94 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
       </div>
     </div>
   </div>
-  <script type="application/json" id="not-found-i18n" set:html={i18nJson} />
-  
-  <script is:inline>
-    (function () {
-      // Show the attempted path in the first command
-      var pathEl = document.getElementById('typed-path');
-      if (pathEl) {
-        pathEl.textContent = 'open ' + window.location.pathname;
-      }
-  
-      // Switch the terminal to the language in the requested URL (e.g. /it/...).
-      // Runs synchronously right after the markup, before first paint.
-      var dataEl = document.getElementById('not-found-i18n');
-      if (!dataEl) return;
-      var data;
-      try { data = JSON.parse(dataEl.textContent || '{}'); } catch (e) { return; }
-      var lang = window.location.pathname.split('/')[1];
-      var d = data[lang];
-      if (!d || lang === document.documentElement.lang) return;
-  
-      document.documentElement.lang = lang;
-      document.title = d.title;
-      var nodes = document.querySelectorAll('[data-i18n]');
-      for (var i = 0; i < nodes.length; i++) {
-        var key = nodes[i].getAttribute('data-i18n');
-        if (d[key]) nodes[i].textContent = d[key];
-      }
-      var home = document.getElementById('terminal-home');
-      if (home) home.setAttribute('href', d.home);
-  
-      var ls = document.getElementById('terminal-ls');
-      var template = ls && ls.querySelector('.terminal-file');
-      if (ls && template) {
-        var fragment = document.createDocumentFragment();
-        d.posts.forEach(function (post) {
-          var row = template.cloneNode(true);
-          row.setAttribute('href', post.href);
-          row.querySelector('.file-date').textContent = post.date;
-          row.querySelector('.file-name').textContent = post.name;
-          fragment.appendChild(row);
-        });
-        ls.replaceChildren(fragment);
-      }
-    })();
-  </script>
 </BaseLayout>
 
+<script is:inline define:vars={{
+  i18nData: JSON.stringify(i18nData),
+  postsData: JSON.stringify(postsData),
+  homePaths: JSON.stringify(homePaths),
+  localeMap: JSON.stringify(localeMap),
+  defaultLang,
+  activeLanguages: JSON.stringify(activeLanguages),
+}}>
+  (function() {
+    // Parse embedded data
+    var translations = JSON.parse(i18nData);
+    var posts = JSON.parse(postsData);
+    var homes = JSON.parse(homePaths);
+    var locales = JSON.parse(localeMap);
+    var langs = JSON.parse(activeLanguages);
 
+    // Detect language from URL path (mirrors getLangFromUrl from i18n/utils.ts)
+    function detectLang() {
+      var parts = window.location.pathname.split('/');
+      var langSegment = parts[1] || '';
+      if (langs.indexOf(langSegment) !== -1) {
+        return langSegment;
+      }
+      return defaultLang;
+    }
+
+    var lang = detectLang();
+    var t = translations[lang] || translations[defaultLang];
+    var locale = locales[lang] || locales[defaultLang] || 'en-GB';
+
+    // Determine the "open" command prefix per language
+    var openCmd = lang === 'it' ? 'apri' : lang === 'nl' ? 'open' : 'open';
+
+    // Update typed path with localized command
+    var pathEl = document.getElementById('typed-path');
+    if (pathEl) {
+      pathEl.textContent = openCmd + ' ' + window.location.pathname;
+    }
+
+    // Update all data-i18n elements
+    var i18nEls = document.querySelectorAll('[data-i18n]');
+    for (var i = 0; i < i18nEls.length; i++) {
+      var el = i18nEls[i];
+      var key = el.getAttribute('data-i18n');
+      if (key === 'titlebar') {
+        // Titlebar uses localized "bash" label
+        el.textContent = 'bash - 404';
+      } else if (key === '404.terminalHint') {
+        el.textContent = '# ' + (t[key] || el.textContent);
+      } else if (key === '404.terminalHelp') {
+        el.textContent = '# ' + (t[key] || el.textContent);
+      } else if (key === '404.backButtonLabel') {
+        el.textContent = t[key] || el.textContent;
+      } else if (t[key]) {
+        el.textContent = t[key];
+      }
+    }
+
+    // Update home link
+    var homeLink = document.getElementById('home-link');
+    if (homeLink && homes[lang]) {
+      homeLink.setAttribute('href', homes[lang]);
+    }
+
+    // Render posts listing
+    var postsContainer = document.getElementById('posts-listing');
+    var langPosts = posts[lang] || posts[defaultLang] || [];
+    if (postsContainer && langPosts.length > 0) {
+      var html = '';
+      for (var j = 0; j < langPosts.length; j++) {
+        var post = langPosts[j];
+        var date = new Date(post.dateISO);
+        var dateStr = date.toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' });
+        html += '<a href="' + post.href + '" class="terminal-file" data-astro-prefetch>'
+          + '<span class="file-permissions">-rw-r--r--</span>'
+          + '<span class="file-date">' + dateStr + '</span>'
+          + '<span class="file-name">' + post.slug + '/</span>'
+          + '</a>';
+      }
+      postsContainer.innerHTML = html;
+    }
+
+    // Update the html lang attribute
+    document.documentElement.setAttribute('lang', lang);
+  })();
+</script>
 
 <style>
   .terminal-wrapper {
@@ -179,6 +227,10 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
     font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'SF Mono', 'Consolas', 'Liberation Mono', monospace;
     font-size: 0.875rem;
     line-height: 1.6;
+  }
+
+  :global(:not(.dark)) .terminal-wrapper {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   }
 
   /* Title bar */
@@ -228,7 +280,7 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
     min-height: 20rem;
   }
 
-  :global(html:not(.dark)) .terminal-body {
+  :global(:not(.dark)) .terminal-body {
     background: #f5f5f5;
     color: #333;
   }
@@ -256,19 +308,19 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
   .prompt-path { color: #569cd6; }
   .prompt-dollar { color: #d4d4d4; margin-left: 0.15rem; }
 
-  :global(html:not(.dark)) .prompt-user { color: #098658; }
-  :global(html:not(.dark)) .prompt-at { color: #333; }
-  :global(html:not(.dark)) .prompt-host { color: #0451a5; }
-  :global(html:not(.dark)) .prompt-colon { color: #333; }
-  :global(html:not(.dark)) .prompt-path { color: #0000ff; }
-  :global(html:not(.dark)) .prompt-dollar { color: #333; }
+  :global(:not(.dark)) .prompt-user { color: #067a4e; }
+  :global(:not(.dark)) .prompt-at { color: #333; }
+  :global(:not(.dark)) .prompt-host { color: #0451a5; }
+  :global(:not(.dark)) .prompt-colon { color: #333; }
+  :global(:not(.dark)) .prompt-path { color: #0000ff; }
+  :global(:not(.dark)) .prompt-dollar { color: #333; }
 
   /* Command text */
   .terminal-command {
     color: #ce9178;
   }
 
-  :global(html:not(.dark)) .terminal-command {
+  :global(:not(.dark)) .terminal-command {
     color: #a31515;
   }
 
@@ -278,7 +330,7 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
     font-weight: 500;
   }
 
-  :global(html:not(.dark)) .terminal-error {
+  :global(:not(.dark)) .terminal-error {
     color: #cd3131;
   }
 
@@ -289,8 +341,8 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
     font-style: italic;
   }
 
-  :global(html:not(.dark)) .terminal-hint,
-  :global(html:not(.dark)) .terminal-help {
+  :global(:not(.dark)) .terminal-hint,
+  :global(:not(.dark)) .terminal-help {
     color: #008000;
   }
 
@@ -302,7 +354,7 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
     margin-left: 0;
   }
 
-  .terminal-file {
+  .terminal-ls :global(.terminal-file) {
     display: flex;
     gap: 1.5rem;
     text-decoration: none;
@@ -312,43 +364,43 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
     transition: background-color 0.15s;
   }
 
-  .terminal-file:hover {
+  .terminal-ls :global(.terminal-file:hover) {
     background: rgba(255, 255, 255, 0.06);
   }
 
-  :global(html:not(.dark)) .terminal-file:hover {
+  :global(:not(.dark)) .terminal-ls :global(.terminal-file:hover) {
     background: rgba(0, 0, 0, 0.06);
   }
 
-  .file-permissions {
-    color: #858585;
+  .terminal-ls :global(.file-permissions) {
+    color: #8b8b8b;
     flex-shrink: 0;
   }
 
-  :global(html:not(.dark)) .file-permissions {
-    color: #999;
+  :global(:not(.dark)) .terminal-ls :global(.file-permissions) {
+    color: #666;
   }
 
-  .file-date {
-    color: #858585;
+  .terminal-ls :global(.file-date) {
+    color: #8b8b8b;
     min-width: 7.5rem;
     flex-shrink: 0;
   }
 
-  :global(html:not(.dark)) .file-date {
-    color: #999;
+  :global(:not(.dark)) .terminal-ls :global(.file-date) {
+    color: #666;
   }
 
-  .file-name {
+  .terminal-ls :global(.file-name) {
     color: #569cd6;
     font-weight: 500;
   }
 
-  :global(html:not(.dark)) .file-name {
+  :global(:not(.dark)) .terminal-ls :global(.file-name) {
     color: #0451a5;
   }
 
-  .terminal-file:hover .file-name {
+  .terminal-ls :global(.terminal-file:hover .file-name) {
     text-decoration: underline;
   }
 
@@ -363,7 +415,7 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
     text-decoration: underline;
   }
 
-  :global(html:not(.dark)) .terminal-link {
+  :global(:not(.dark)) .terminal-link {
     color: #0451a5;
   }
 
@@ -372,7 +424,7 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
     color: #d4d4d4;
   }
 
-  :global(html:not(.dark)) .terminal-cursor {
+  :global(:not(.dark)) .terminal-cursor {
     color: #333;
   }
 
@@ -396,15 +448,15 @@ const i18nJson = JSON.stringify(i18nData).replace(/</g, '\\u003c');
       padding: 0.75rem;
     }
 
-    .terminal-file {
+    .terminal-ls :global(.terminal-file) {
       gap: 0.75rem;
     }
 
-    .file-permissions {
+    .terminal-ls :global(.file-permissions) {
       display: none;
     }
 
-    .file-date {
+    .terminal-ls :global(.file-date) {
       min-width: 5.5rem;
     }
   }

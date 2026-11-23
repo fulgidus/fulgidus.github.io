@@ -1,0 +1,17 @@
+id: syntax-copy-button
+title: Add copy-to-clipboard button for code blocks
+description: Add a small copy button to code blocks using navigator.clipboard API. Show brief feedback (checkmark or
+  Copied! tooltip) on success. Button appears on hover, must not copy language labels or line numbers.
+status: backlog
+completion: 0
+difficulty: easy
+priority: low
+depends_on: []
+effort: PT2H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

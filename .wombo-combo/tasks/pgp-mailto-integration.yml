@@ -1,0 +1,19 @@
+id: pgp-mailto-integration
+title: Compose mailto URL with encrypted body
+description: "After encryption, construct mailto: URL with subject and PGP-encrypted ciphertext as body. Handle mailto:
+  URL length limits (~2000 chars) — fall back to clipboard copy with instructions if exceeded. Subject should indicate
+  PGP-encrypted message."
+status: backlog
+completion: 0
+difficulty: medium
+priority: high
+depends_on:
+  - pgp-openpgpjs-integration
+effort: PT2H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

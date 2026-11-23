@@ -1,0 +1,18 @@
+id: content-lint-rules
+title: Define frontmatter validation rules
+description: "Document and implement validation rules: every post must have description, lang field, images must have
+  imageAlt, tags must be kebab-case, pubDate must be valid date, series posts must have sequential seriesOrder, Italian
+  posts must have matching English post (or be explicitly marked as untranslated)."
+status: backlog
+completion: 0
+difficulty: medium
+priority: high
+depends_on: []
+effort: PT2H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

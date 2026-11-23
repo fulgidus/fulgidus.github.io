@@ -1,0 +1,18 @@
+id: content-lint-fix-existing
+title: Fix existing frontmatter issues
+description: Run the linter against current content and fix any violations found. May include adding missing
+  descriptions, lang fields, imageAlt values, or normalizing tag naming.
+status: backlog
+completion: 0
+difficulty: easy
+priority: medium
+depends_on:
+  - content-lint-rules
+effort: PT1H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

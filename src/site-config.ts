@@ -59,10 +59,10 @@ export const siteConfig = {
                 text: 'nav.notes',
                 href: '/blog/notes',
             },
-            /* {
-              text: 'Talks',
-              href: '/blog/talks',
-            }, */
+            {
+                text: 'nav.talks',
+                href: '/blog/talks',
+            },
             {
                 text: 'nav.projects',
                 href: '/projects',
@@ -84,10 +84,10 @@ export const siteConfig = {
                     text: 'Notes',
                     href: '/blog/notes',
                 },
-                /* {
-                  text: 'Talks',
-                  href: '/blog/talks',
-                }, */
+                {
+                    text: 'Talks',
+                    href: '/blog/talks',
+                },
             ],
             it: [
                 {
@@ -98,10 +98,10 @@ export const siteConfig = {
                     text: 'Note',
                     href: '/it/blog/notes',
                 },
-                /* {
-                  text: 'Talks',
-                  href: '/blog/talks',
-                }, */
+                {
+                    text: 'Talks',
+                    href: '/it/blog/talks',
+                },
             ]
         },
     },

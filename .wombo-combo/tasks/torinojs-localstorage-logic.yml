@@ -1,0 +1,19 @@
+id: torinojs-localstorage-logic
+title: Implement localStorage dismissal logic
+description: "Create utility module for three-tier localStorage dismissal: (1) torinojs-banner-dismissed-until: ISO
+  timestamp for 24h temp dismissal, (2) torinojs-banner-acked-events: JSON array of acknowledged event IDs, (3)
+  torinojs-banner-disabled: boolean for permanent opt-out. Include helpers: shouldShowBanner(), dismissTemporarily(),
+  acknowledgeEvent(), disablePermanently(). Handle corrupted/missing localStorage gracefully."
+status: backlog
+completion: 0
+difficulty: easy
+priority: high
+depends_on: []
+effort: PT2H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

@@ -1,0 +1,17 @@
+id: reading-progress-theme
+title: Make ReadingProgress bar respect site theme
+description: "Replace hardcoded purple gradient in ReadingProgress.vue with theme-aware CSS custom properties or UnoCSS
+  dark: variants. Bar should use appropriate shades for visibility in both light and dark modes."
+status: done
+completion: 100
+difficulty: trivial
+priority: medium
+depends_on: []
+effort: PT1H
+started_at: null
+ended_at: 2026-03-16T10:30:24.597Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

@@ -1,0 +1,17 @@
+id: cv-page-styling
+title: Unify CV page styling (remove CDN Tailwind)
+description: Migrate CV page from CDN Tailwind to UnoCSS classes. Remove external script dependency for consistency,
+  security, and performance. Maintain exact same visual appearance and print styles.
+status: done
+completion: 100
+difficulty: easy
+priority: medium
+depends_on: []
+effort: PT3H
+started_at: null
+ended_at: 2026-03-16T10:30:26.445Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

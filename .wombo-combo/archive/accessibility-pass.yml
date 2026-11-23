@@ -1,0 +1,18 @@
+id: accessibility-pass
+title: Comprehensive accessibility pass (WCAG 2.1 AA)
+description: "Full accessibility audit and remediation: skip-to-content link, fixed malformed HTML, added
+  aria-expanded/aria-current, keyboard Escape dismiss, focus trap on mobile nav, focus-visible audit, color contrast
+  fixes, landmark semantics verification."
+status: done
+completion: 100
+difficulty: hard
+priority: critical
+depends_on: []
+effort: P2D
+started_at: null
+ended_at: 2026-03-16T10:28:38.756Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

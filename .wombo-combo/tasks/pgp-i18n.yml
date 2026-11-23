@@ -1,0 +1,18 @@
+id: pgp-i18n
+title: Add i18n keys for PGP encryption UI
+description: "Add translation keys for all PGP-related UI text: button labels, form placeholders, explanation text,
+  error messages, success messages, clipboard fallback instructions. Add to en, it (and nl if enabled) in
+  src/i18n/ui.ts."
+status: backlog
+completion: 0
+difficulty: trivial
+priority: medium
+depends_on: []
+effort: PT30M
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

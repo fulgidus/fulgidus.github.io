@@ -1,0 +1,17 @@
+id: web-share-api
+title: Web Share API integration for native sharing
+description: Integrate navigator.share() as primary sharing on supported browsers (mobile). Single Share button triggers
+  native OS share sheet. Fall back gracefully to existing SharePost.vue icon row on unsupported browsers.
+status: done
+completion: 100
+difficulty: easy
+priority: medium
+depends_on: []
+effort: PT3H
+started_at: null
+ended_at: 2026-03-16T10:30:43.979Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

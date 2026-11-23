@@ -1,0 +1,18 @@
+id: syntax-add-missing-grammars
+title: Add any missing Shiki language grammars
+description: If the audit reveals missing languages, add them to the Shiki configuration in astro.config.ts. Shiki
+  supports a vast list of languages, so most should already work — but some may need explicit registration.
+status: backlog
+completion: 0
+difficulty: easy
+priority: medium
+depends_on:
+  - syntax-audit-languages
+effort: PT1H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

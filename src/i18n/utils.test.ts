@@ -6,7 +6,8 @@ import {
     translatePath,
     useSpecificPath,
     stripLangFromPath,
-    getLangFromSlug
+    getLangFromSlug,
+    getGiscusLocale,
 } from './utils';
 import { Languages, TranslationKeys, ui } from './ui';
 
@@ -143,6 +144,26 @@ describe('i18n/utils', () => {
         expect(stripLangFromPath('/en/about')).toBe('/about');
         expect(stripLangFromPath('/about')).toBe('/about'); //Should handle paths without language prefix
         expect(stripLangFromPath('/it/posts/my-post')).toBe('/posts/my-post'); // Test with more complex path
+    });
+
+    describe('getGiscusLocale', () => {
+        it('should map known site languages to Giscus locale codes', () => {
+            expect(getGiscusLocale('en')).toBe('en');
+            expect(getGiscusLocale('it')).toBe('it');
+            expect(getGiscusLocale('nl')).toBe('nl');
+        });
+
+        it('should fall back to English for unknown languages', () => {
+            expect(getGiscusLocale('fr')).toBe('en');
+            expect(getGiscusLocale('de')).toBe('en');
+            expect(getGiscusLocale('zh')).toBe('en');
+            expect(getGiscusLocale('')).toBe('en');
+        });
+
+        it('should handle edge cases gracefully', () => {
+            expect(getGiscusLocale('EN')).toBe('en'); // uppercase should fall back
+            expect(getGiscusLocale('unknown')).toBe('en');
+        });
     });
 
 });

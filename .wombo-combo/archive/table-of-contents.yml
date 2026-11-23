@@ -1,0 +1,18 @@
+id: table-of-contents
+title: Auto-generated Table of Contents with scrollspy
+description: Add ToC component to blog posts auto-generated from heading hierarchy. Uses rehype-slug heading IDs.
+  Scrollspy highlights current section via IntersectionObserver. Collapsible, responsive (sidebar/inline on desktop,
+  collapsed on mobile).
+status: done
+completion: 100
+difficulty: medium
+priority: medium
+depends_on: []
+effort: P1D
+started_at: null
+ended_at: 2026-03-16T10:30:46.953Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

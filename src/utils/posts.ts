@@ -128,6 +128,31 @@ export function getUniqueTagsWithCount(
     return Array.from(tags).sort((a, b) => b[1] !== a[1] ? b[1] - a[1] : a[0].localeCompare(b[0]))
 }
 
+/**
+ * Get the chronologically previous (older) and next (newer) posts relative to the given post.
+ * Posts are filtered by language and exclude drafts and unlisted posts.
+ * Returns null for previous/next when the current post is the oldest/newest respectively.
+ */
+export function getAdjacentPosts(
+    currentPost: CollectionPost,
+    allPosts: CollectionPost[],
+): { previous: CollectionPost | null; next: CollectionPost | null } {
+    // allPosts should already be sorted newest-first and filtered by language/draft/unlisted
+    const currentIndex = allPosts.findIndex(p => p.slug === currentPost.slug)
+
+    if (currentIndex === -1) {
+        return { previous: null, next: null }
+    }
+
+    // In a newest-first sorted list:
+    // - "previous" (older) post is the next index (index + 1)
+    // - "next" (newer) post is the previous index (index - 1)
+    const previous = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null
+    const next = currentIndex > 0 ? allPosts[currentIndex - 1] : null
+
+    return { previous, next }
+}
+
 export type DateStringNumber = Date | string | number;
 
 export function getDate(date: DateStringNumber) {

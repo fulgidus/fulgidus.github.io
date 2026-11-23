@@ -1,0 +1,17 @@
+id: footer-copyright-range
+title: Show copyright year range
+description: Change copyright notice from showing only current year to a range (e.g. 2024-2026). Start year should be
+  configurable in siteConfig or hardcoded to site launch year.
+status: backlog
+completion: 0
+difficulty: trivial
+priority: low
+depends_on: []
+effort: PT15M
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

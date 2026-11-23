@@ -1,0 +1,16 @@
+id: torinojs-projects
+title: Add TorinoJS organizer role to projects section
+description: Added TorinoJS co-organizer role as Community group in both EN and IT project data files.
+status: done
+completion: 100
+difficulty: trivial
+priority: high
+depends_on: []
+effort: PT30M
+started_at: null
+ended_at: 2026-03-16T10:28:35.949Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

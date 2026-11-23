@@ -1,0 +1,18 @@
+id: pgp-key-info-display
+title: Display PGP key info and download link
+description: Show PGP key fingerprint and .asc download link near email contact section. Display fingerprint in standard
+  4-char grouped format (0A2C 0C79 81CF A6F3 ...). Allows visitors to import the key into their own PGP setup.
+status: backlog
+completion: 0
+difficulty: trivial
+priority: low
+depends_on:
+  - pgp-download-pubkey
+effort: PT1H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

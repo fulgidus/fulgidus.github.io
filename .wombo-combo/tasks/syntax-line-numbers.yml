@@ -1,0 +1,17 @@
+id: syntax-line-numbers
+title: Optional line numbers for code blocks
+description: Add support for optional line numbers in code blocks, togglable via frontmatter flag or code fence
+  attribute. Line numbers must not be included when copying code. Must be opt-in, not default.
+status: backlog
+completion: 0
+difficulty: medium
+priority: low
+depends_on: []
+effort: PT3H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

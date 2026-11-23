@@ -3,15 +3,17 @@ import GoBackToBlog from "@/components/GoBackToBlog.vue";
 import GiscusComments from "@/components/GiscusComments.vue";
 import LanguageFlag from "@/components/LanguageFlags.vue";
 import ReadingProgress from "@/components/ReadingProgress.vue";
+import PostNavigation from "@/components/PostNavigation.astro";
 import RelatedPosts from "@/components/RelatedPosts.astro";
 import SeriesNavigation from "@/components/SeriesNavigation.astro";
 import SharePost from "@/components/SharePost.vue";
+import TableOfContents from "@/components/TableOfContents.vue";
 import TagsList from "@/components/TagsList.vue";
 import { defaultLang, type Languages } from "@/i18n/ui";
 import { getLangFromSlug, getActiveLanguages, useTranslate } from "@/i18n/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { type CollectionPost } from "@/types";
-import { getPosts, removeLangFromSlug } from "@/utils/posts";
+import { getPosts, removeLangFromSlug, getAdjacentPosts } from "@/utils/posts";
 import { getOgImagePath } from "@/utils/og";
 import { getFormattedDate } from "@/utils/date";
 import { composeImageSizeClasses } from "@/utils/image";
@@ -68,8 +70,15 @@ const { Content, remarkPluginFrontmatter } = await post.render();
 // Use remark-computed reading time, with manual duration as fallback/override
 const readingTime = duration || remarkPluginFrontmatter?.duration;
 
+// Extract heading hierarchy for Table of Contents (injected by rehype-toc-headings)
+const headings = remarkPluginFrontmatter?.headings ?? [];
+const showToc = headings.length >= 3;
+
 // Fetch all posts in current language for related posts component
 const allLangPosts = await getPosts({ lang }) as CollectionPost[];
+
+// Get chronologically adjacent posts for prev/next navigation
+const { previous: previousPost, next: nextPost } = getAdjacentPosts(post, allLangPosts);
 
 function getDate(date: Date | string) {
   return new Date(date).toISOString();
@@ -140,6 +149,14 @@ const t = useTranslate(lang);
         />
       )
     }
+    {showToc && (
+      <TableOfContents
+        headings={headings}
+        title={t('toc.title')}
+        ariaLabel={t('toc.ariaLabel')}
+        client:only="vue"
+      />
+    )}
     <Content />
     {series && <SeriesNavigation currentSlug={slug} series={series} lang={lang} />}
     <div class="!mt-10 !mb--10" data-pagefind-ignore>
@@ -158,7 +175,11 @@ const t = useTranslate(lang);
     <RelatedPosts currentPost={post} allPosts={allLangPosts} lang={lang} />
   )}
 
-  {!draft && !unlisted && <GiscusComments client:only="vue" />}
+  {!draft && !unlisted && (
+    <PostNavigation previousPost={previousPost} nextPost={nextPost} lang={lang} />
+  )}
+
+  {!draft && !unlisted && <GiscusComments lang={lang} client:only="vue" />}
 
   {slides && (
     <SlideDock

@@ -1,0 +1,17 @@
+id: og-display-tags
+title: Show tags or category on OG card
+description: Display the first 2-3 tags as small badges on the OG card. Helps with visual identification of post topics
+  when shared on social media. Limit to 3 tags max to avoid clutter.
+status: backlog
+completion: 0
+difficulty: easy
+priority: low
+depends_on: []
+effort: PT1H
+started_at: null
+ended_at: null
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []

@@ -1,0 +1,17 @@
+id: tarpit-analytics
+title: Track honeypot/tarpit effectiveness with analytics
+description: "Add Umami custom event tracking to tarpit pages (/well/) to measure bot trap effectiveness: tarpit entry,
+  navigation depth, user agent classification. Uses existing Umami analytics integration."
+status: done
+completion: 100
+difficulty: easy
+priority: low
+depends_on: []
+effort: PT2H
+started_at: null
+ended_at: 2026-03-16T10:31:06.714Z
+constraints: []
+forbidden: []
+references: []
+notes: []
+subtasks: []
