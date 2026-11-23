@@ -29,6 +29,7 @@ let frame: HTMLIFrameElement | null = null
 let holder: HTMLElement | null = null
 let stage: HTMLElement | null = null
 let raf = 0
+let portrait: MediaQueryList | null = null
 let fadeTimer = 0
 let shown = 1
 
@@ -93,8 +94,14 @@ function render() {
   const on = docked.value && state.value !== 'closed'
   stage.classList.toggle('sd-docked', on)
   stage.classList.toggle('sd-min', on && state.value === 'min')
-  holder?.classList.toggle('sd-sticky', state.value !== 'closed')
-  holder?.classList.toggle('sd-min', on && state.value === 'min')
+  // Mobile browsers (as they declare themselves, see BaseLayout) pin the deck full-size at the top;
+  // everything else, including vertical monitors and "request desktop site", gets the corner player.
+  // A mobile browser held in landscape (or a tablet) also gets the corner player.
+  const topMode = document.documentElement.classList.contains('ua-mobile') && !!portrait?.matches
+  holder?.classList.toggle('sd-sticky', topMode && state.value !== 'closed')
+  stage.classList.toggle('sd-top', topMode)
+  stage.classList.toggle('sd-corner', !topMode)
+  holder?.classList.toggle('sd-min', topMode && on && state.value === 'min')
 }
 
 function update() {
@@ -132,6 +139,8 @@ onMounted(() => {
 
   window.addEventListener('scroll', schedule, { passive: true })
   window.addEventListener('resize', schedule, { passive: true })
+  portrait = window.matchMedia('(orientation: portrait)')
+  portrait.addEventListener('change', schedule)
   update()
 })
 
@@ -140,6 +149,7 @@ onUnmounted(() => {
   clearTimeout(fadeTimer)
   window.removeEventListener('scroll', schedule)
   window.removeEventListener('resize', schedule)
+  portrait?.removeEventListener('change', schedule)
 })
 </script>
 
@@ -181,7 +191,7 @@ onUnmounted(() => {
 .dark .sd-holder {
   /* dark backdrop while the deck loads or fades, instead of a white flash */
   background: #0d1117;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 }
 .sd-stage iframe {
   display: block;
@@ -219,8 +229,8 @@ onUnmounted(() => {
 .sd-stage.sd-docked {
   background: #eef5fc;
   color: #555;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-  border-radius: 8px;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.25);
+  border-radius: 0.5rem;
   overflow: hidden;
 }
 .dark .sd-stage.sd-docked {
@@ -235,45 +245,42 @@ onUnmounted(() => {
 }
 
 /* Below xl: the embedded deck itself is sticky, same size, pinned to the top while the text scrolls under it. */
-@media (max-width: 1279.98px) {
-  .sd-holder.sd-sticky {
-    position: sticky;
-    top: 0;
-    z-index: 40;
-  }
-  .sd-holder.sd-min {
-    aspect-ratio: auto;
-  }
-  /* Controls float over the slide so the deck keeps its exact size. */
-  .sd-stage.sd-docked:not(.sd-min) .sd-head {
-    position: absolute;
-    top: 0.4rem;
-    right: 0.4rem;
-    z-index: 1;
-    padding: 0.3rem 0.5rem;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.55);
-    color: #fff;
-  }
-  .sd-stage.sd-docked:not(.sd-min) .sd-head > .font-semibold {
-    display: none;
-  }
-  .sd-stage.sd-docked:not(.sd-min) .sd-head .sd-btn {
-    margin-left: 0;
-  }
+/* Top mode (portrait phones): the embedded deck itself is sticky, same size, pinned to the top. */
+.sd-holder.sd-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.sd-holder.sd-min {
+  aspect-ratio: auto;
+}
+/* Controls float over the slide so the deck keeps its exact size. */
+.sd-stage.sd-top.sd-docked:not(.sd-min) .sd-head {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  z-index: 1;
+  padding: 0.3rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+}
+.sd-stage.sd-top.sd-docked:not(.sd-min) .sd-head > .font-semibold {
+  display: none;
+}
+.sd-stage.sd-top.sd-docked:not(.sd-min) .sd-head .sd-btn {
+  margin-left: 0;
 }
 
-/* xl+: the same element moves to the bottom-left corner, clear of the text column. */
-@media (min-width: 1280px) {
-  .sd-stage.sd-docked {
-    position: fixed;
-    z-index: 40;
-    left: 1rem;
-    bottom: 1rem;
-    width: 16rem;
-  }
-  .sd-stage.sd-docked iframe {
-    border-radius: 0 !important;
-  }
+/* Corner mode (everything else): the same element moves to the bottom-left corner. */
+.sd-stage.sd-corner.sd-docked {
+  position: fixed;
+  z-index: 40;
+  left: 1rem;
+  bottom: 1rem;
+  width: min(20vw, 60vh);
+}
+.sd-stage.sd-corner.sd-docked iframe {
+  border-radius: 0 !important;
 }
 </style>
