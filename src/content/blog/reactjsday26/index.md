@@ -19,14 +19,12 @@ draft: false
 lang: en
 redirect: ""
 unlisted: false
-video: true
+video: false
 slides:
   src: /talks/reactjsday26/
   byHeading: [2, 3, 4, 5, 6, 7]
 ---
 This is the written version of the lightning talk I gave at **reactjsday 2026**. Five minutes on stage, and a deck I put together on a split-second decision that same day. So no, it wasn't the best presentation you'll see this year. It's mostly made of my recent observations and opinions, and me being the person I am, you probably won't agree with all of it. That's fine: come and argue with me.
-
-<iframe src="https://www.youtube-nocookie.com/embed/ErRX5rcoSMc" title="Cheap Output, Expensive Judgment: talk recording" loading="lazy" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 **[Open the slides full screen](/talks/reactjsday26/)**
 
