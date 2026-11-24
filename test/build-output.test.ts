@@ -331,3 +331,22 @@ describe('Build Output Smoke Tests', () => {
         })
     })
 })
+
+describe('Web fonts', () => {
+    // Fonts from a third-party origin arrive after first paint and shift the text (CLS)
+    it.skipIf(!distExists)('are self-hosted, preloaded, with metric-matched fallbacks', () => {
+        const css = findFiles(resolve(DIST_DIR, '_astro'), /\.css$/).map((f) => readFileSync(f, 'utf-8')).join('\n')
+        const home = readFileSync(resolve(DIST_DIR, 'index.html'), 'utf-8')
+        for (const source of [css, home]) {
+            expect(source).not.toMatch(/fonts\.(googleapis|gstatic)\.com/)
+        }
+        expect(findFiles(resolve(DIST_DIR, '_astro', 'fonts'), /\.woff2$/).length).toBeGreaterThan(0)
+        expect(home).toMatch(/<link rel="preload" href="\/_astro\/fonts\/[^"]+\.woff2" as="font"/)
+        expect(home).toMatch(/fallback: Arial";src:local\("Arial"\)[^}]*size-adjust/)
+    })
+
+    it.skipIf(!distExists)('the no-JS header is fixed, so it takes no room before the Vue header replaces it', () => {
+        const home = readFileSync(resolve(DIST_DIR, 'index.html'), 'utf-8')
+        expect(home).toMatch(/<header id="no-js-header" class="!fixed /)
+    })
+})

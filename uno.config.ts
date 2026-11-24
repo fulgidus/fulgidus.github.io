@@ -4,12 +4,19 @@ import {
     presetIcons,
     presetTypography,
     presetWind3,
-    presetWebFonts,
     transformerDirectives,
     transformerVariantGroup,
 } from 'unocss'
 
 export default defineConfig({
+    // Font files and @font-face come from Astro's Fonts API (astro.config.ts, <Font> in BaseHead)
+    theme: {
+        fontFamily: {
+            title: 'var(--font-inter)',
+            sans: 'var(--font-roboto)',
+            mono: 'var(--font-fira-code), var(--font-fira-mono)',
+        },
+    },
     shortcuts: [
         {
             'bg-main': 'bg-hex-eef5fc dark:bg-hex-0d1117',
@@ -38,14 +45,6 @@ export default defineConfig({
             },
         }),
         presetTypography(),
-        presetWebFonts({
-            provider: 'google',
-            fonts: {
-                title: 'Inter:400,600,800',
-                sans: 'Roboto',
-                mono: ['Fira Code', 'Fira Mono:400,700'],
-            },
-        }),
     ],
     transformers: [transformerDirectives(), transformerVariantGroup()],
     safelist: [

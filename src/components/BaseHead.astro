@@ -1,4 +1,5 @@
 ---
+import { Font } from "astro:assets";
 import siteConfig from "@/site-config";
 import "@/styles/global.css";
 import "@/styles/prose.css";
@@ -112,6 +113,10 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd({
 
 <!-- High Priority Global Metadata -->
 <meta charset="utf-8" />
+<Font cssVariable="--font-roboto" preload />
+<Font cssVariable="--font-inter" />
+<Font cssVariable="--font-fira-code" />
+<Font cssVariable="--font-fira-mono" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>{title}</title>
 <meta name="generator" content={Astro.generator} />

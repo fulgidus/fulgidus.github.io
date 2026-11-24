@@ -3,14 +3,39 @@ import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import type { SitemapItem } from '@astrojs/sitemap'
 import vue from '@astrojs/vue'
-import { defineConfig } from 'astro/config'
+import { defineConfig, fontProviders } from 'astro/config'
 import UnoCSS from 'unocss/astro'
 import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import { remarkReadingTime } from './src/plugins/remark-reading-time'
 import { rehypeTocHeadings } from './src/plugins/rehype-toc-headings'
 import { unified } from '@astrojs/markdown-remark'
+import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
+import { dirname } from 'node:path'
 
+
+const require = createRequire(import.meta.url)
+
+/** A font family served from an @fontsource package: latin and latin-ext subsets, normal style. */
+function fontsource(name: string, pkg: string, cssVariable: `--${string}`, weights: number[], fallbacks: string[]) {
+    const dir = dirname(require.resolve(`@fontsource/${pkg}/package.json`))
+    const ranges: Record<string, string> = JSON.parse(readFileSync(`${dir}/unicode.json`, 'utf8'))
+    const variants = weights.flatMap((weight) => ['latin', 'latin-ext'].map((subset) => ({
+        src: [`${dir}/files/${pkg}-${subset}-${weight}-normal.woff2`] as [string],
+        weight,
+        style: 'normal' as const,
+        unicodeRange: ranges[subset].split(',') as [string, ...string[]],
+        display: 'swap' as const,
+    })))
+    return {
+        provider: fontProviders.local(),
+        name,
+        cssVariable,
+        fallbacks,
+        options: { variants: variants as [typeof variants[number], ...typeof variants] },
+    }
+}
 
 const languages: Record<string, string> = Object.fromEntries(
     availableLanguages.map((lang) => [lang, lang])
@@ -64,6 +89,15 @@ export default defineConfig({
             prefixDefaultLocale: false,
         },
     },
+    // Fonts are self-hosted from @fontsource (no network at build time) and served by the
+    // site itself, with preload and metric-matched fallbacks: text no longer jumps
+    // when the web font arrives (CLS).
+    fonts: [
+        fontsource('Roboto', 'roboto', '--font-roboto', [400], ['ui-sans-serif', 'system-ui', 'sans-serif']),
+        fontsource('Inter', 'inter', '--font-inter', [400, 600, 800], ['sans-serif']),
+        fontsource('Fira Code', 'fira-code', '--font-fira-code', [400], ['monospace']),
+        fontsource('Fira Mono', 'fira-mono', '--font-fira-mono', [400, 700], ['monospace']),
+    ],
     integrations: [
         mdx(), 
         vue(), 

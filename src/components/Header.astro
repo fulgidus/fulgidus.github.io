@@ -9,7 +9,7 @@ const translate = useTranslate(currentLang)
 const availableLanguages = Object.keys(ui) as Languages[]
 const languages = availableLanguages.map(lang => [lang, ui[lang].language])
 ---
-<header id="no-js-header" class="{`!fixed bg-transparent z-899 w-screen h-20 px-6 flex justify-center items-center relative print:hidden text-main`}">
+<header id="no-js-header" class="!fixed bg-transparent z-899 w-screen h-20 px-6 flex justify-center items-center relative print:hidden text-main">
     <div class="flex items-center justify-between h-full w-screen flew-grow-1">
         <!-- Logo -->
         <a href={translatePath(siteConfig.basePath, currentLang)} aria-label={siteConfig.header.logo.alt} class="mr-6 b-rd-full">
