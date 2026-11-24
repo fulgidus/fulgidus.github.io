@@ -17,7 +17,7 @@
   "scripts": {
     "generate-pdfs": "node scripts/generate-pdfs.mjs",
     "talks": "node scripts/build-talks.mjs",
-    "dev": "node scripts/build-talks.mjs && astro dev --host",
+    "dev": "node scripts/build-talks.mjs --no-export && astro dev --host",
     "build": "node scripts/build-talks.mjs && astro check && astro build && pagefind --site dist",
     "preview": "astro preview",
     "prod": "pnpm build && pnpm preview",

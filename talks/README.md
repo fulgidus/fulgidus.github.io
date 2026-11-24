@@ -28,4 +28,15 @@ and embed it where it should appear:
 
 The SlideDock pins that iframe while reading and follows the headings.
 
-`pnpm talks` rebuilds only the decks; `pnpm dev` and `pnpm build` run it first.
+Each deck also gets downloads, listed in `public/talks/<slug>/downloads.json` and shown under
+the deck in the post (light or dark variant following the site theme):
+
+- Marp: HTML, PDF, PPTX in light and dark (dark = `class: invert`), plus the `.md` source
+- Slidev: PDF, PPTX in light and dark (`slidev export --dark`), plus the `.md` source
+- ready-made HTML: the `.html` file
+
+PDF/PPTX use the system Chrome (`CHROME_PATH`, or the usual install paths); the build fails if
+an export fails, so a deck never ships with missing downloads.
+
+`pnpm talks` rebuilds only the decks; `pnpm build` runs it first, `pnpm dev` runs it with
+`--no-export` (decks only, no PDF/PPTX).

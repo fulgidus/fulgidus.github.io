@@ -256,6 +256,21 @@ describe('Build Output Smoke Tests', () => {
             expect(missing).toEqual([])
         })
 
+        it.skipIf(!distExists)('every download listed for a deck is published', () => {
+            const missing: string[] = []
+            for (const slug of decks) {
+                const manifest = join(DIST_DIR, 'talks', slug, 'downloads.json')
+                if (!existsSync(manifest)) {
+                    missing.push(`${slug}/downloads.json`)
+                    continue
+                }
+                for (const d of JSON.parse(readFileSync(manifest, 'utf-8')) as Array<{ file: string }>) {
+                    if (!existsSync(join(DIST_DIR, 'talks', slug, d.file))) missing.push(`${slug}/${d.file}`)
+                }
+            }
+            expect(missing).toEqual([])
+        })
+
         it.skipIf(!distExists)('every embedded /talks/ iframe points to a published deck', () => {
             const broken: Array<{ file: string; src: string }> = []
             for (const file of findFiles(join(DIST_DIR, 'posts'), /\.html$/).concat(findFiles(join(DIST_DIR, 'it', 'posts'), /\.html$/))) {
