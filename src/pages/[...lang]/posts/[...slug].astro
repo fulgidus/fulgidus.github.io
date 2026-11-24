@@ -185,7 +185,8 @@ const t = useTranslate(lang);
 
   {!draft && !unlisted && <GiscusComments lang={lang} client:only="vue" />}
 
-  {slides && (
+  {/* the dock pins the deck and follows the headings: only when the post maps them to slides */}
+  {slides && slides.byHeading.length > 0 && (
     <SlideDock
       client:only="vue"
       src={slides.src}

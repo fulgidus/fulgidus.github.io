@@ -1,7 +1,7 @@
 ---
 title: "Cheap Output, Expensive Judgment"
 description: "Slide e resoconto del mio talk a reactjsday 2026: l'AI ha reso l'output quasi gratuito, ma non il giudizio. Cosa significa per chi fa il lavoro, per chi lo riceve, per i nostri clienti e per il vecchio sogno di non aver più bisogno di persone competenti."
-image: "../../reactjsday26/cover.jpg"
+image: "../../../talks/reactjsday26/cover.jpg"
 imageAlt: "Slide del titolo del talk Cheap Output, Expensive Judgment, con la foto di Lewis Hine del 1920 di un meccanico al lavoro su una pompa a vapore"
 imageSize: md
 pubDate: 2026-11-19T19:00:00
@@ -17,7 +17,7 @@ tags:
   - best-practices
 draft: false
 lang: it
-translationOf: "reactjsday26"
+translationOf: "talks/reactjsday26"
 redirect: ""
 unlisted: false
 video: false
