@@ -61,6 +61,24 @@ function marpDark(md) {
     return md.replace(/^---\r?\n/, '---\nclass: invert\n')
 }
 
+// Injected in the Marp deck page: follows the site theme (same localStorage key as the site's
+// useDark, else prefers-color-scheme), before the first paint and live when the theme changes.
+const MARP_THEME_SYNC = `<style>html.site-dark,html.site-dark body{background:#0d1117!important}</style>
+<script>(function(){
+var d=document.documentElement;
+function dark(){var s=null;try{s=localStorage.getItem('vueuse-color-scheme')}catch(e){}
+return s==='dark'||(s!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches)}
+function apply(){var on=dark();d.classList.toggle('site-dark',on);
+var ss=document.querySelectorAll('section');for(var i=0;i<ss.length;i++)ss[i].classList.toggle('invert',on)}
+apply();addEventListener('storage',apply);matchMedia('(prefers-color-scheme: dark)').addEventListener('change',apply)})()</script>`
+
+/** Make the deck page follow the site theme: dark = Marp's invert class on every slide. */
+function syncMarpTheme(file) {
+    const html = fs.readFileSync(file, 'utf-8')
+    if (!html.includes('</body>')) throw new Error(`[talks] ${file}: no </body> to inject the theme sync into`)
+    fs.writeFileSync(file, html.replace('</body>', `${MARP_THEME_SYNC}</body>`))
+}
+
 function marp(input, output, extra = []) {
     run(bin('marp'), ['--no-stdin', '--html', '--allow-local-files', '--theme-set', MARP_THEME, ...extra, '--output', output, input])
 }
@@ -72,7 +90,9 @@ function buildMarp({ slug, dir }, out, downloads) {
     fs.writeFileSync(dark, marpDark(fs.readFileSync(src, 'utf-8')))
     try {
         marp(src, path.join(out, 'index.html'))
+        // the light .html download is the plain deck; the page embedded in the post follows the site theme
         fs.copyFileSync(path.join(out, 'index.html'), path.join(out, `${slug}.html`))
+        syncMarpTheme(path.join(out, 'index.html'))
         marp(dark, path.join(out, `${slug}-dark.html`))
         downloads.push({ type: 'html', variant: 'light', file: `${slug}.html` }, { type: 'html', variant: 'dark', file: `${slug}-dark.html` })
         if (EXPORT) {
