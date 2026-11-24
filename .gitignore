@@ -5,7 +5,7 @@ node_modules
 .DS_Store
 .eslintcache
 *.log
-public/marp/
+public/talks/
 
 # Lychee link checker cache
 .lycheecache

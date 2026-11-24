@@ -6,6 +6,8 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 // corner on xl+) and follows the section being read, with a 300ms fade between slides.
 const props = defineProps<{
   src: string
+  // how the deck takes a slide number in its URL: Marp and ready-made HTML use #N, Slidev (hash router) #/N
+  engine: 'html' | 'marp' | 'slidev'
   byHeading: number[]
   labels: { label: string; open: string; minimize: string; expand: string; close: string }
 }>()
@@ -21,7 +23,10 @@ const state = ref<DockState>('open')
 const head = ref<HTMLElement | null>(null)
 
 const base = computed(() => props.src.replace(/#.*$/, ''))
-const fullUrl = computed(() => `${base.value}#${slide.value}`)
+const hashFor = (n: number) => (props.engine === 'slidev' ? `/${n}` : String(n))
+const fullUrl = computed(() => `${base.value}#${hashFor(slide.value)}`)
+// with no headings mapped the dock can't know which slide is showing, so it shows no counter
+const counter = computed(() => (props.byHeading.length ? ` ${slide.value}/${total.value}` : ''))
 
 let article: HTMLElement | null = null
 let headings: HTMLElement[] = []
@@ -55,11 +60,11 @@ function setHash(n: number) {
   if (!frame) return
   try {
     if (frame.contentWindow) {
-      frame.contentWindow.location.hash = String(n)
+      frame.contentWindow.location.hash = hashFor(n)
       return
     }
   } catch {}
-  frame.src = `${base.value}#${n}`
+  frame.src = `${base.value}#${hashFor(n)}`
 }
 
 function goTo(n: number) {
@@ -164,10 +169,10 @@ onUnmounted(() => {
       @click="setState('open')"
     >
       <span class="i-ri-slideshow-line inline-block align-middle" />
-      {{ labels.label }} {{ slide }}/{{ total }}
+      {{ labels.label }}{{ counter }}
     </button>
     <template v-else>
-      <span class="font-semibold">{{ labels.label }} {{ slide }}/{{ total }}</span>
+      <span class="font-semibold">{{ labels.label }}{{ counter }}</span>
       <a class="sd-btn ml-auto" :href="fullUrl" target="_blank" rel="noopener" :title="labels.open" :aria-label="labels.open">
         <span class="i-ri-fullscreen-line block" />
       </a>

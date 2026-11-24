@@ -190,7 +190,6 @@ describe('Build Output Smoke Tests', () => {
                 /^\/cdn-cgi\//,        // CDN paths
                 /^\/_astro\//,         // Vite-hashed assets (may be pruned)
                 /^\/img\//,            // May reference images not yet built
-                /^\/marp\//,           // Marp presentation assets
                 /^\/404\/?$/,          // 404 page self-references
                 /^\/it\/404\/?$/,      // Italian 404 self-references
             ]
@@ -244,6 +243,32 @@ describe('Build Output Smoke Tests', () => {
     })
 
     // ─── RSS/XML files are well-formed ────────────────────────────
+    describe('Slide decks', () => {
+        const TALKS_DIR = resolve(__dirname, '..', 'talks')
+        const decks = existsSync(TALKS_DIR)
+            ? readdirSync(TALKS_DIR, { withFileTypes: true })
+                .filter((e) => e.isDirectory() && e.name !== 'node_modules' && !e.name.startsWith('.'))
+                .map((e) => e.name)
+            : []
+
+        it.skipIf(!distExists)('every deck in talks/ is published at /talks/<slug>/', () => {
+            const missing = decks.filter((slug) => !existsSync(join(DIST_DIR, 'talks', slug, 'index.html')))
+            expect(missing).toEqual([])
+        })
+
+        it.skipIf(!distExists)('every embedded /talks/ iframe points to a published deck', () => {
+            const broken: Array<{ file: string; src: string }> = []
+            for (const file of findFiles(join(DIST_DIR, 'posts'), /\.html$/).concat(findFiles(join(DIST_DIR, 'it', 'posts'), /\.html$/))) {
+                const html = readFileSync(file, 'utf-8')
+                for (const m of html.matchAll(/<iframe[^>]*\ssrc="(\/talks\/[^"#?]*)/g)) {
+                    const target = join(DIST_DIR, m[1], m[1].endsWith('/') ? 'index.html' : '')
+                    if (!existsSync(target)) broken.push({ file: relative(DIST_DIR, file), src: m[1] })
+                }
+            }
+            expect(broken).toEqual([])
+        })
+    })
+
     describe('XML files are well-formed', () => {
         it.skipIf(!distExists)('XML files start with XML declaration', () => {
             const xmlFiles = findFiles(DIST_DIR, /\.xml$/)

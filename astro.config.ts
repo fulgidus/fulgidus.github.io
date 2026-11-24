@@ -10,7 +10,6 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import { remarkReadingTime } from './src/plugins/remark-reading-time'
 import { rehypeTocHeadings } from './src/plugins/rehype-toc-headings'
 import { unified } from '@astrojs/markdown-remark'
-import nodePath from 'node:path'
 
 
 const languages: Record<string, string> = Object.fromEntries(
@@ -151,38 +150,4 @@ export default defineConfig({
         },
     },
     compressHTML: import.meta.env.PROD,
-    vite: {
-        plugins: [
-            // Custom plugin: ?with-path imports resolve both the hashed URL
-            // and the original filesystem path. Used by MarpSlides.astro to
-            // find PPTX source files for LibreOffice conversion at build time.
-            // Usage: import deck from './deck.pptx?with-path'
-            //        → { url: '/_astro/deck.Bx1234.pptx', fsPath: '/abs/path/deck.pptx' }
-            {
-                name: 'asset-with-path',
-                enforce: 'pre' as const,
-                resolveId(source: string, importer: string | undefined) {
-                    if (source.endsWith('?with-path')) {
-                        const clean = source.replace('?with-path', '')
-                        if (importer) {
-                            const importerClean = importer.replace(/[?#].*$/, '')
-                            const resolved = nodePath.resolve(nodePath.dirname(importerClean), clean)
-                            return `\0asset-with-path:${resolved}`
-                        }
-                    }
-                    return null
-                },
-                load(id: string) {
-                    if (id.startsWith('\0asset-with-path:')) {
-                        const absPath = id.slice('\0asset-with-path:'.length)
-                        return [
-                            `import url from ${JSON.stringify(absPath + '?url')};`,
-                            `export default { url, fsPath: ${JSON.stringify(absPath)} };`,
-                        ].join('\n')
-                    }
-                    return null
-                },
-            },
-        ],
-    },
 })

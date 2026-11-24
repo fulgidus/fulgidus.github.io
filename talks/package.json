@@ -1,0 +1,9 @@
+{
+  "name": "talks",
+  "private": true,
+  "description": "Slide decks published at /talks/<slug>/. Slidev lives here so its Vite/Vue stay separate from the site's.",
+  "dependencies": {
+    "@slidev/cli": "^53.1.0",
+    "@slidev/theme-default": "^0.25.0"
+  }
+}
