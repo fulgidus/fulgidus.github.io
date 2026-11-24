@@ -1,33 +1,22 @@
-import siteConfig from "@/site-config";
-import { getCollection } from "astro:content";
-
 interface Context {
     site: string
 }
 
-
-export async function generateDisallowedPaths() {
-    const blogPosts = await getCollection('blog', p => p.data.unlisted);
-    const base = siteConfig.basePath ?? '/'
-    return blogPosts.map(p => `Disallow: ${base}posts/${p.id}`).join('\n');
-}
-
+// Unlisted posts are deliberately NOT listed here: robots.txt is public, so a Disallow line
+// would hand out the very URL that only its owner is supposed to know, and a crawler that
+// may not fetch a page never sees its noindex meta. They carry noindex and stay out of
+// lists, RSS, sitemap and search instead.
 export async function GET(context: Context) {
-    const unlistedRules = await generateDisallowedPaths()
-
     const robots = `
 User-agent: *
 Disallow: /well/
-${unlistedRules}
 Allow: /
 
 User-agent: AdsBot-Google
 Disallow: /well/
-${unlistedRules}
 
 User-agent: AdsBot-Google-Mobile
 Disallow: /well/
-${unlistedRules}
 
 Sitemap: ${new URL('sitemap-index.xml', context.site).href}
 `.trim()

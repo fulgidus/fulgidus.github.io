@@ -5,6 +5,7 @@
   "dependencies": {
     "@slidev/cli": "^53.1.0",
     "@slidev/theme-default": "^0.25.0",
+    "pdfjs-dist": "6.5.438",
     "playwright-chromium": "^1.65.1"
   }
 }

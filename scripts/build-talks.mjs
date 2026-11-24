@@ -8,6 +8,7 @@
 //   Marp    HTML, PDF, PPTX in light and dark, plus the .md source
 //   Slidev  PDF, PPTX in light and dark, plus the .md source
 //   HTML    the deck as a single .html file
+//   PDF     the PDF itself, plus slides.pptx if the folder has one
 // PDF/PPTX need a Chrome/Chromium: CHROME_PATH, else the usual install paths.
 // `--no-export` (used by `pnpm dev`) builds only the decks, without PDF/PPTX.
 import { execFileSync } from 'node:child_process'
@@ -135,7 +136,50 @@ function buildHtml({ slug, dir }, out, downloads) {
     downloads.push({ type: 'html', file: 'index.html', name: `${slug}.html` })
 }
 
-const builders = { marp: buildMarp, slidev: buildSlidev, html: buildHtml }
+const PDFJS_DIR = path.join(TALKS_DIR, 'node_modules', 'pdfjs-dist', 'build')
+const PDF_DECK = path.join(ROOT, 'scripts', 'pdf-deck.html')
+const escapeHtml = (s) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
+
+/** The PDF's own title (Google Slides puts the deck title there), else the slug. */
+async function pdfTitle(file, slug) {
+    const pdfjs = await import(path.join(TALKS_DIR, 'node_modules', 'pdfjs-dist', 'legacy', 'build', 'pdf.mjs'))
+    const task = pdfjs.getDocument({ data: new Uint8Array(fs.readFileSync(file)), verbosity: 0 })
+    try {
+        const doc = await task.promise
+        const { info } = await doc.getMetadata()
+        return (info && typeof info.Title === 'string' && info.Title.trim()) || slug
+    } finally {
+        await task.destroy()
+    }
+}
+
+async function buildPdf({ slug, dir }, out, downloads) {
+    // pdf.js is shared by every PDF deck: /talks/pdfjs/
+    const shared = path.join(OUT_DIR, 'pdfjs')
+    if (!fs.existsSync(shared)) {
+        fs.mkdirSync(shared, { recursive: true })
+        for (const f of ['pdf.min.mjs', 'pdf.worker.min.mjs']) fs.copyFileSync(path.join(PDFJS_DIR, f), path.join(shared, f))
+    }
+    const pdf = `${slug}.pdf`
+    fs.copyFileSync(path.join(dir, 'slides.pdf'), path.join(out, pdf))
+    const title = escapeHtml(await pdfTitle(path.join(dir, 'slides.pdf'), slug))
+    // optional overlays.json: images (e.g. animated GIFs) to show on top of a page, see scripts/pdf-deck.html
+    const overlaysFile = path.join(dir, 'overlays.json')
+    const overlays = fs.existsSync(overlaysFile) ? JSON.parse(fs.readFileSync(overlaysFile, 'utf-8')) : {}
+    const page = fs.readFileSync(PDF_DECK, 'utf-8')
+        .replaceAll('{{TITLE}}', title)
+        .replaceAll('{{PDF}}', pdf)
+        .replace('{{OVERLAYS}}', JSON.stringify(overlays).replace(/</g, '\\u003c'))
+    fs.writeFileSync(path.join(out, 'index.html'), page)
+    downloads.push({ type: 'pdf', file: pdf })
+    if (fs.existsSync(path.join(dir, 'slides.pptx'))) {
+        fs.copyFileSync(path.join(dir, 'slides.pptx'), path.join(out, `${slug}.pptx`))
+        downloads.push({ type: 'pptx', file: `${slug}.pptx` })
+    }
+    copyAssets(dir, out, ['slides.pdf', 'slides.pptx', 'overlays.json'])
+}
+
+const builders = { marp: buildMarp, slidev: buildSlidev, html: buildHtml, pdf: buildPdf }
 
 fs.rmSync(OUT_DIR, { recursive: true, force: true })
 fs.mkdirSync(OUT_DIR, { recursive: true })
@@ -146,7 +190,7 @@ for (const deck of decks) {
     fs.mkdirSync(out, { recursive: true })
     console.log(`[talks] ${deck.slug} (${deck.engine})`)
     const downloads = []
-    builders[deck.engine](deck, out, downloads)
+    await builders[deck.engine](deck, out, downloads)
     for (const d of downloads) {
         const file = path.join(out, d.file)
         if (!fs.existsSync(file)) throw new Error(`[talks] ${deck.slug}: ${d.file} was not produced`)
