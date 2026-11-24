@@ -206,7 +206,7 @@ const t = (key: Parameters<typeof translateFrom>[1]) => translateFrom(currentLan
         html += '<a href="' + post.href + '" class="terminal-file" data-astro-prefetch>'
           + '<span class="file-permissions">-rw-r--r--</span>'
           + '<span class="file-date">' + dateStr + '</span>'
-          + '<span class="file-name">' + post.id + '/</span>'
+          + '<span class="file-name">' + post.slug + '/</span>'
           + '</a>';
       }
       postsContainer.innerHTML = html;
