@@ -284,6 +284,38 @@ describe('Build Output Smoke Tests', () => {
         })
     })
 
+    // ─── Unlisted posts are reachable only by their URL ───────────
+    describe('Unlisted posts', () => {
+        const unlisted = distExists
+            ? findFiles(DIST_DIR, /\.html$/)
+                .filter((f) => /^(it\/)?posts\//.test(relative(DIST_DIR, f).replace(/\\/g, '/')))
+                .filter((f) => /<meta name="robots" content="noindex/.test(readFileSync(f, 'utf-8')))
+            : []
+        const pathOf = (f: string) => '/' + relative(DIST_DIR, f).replace(/\\/g, '/').replace(/index\.html$/, '')
+
+        it.skipIf(!distExists)('are left out of the search index', () => {
+            const indexed = unlisted.filter((f) => readFileSync(f, 'utf-8').includes('data-pagefind-body')).map(pathOf)
+            expect(indexed).toEqual([])
+        })
+
+        it.skipIf(!distExists)('are not linked or listed anywhere else (pages, RSS, sitemap, robots.txt, llms.txt)', () => {
+            const own = new Set(unlisted)
+            const leaks: Array<{ file: string; path: string }> = []
+            const files = findFiles(DIST_DIR, /\.(html|xml|json|txt)$/)
+                .filter((f) => !own.has(f) && !relative(DIST_DIR, f).replace(/\\/g, '/').startsWith('pagefind/'))
+            for (const file of files) {
+                const text = readFileSync(file, 'utf-8')
+                for (const u of unlisted) {
+                    const p = pathOf(u)
+                    if (text.includes(`"${p}"`) || text.includes(`${p}<`) || text.includes(`io${p}`) || text.includes(`: ${p}`)) {
+                        leaks.push({ file: relative(DIST_DIR, file), path: p })
+                    }
+                }
+            }
+            expect(leaks).toEqual([])
+        })
+    })
+
     describe('XML files are well-formed', () => {
         it.skipIf(!distExists)('XML files start with XML declaration', () => {
             const xmlFiles = findFiles(DIST_DIR, /\.xml$/)

@@ -116,7 +116,8 @@ const t = useTranslate(lang);
   readingTime={readingTime}
 >
   <ReadingProgress client:only="vue" />
-  <article class="prose" data-pagefind-body>
+  <!-- unlisted posts stay out of the search index (pagefind only indexes data-pagefind-body); their tags are plain text, since the tag pages leave them out -->
+  <article class="prose" {...(unlisted ? {} : { "data-pagefind-body": "" })}>
     <div class="max-w-4xl mx-auto relative">
       <h1 transition:name={`post-title-${slug.replace(/\//g, '-')}`}>
         {title}
@@ -168,7 +169,7 @@ const t = useTranslate(lang);
       {
         tags && tags.length > 0 && (
           <span class="flex flex-wrap flex-gap-1 py1rem !mt-10 !mb--10">
-            <TagsList tags={tags} link={true} verbose noDot />
+            <TagsList tags={tags} link={!unlisted} verbose noDot />
           </span>
         )
       }

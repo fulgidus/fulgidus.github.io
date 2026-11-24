@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>{{TITLE}}</title>
+<!--
+  Deck viewer for talks/<slug>/slides.pdf (built by scripts/build-talks.mjs).
+  Each PDF page is one slide, drawn with pdf.js at screen resolution, so the
+  original fonts, layout and links stay exactly as exported. #N selects slide N
+  (what the SlideDock in the post uses). Optional overlays.json puts images
+  (e.g. animated GIFs, which a PDF can only hold as a still frame) back on top of
+  a page: { "3": [{ "src": "gif/a.gif", "x": 0.04, "y": 0.3, "w": 0.4, "h": 0.6 }] },
+  positions as fractions of the page, loaded only when their slide is shown.
+-->
+<style>
+  html, body { margin: 0; height: 100%; background: #111; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; font-family: system-ui, sans-serif; }
+  #stage { position: relative; box-shadow: 0 0 24px rgb(0 0 0 / 0.5); background: #fff; }
+  #stage canvas { display: block; width: 100%; height: 100%; }
+  .layer { position: absolute; inset: 0; }
+  .layer a { position: absolute; display: block; }
+  .layer a:focus-visible { outline: 2px solid #4c8dff; }
+  .layer img { position: absolute; display: block; }
+  .nav { position: fixed; right: 12px; bottom: 10px; display: flex; gap: 6px; align-items: center;
+         color: #eee; font-size: 13px; opacity: 0; transition: opacity .2s; }
+  body:hover .nav, .nav:focus-within { opacity: 0.9; }
+  .nav button { background: rgb(0 0 0 / 0.6); color: #eee; border: 1px solid #555; border-radius: 4px;
+                padding: 2px 8px; font: inherit; cursor: pointer; }
+  .nav span { background: rgb(0 0 0 / 0.6); padding: 2px 8px; border-radius: 4px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  #error { color: #eee; padding: 2rem; }
+</style>
+</head>
+<body>
+<div id="stage" hidden>
+  <canvas id="canvas"></canvas>
+  <div class="layer" id="overlays"></div>
+  <div class="layer" id="links"></div>
+</div>
+<div class="sr" id="text" aria-live="polite"></div>
+<div class="nav">
+  <button id="prev" type="button" aria-label="Previous slide">‹</button>
+  <span id="count"></span>
+  <button id="next" type="button" aria-label="Next slide">›</button>
+  <button id="full" type="button" aria-label="Full screen">⛶</button>
+</div>
+<noscript><p id="error"><a href="{{PDF}}">{{TITLE}} (PDF)</a></p></noscript>
+<script type="module">
+import * as pdfjs from '../pdfjs/pdf.min.mjs'
+pdfjs.GlobalWorkerOptions.workerSrc = '../pdfjs/pdf.worker.min.mjs'
+
+const stage = document.getElementById('stage')
+const canvas = document.getElementById('canvas')
+const links = document.getElementById('links')
+const overlaysEl = document.getElementById('overlays')
+const text = document.getElementById('text')
+const count = document.getElementById('count')
+
+let doc = null
+const overlays = {{OVERLAYS}}
+let current = 0
+let task = null
+const pages = new Map()
+
+function slideFromHash() {
+  const n = parseInt(location.hash.replace(/^#\/?/, ''), 10)
+  return Number.isFinite(n) ? Math.min(Math.max(n, 1), doc.numPages) : 1
+}
+
+function page(n) {
+  if (!pages.has(n)) pages.set(n, doc.getPage(n))
+  return pages.get(n)
+}
+
+async function render(n) {
+  const p = await page(n)
+  const base = p.getViewport({ scale: 1 })
+  const fit = Math.min(innerWidth / base.width, innerHeight / base.height)
+  const cssW = Math.floor(base.width * fit)
+  const cssH = Math.floor(base.height * fit)
+  const dpr = Math.min(devicePixelRatio || 1, 3)
+  const viewport = p.getViewport({ scale: fit * dpr })
+  // draw off screen, then swap in one go: no blank frame between slides
+  const off = document.createElement('canvas')
+  off.width = Math.floor(viewport.width)
+  off.height = Math.floor(viewport.height)
+  if (task) task.cancel()
+  task = p.render({ canvas: off, canvasContext: off.getContext('2d'), viewport })
+  try {
+    await task.promise
+  } catch (e) {
+    if (e && e.name === 'RenderingCancelledException') return
+    throw e
+  }
+  task = null
+  if (n !== current) return
+  stage.style.width = cssW + 'px'
+  stage.style.height = cssH + 'px'
+  canvas.width = off.width
+  canvas.height = off.height
+  canvas.getContext('2d').drawImage(off, 0, 0)
+  stage.hidden = false
+
+  // links, in CSS pixels
+  const cssViewport = p.getViewport({ scale: fit })
+  links.replaceChildren()
+  for (const a of await p.getAnnotations({ intent: 'display' })) {
+    // a.url is only set for safe absolute URLs; empty "#" links in the export are skipped
+    if (a.subtype !== 'Link' || !a.url) continue
+    const [x1, y1] = toCss(cssViewport, a.rect[0], a.rect[1])
+    const [x2, y2] = toCss(cssViewport, a.rect[2], a.rect[3])
+    const el = document.createElement('a')
+    el.href = target(a.url)
+    el.target = '_blank'
+    el.rel = 'noopener'
+    el.title = el.href
+    Object.assign(el.style, {
+      left: Math.min(x1, x2) + 'px', top: Math.min(y1, y2) + 'px',
+      width: Math.abs(x2 - x1) + 'px', height: Math.abs(y2 - y1) + 'px',
+    })
+    links.append(el)
+  }
+
+  overlaysEl.replaceChildren()
+  for (const o of overlays[n] || []) {
+    const img = document.createElement('img')
+    img.src = o.src
+    img.alt = ''
+    Object.assign(img.style, {
+      left: o.x * 100 + '%', top: o.y * 100 + '%', width: o.w * 100 + '%', height: o.h * 100 + '%',
+    })
+    overlaysEl.append(img)
+  }
+
+  const content = await p.getTextContent()
+  text.textContent = `${n} / ${doc.numPages}. ` + content.items.map((i) => i.str).join(' ')
+}
+
+// Google Slides exports wrap every link in a google.com/url?q=<target> redirect: go straight to the target
+function target(url) {
+  try {
+    const u = new URL(url)
+    const q = u.searchParams.get('q')
+    if (/(^|\.)google\.com$/.test(u.hostname) && u.pathname === '/url' && q && /^https?:\/\//.test(q)) return q
+  } catch {}
+  return url
+}
+
+// PDF user space to viewport pixels (the viewport's affine transform)
+function toCss(v, x, y) {
+  const [a, b, c, d, e, f] = v.transform
+  return [a * x + c * y + e, b * x + d * y + f]
+}
+
+function go(n) {
+  n = Math.min(Math.max(n, 1), doc.numPages)
+  if (n === current) return
+  current = n
+  count.textContent = `${n} / ${doc.numPages}`
+  if (location.hash !== '#' + n) history.replaceState(null, '', '#' + n)
+  render(n).catch(fail)
+  // warm up the neighbours so the next click is instant
+  if (n < doc.numPages) page(n + 1)
+}
+
+function fail(e) {
+  console.error(e)
+  stage.hidden = true
+  document.body.insertAdjacentHTML('beforeend', '<p id="error"><a href="{{PDF}}" style="color:#9cf">{{TITLE}} (PDF)</a></p>')
+}
+
+try {
+  doc = await pdfjs.getDocument({ url: '{{PDF}}' }).promise
+  go(slideFromHash())
+} catch (e) {
+  fail(e)
+}
+
+addEventListener('hashchange', () => doc && go(slideFromHash()))
+let resizeTimer = 0
+addEventListener('resize', () => {
+  clearTimeout(resizeTimer)
+  resizeTimer = setTimeout(() => doc && render(current).catch(fail), 100)
+})
+addEventListener('keydown', (e) => {
+  if (!doc || e.altKey || e.ctrlKey || e.metaKey) return
+  const k = e.key
+  if (k === 'ArrowRight' || k === 'ArrowDown' || k === 'PageDown' || k === ' ' || k === 'Enter') go(current + 1)
+  else if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'PageUp' || k === 'Backspace') go(current - 1)
+  else if (k === 'Home') go(1)
+  else if (k === 'End') go(doc.numPages)
+  else if (k === 'f' || k === 'F') toggleFull()
+  else return
+  e.preventDefault()
+})
+document.getElementById('prev').onclick = () => go(current - 1)
+document.getElementById('next').onclick = () => go(current + 1)
+document.getElementById('full').onclick = () => toggleFull()
+function toggleFull() {
+  if (document.fullscreenElement) document.exitFullscreen()
+  else document.documentElement.requestFullscreen?.()
+}
+// click on the slide (not on a link): right half forward, left half back
+stage.addEventListener('click', (e) => {
+  if (e.target.closest('a')) return
+  const r = stage.getBoundingClientRect()
+  go(current + (e.clientX - r.left > r.width / 2 ? 1 : -1))
+})
+let touchX = null
+addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX }, { passive: true })
+addEventListener('touchend', (e) => {
+  if (touchX === null) return
+  const dx = e.changedTouches[0].clientX - touchX
+  touchX = null
+  if (Math.abs(dx) > 40) go(current + (dx < 0 ? 1 : -1))
+})
+</script>
+</body>
+</html>

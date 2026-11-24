@@ -10,7 +10,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import { remarkReadingTime } from './src/plugins/remark-reading-time'
 import { rehypeTocHeadings } from './src/plugins/rehype-toc-headings'
 import { unified } from '@astrojs/markdown-remark'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname } from 'node:path'
 
@@ -40,6 +40,27 @@ function fontsource(name: string, pkg: string, cssVariable: `--${string}`, weigh
 const languages: Record<string, string> = Object.fromEntries(
     availableLanguages.map((lang) => [lang, lang])
 );
+
+/**
+ * URL paths of the unlisted blog posts (front matter `unlisted: true`), e.g.
+ * /posts/talks/x/ and /it/posts/talks/x/, so the sitemap leaves them out.
+ * Reads the markdown directly: the content collections aren't available here.
+ */
+function unlistedPostPaths(): string[] {
+    const root = new URL('./src/content/blog/', import.meta.url)
+    const paths: string[] = []
+    for (const file of readdirSync(root, { recursive: true, encoding: 'utf-8' })) {
+        if (!/\.mdx?$/.test(file)) continue
+        const fm = readFileSync(new URL(file, root), 'utf-8').match(/^---\r?\n([\s\S]*?)\r?\n---/)
+        if (!fm || !/^unlisted:\s*true\s*$/m.test(fm[1])) continue
+        // same id as the glob loader: path without extension and trailing /index, slugified
+        const id = file.replace(/\\/g, '/').replace(/\.mdx?$/, '').replace(/\/index$/, '')
+            .split('/').map((s) => s.toLowerCase().replace(/\s+/g, '-')).join('/')
+        paths.push(id.startsWith('it/') ? `/it/posts/${id.slice(3)}/` : `/posts/${id}/`)
+    }
+    return paths
+}
+const UNLISTED = unlistedPostPaths()
 
 /**
  * Assign sitemap priority based on page type/path.
@@ -106,7 +127,7 @@ export default defineConfig({
                 defaultLocale: 'en',
                 locales: languages
             },
-            filter: (page) => !page.includes('/well/'),
+            filter: (page) => !page.includes('/well/') && !UNLISTED.some((p) => new URL(page).pathname === p),
             lastmod: new Date(),
             serialize(item: SitemapItem) {
                 // Add priority based on page type

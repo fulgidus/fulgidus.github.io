@@ -1,6 +1,7 @@
 // Slide decks: one folder per deck in talks/<slug>/, published at /talks/<slug>/.
 //
 //   talks/<slug>/index.html   ready-made deck, copied as is
+//   talks/<slug>/slides.pdf   PDF export (e.g. from Google Slides), shown page by page with pdf.js
 //   talks/<slug>/slides.md    Marp if its front matter has `marp: true`, Slidev otherwise
 //
 // Shared by scripts/build-talks.mjs (which builds them) and the post page
@@ -19,9 +20,10 @@ function frontMatter(md) {
     return m ? m[1] : ''
 }
 
-/** 'html' | 'marp' | 'slidev' | null for a deck folder. */
+/** 'html' | 'pdf' | 'marp' | 'slidev' | null for a deck folder. */
 export function detectEngine(dir) {
     if (fs.existsSync(path.join(dir, 'index.html'))) return 'html'
+    if (fs.existsSync(path.join(dir, 'slides.pdf'))) return 'pdf'
     const slides = path.join(dir, 'slides.md')
     if (!fs.existsSync(slides)) return null
     const fm = frontMatter(fs.readFileSync(slides, 'utf-8'))

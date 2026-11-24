@@ -6,8 +6,8 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 // corner on xl+) and follows the section being read, with a 300ms fade between slides.
 const props = defineProps<{
   src: string
-  // how the deck takes a slide number in its URL: Marp and ready-made HTML use #N, Slidev (hash router) #/N
-  engine: 'html' | 'marp' | 'slidev'
+  // how the deck takes a slide number in its URL: Marp, PDF and ready-made HTML use #N, Slidev (hash router) #/N
+  engine: 'html' | 'pdf' | 'marp' | 'slidev'
   byHeading: number[]
   labels: { label: string; open: string; minimize: string; expand: string; close: string }
 }>()
