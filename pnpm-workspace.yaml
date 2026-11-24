@@ -5,3 +5,5 @@ allowBuilds:
   esbuild: true
   sharp: true
   vue-demi: true
+  # uses the system Chrome (scripts/build-talks.mjs), no browser download
+  playwright-chromium: false
