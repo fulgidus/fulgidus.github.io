@@ -8,10 +8,10 @@ lang: en
 unlisted: true
 video: false
 slides:
-  src: /talks/fine-delle-maledette-date/
+  src: /talks/temporal/
 ---
 The slides of the talk I gave at **TorinoJS** on February 9, 2026, at Toolbox Coworking in Turin.
 
-**[Open the slides full screen](/talks/fine-delle-maledette-date/)** (talk and slides are in Italian)
+**[Open the slides full screen](/talks/temporal/)** (talk and slides are in Italian)
 
-<iframe src="/talks/fine-delle-maledette-date/" title="La Fine delle Maledette Date: Benvenuto, Temporal: slides" loading="lazy" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;" allowfullscreen></iframe>
+<iframe src="/talks/temporal/" title="La Fine delle Maledette Date: Benvenuto, Temporal: slides" loading="lazy" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;" allowfullscreen></iframe>

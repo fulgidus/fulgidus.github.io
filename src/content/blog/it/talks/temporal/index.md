@@ -5,14 +5,14 @@ pubDate: 2026-02-09T19:00:00
 tags: [talks, torinojs, javascript, temporal]
 draft: false
 lang: it
-translationOf: "talks/fine-delle-maledette-date"
+translationOf: "talks/temporal"
 unlisted: true
 video: false
 slides:
-  src: /talks/fine-delle-maledette-date/
+  src: /talks/temporal/
 ---
 Le slide del talk che ho tenuto a **TorinoJS** il 9 febbraio 2026, al Toolbox Coworking di Torino.
 
-**[Apri le slide a schermo intero](/talks/fine-delle-maledette-date/)**
+**[Apri le slide a schermo intero](/talks/temporal/)**
 
-<iframe src="/talks/fine-delle-maledette-date/" title="La Fine delle Maledette Date: Benvenuto, Temporal: slide" loading="lazy" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;" allowfullscreen></iframe>
+<iframe src="/talks/temporal/" title="La Fine delle Maledette Date: Benvenuto, Temporal: slide" loading="lazy" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;" allowfullscreen></iframe>
