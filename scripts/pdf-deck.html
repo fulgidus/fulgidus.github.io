@@ -11,8 +11,9 @@
   original fonts, layout and links stay exactly as exported. #N selects slide N
   (what the SlideDock in the post uses). Optional overlays.json puts images
   (e.g. animated GIFs, which a PDF can only hold as a still frame) back on top of
-  a page: { "3": [{ "src": "gif/a.gif", "x": 0.04, "y": 0.3, "w": 0.4, "h": 0.6 }] },
-  positions as fractions of the page, loaded only when their slide is shown.
+  a page: { "3": [{ "src": "gif/a.gif", "x": 0.04, "y": 0.3, "w": 0.4, "h": 0.6, "crop": { "l": 0.1 } }] },
+  positions as fractions of the page, crop as fractions of the image (optional),
+  loaded only when their slide is shown.
 -->
 <style>
   html, body { margin: 0; height: 100%; background: #111; overflow: hidden; }
@@ -22,7 +23,8 @@
   .layer { position: absolute; inset: 0; }
   .layer a { position: absolute; display: block; }
   .layer a:focus-visible { outline: 2px solid #4c8dff; }
-  .layer img { position: absolute; display: block; }
+  .layer .overlay { position: absolute; overflow: hidden; }
+  .layer img { position: absolute; display: block; max-width: none; }
   .nav { position: fixed; right: 12px; bottom: 10px; display: flex; gap: 6px; align-items: center;
          color: #eee; font-size: 13px; opacity: 0; transition: opacity .2s; }
   body:hover .nav, .nav:focus-within { opacity: 0.9; }
@@ -125,13 +127,23 @@ async function render(n) {
 
   overlaysEl.replaceChildren()
   for (const o of overlays[n] || []) {
+    // o.crop = { l, r, t, b }: fractions of the image cut off on each side (Slides cropProperties)
+    const c = { l: 0, r: 0, t: 0, b: 0, ...o.crop }
+    const box = document.createElement('div')
+    box.className = 'overlay'
+    Object.assign(box.style, {
+      left: o.x * 100 + '%', top: o.y * 100 + '%', width: o.w * 100 + '%', height: o.h * 100 + '%',
+    })
     const img = document.createElement('img')
     img.src = o.src
     img.alt = ''
+    const fw = 1 - c.l - c.r
+    const fh = 1 - c.t - c.b
     Object.assign(img.style, {
-      left: o.x * 100 + '%', top: o.y * 100 + '%', width: o.w * 100 + '%', height: o.h * 100 + '%',
+      left: (-c.l / fw) * 100 + '%', top: (-c.t / fh) * 100 + '%', width: 100 / fw + '%', height: 100 / fh + '%',
     })
-    overlaysEl.append(img)
+    box.append(img)
+    overlaysEl.append(box)
   }
 
   const content = await p.getTextContent()
