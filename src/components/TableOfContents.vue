@@ -159,7 +159,9 @@ function cleanupObserver() {
 }
 
 // ── Responsive collapse state ─────────────────────────────────────────
-const isCollapsed = ref(true)
+// null until mounted: the server-rendered ToC is collapsed on small screens by CSS
+// alone, so the page doesn't shift when the component hydrates
+const isCollapsed = ref<boolean | null>(null)
 const isMobile = ref(false)
 
 function checkMobile() {
@@ -173,7 +175,7 @@ function checkMobile() {
 }
 
 function toggleCollapse() {
-  isCollapsed.value = !isCollapsed.value
+  isCollapsed.value = isCollapsed.value === false
 }
 
 // ── Click handler: scroll to heading and collapse on mobile ───────────
@@ -232,11 +234,11 @@ watch(() => props.headings, () => {
     <button
       class="toc-toggle"
       :class="{ 'toc-toggle--mobile': isMobile }"
-      :aria-expanded="!isCollapsed"
+      :aria-expanded="isCollapsed === false"
       aria-controls="toc-list"
       @click="toggleCollapse"
     >
-      <span class="toc-toggle-icon" :class="{ 'toc-toggle-icon--open': !isCollapsed }">
+      <span class="toc-toggle-icon" :class="{ 'toc-toggle-icon--open': isCollapsed === false, 'toc-toggle-icon--auto': isCollapsed === null }">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
           <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -248,7 +250,7 @@ watch(() => props.headings, () => {
     <div
       id="toc-list"
       class="toc-content"
-      :class="{ 'toc-content--collapsed': isCollapsed }"
+      :class="{ 'toc-content--collapsed': isCollapsed === true, 'toc-content--auto': isCollapsed === null }"
     >
       <ul class="toc-list" role="list">
         <li
@@ -364,6 +366,21 @@ watch(() => props.headings, () => {
   opacity: 0;
   padding: 0;
   overflow: hidden;
+}
+
+/* Before hydration: open on desktop, closed on small screens, like checkMobile() */
+@media (max-width: 767px) {
+  .toc-content--auto {
+    max-height: 0;
+    opacity: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+}
+@media (min-width: 768px) {
+  .toc-toggle-icon--auto {
+    transform: rotate(180deg);
+  }
 }
 
 /* Lists */

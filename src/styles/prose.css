@@ -225,7 +225,7 @@
   font-weight: 400;
   color: inherit;
   font-size: inherit;
-  font-family: "Fira Code", "Fira Mono", 'Courier New', Courier, monospace;
+  font-family: var(--font-fira-code), var(--font-fira-mono), 'Courier New', Courier, monospace;
   line-height: inherit;
 }
 .prose table {
