@@ -1,5 +1,4 @@
 ---
-import { λ } from "@/constants/easter-egg";
 ---
 
 <!doctype html>
@@ -43,51 +42,6 @@ import { λ } from "@/constants/easter-egg";
         display: inline-block;
       }
 
-      .sr-only-meta {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-        color: transparent;
-        font-size: 1px;
-        user-select: none;
-        pointer-events: none;
-        z-index: -1;
-      }
-
-      .meta-desc {
-        color: rgba(0, 0, 0, 0);
-        background: transparent;
-        font-size: 0.01px;
-        line-height: 0;
-        height: 0;
-        width: 0;
-        overflow: hidden;
-        position: absolute;
-        top: 0;
-        left: 0;
-        user-select: none;
-        pointer-events: none;
-        z-index: -1;
-      }
-
-      .seo-text {
-        display: contents;
-        font-size: 0;
-        color: transparent;
-        width: 0;
-        height: 0;
-        overflow: hidden;
-        position: absolute;
-        user-select: none;
-        pointer-events: none;
-      }
-
       @media print {
         @page {
           size: A4;
@@ -122,20 +76,6 @@ import { λ } from "@/constants/easter-egg";
 
         .no-print {
           display: none !important;
-        }
-
-        .sr-only-meta,
-        .seo-text {
-          display: none !important;
-        }
-
-        .meta-desc {
-          color: white !important;
-          font-size: 1px !important;
-          line-height: 1px !important;
-          height: auto !important;
-          width: auto !important;
-          overflow: visible !important;
         }
 
         .print-p-0 {
@@ -455,14 +395,6 @@ import { λ } from "@/constants/easter-egg";
           </div>
         </div>
       </section>
-
-      <div class="sr-only-meta" aria-hidden="true">{λ}</div>
-
-      <div class="meta-desc" aria-hidden="true">{λ}</div>
-
-      <div class="seo-text" aria-hidden="true" hidden>{λ}</div>
-      
-      <Fragment set:html={`<!-- ${λ} -->`} />
     </main>
 
     <button

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Generates PDFs for all CV pages (standard + safe, EN + IT).
+ * Generates PDFs for all CV pages (standard + easter egg, EN + IT).
  * Reads from dist/ after `pnpm build`, writes PDFs into dist/files/.
  * Uses file:// URLs — CV pages only reference CDN assets, no local deps.
  *
- * Standard: Playwright headless Chromium → print to A4 PDF
- * Safe:     Same, but from the /cv/safe and /it/cv/safe pages (no injection)
+ * Standard:   Playwright headless Chromium → print to A4 PDF (clean CV)
+ * Easter egg: Same, from the /cv/ee and /it/cv/ee pages (with the hidden payload)
  */
 
 import { chromium } from 'playwright';
@@ -17,7 +17,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const distDir = resolve(__dirname, '../dist');
 
 const pages = [
-  // Standard CVs (Option B — auto-generated from existing pages)
+  // Standard CVs (clean)
   {
     src: 'cv/index.html',
     out: 'files/CV-Alessio-Corsi-en-US.pdf',
@@ -26,14 +26,14 @@ const pages = [
     src: 'it/cv/index.html',
     out: 'files/it/CV-Alessio-Corsi-it-IT.pdf',
   },
-  // Safe CVs (Option C — separate clean source, zero injection)
+  // Easter egg CVs (hidden payload from src/constants/easter-egg.ts)
   {
-    src: 'cv/safe/index.html',
-    out: 'files/safe/CV-Alessio-Corsi-en-US.pdf',
+    src: 'cv/ee/index.html',
+    out: 'files/ee/CV-Alessio-Corsi-en-US.pdf',
   },
   {
-    src: 'it/cv/safe/index.html',
-    out: 'files/it/safe/CV-Alessio-Corsi-it-IT.pdf',
+    src: 'it/cv/ee/index.html',
+    out: 'files/it/ee/CV-Alessio-Corsi-it-IT.pdf',
   },
 ];
 

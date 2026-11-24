@@ -127,7 +127,7 @@ export default defineConfig({
                 defaultLocale: 'en',
                 locales: languages
             },
-            filter: (page) => !page.includes('/well/') && !UNLISTED.some((p) => new URL(page).pathname === p),
+            filter: (page) => !page.includes('/well/') && !page.includes('/cv/safe/') && !UNLISTED.some((p) => new URL(page).pathname === p),
             lastmod: new Date(),
             serialize(item: SitemapItem) {
                 // Add priority based on page type
