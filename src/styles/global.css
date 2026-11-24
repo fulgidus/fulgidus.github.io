@@ -15,6 +15,14 @@ html:not(.dark) {
   color-scheme: light;
 }
 
+/* Embedded slide decks: with the page in dark and the deck in light color-scheme, the browser
+   paints an opaque white canvas behind the iframe while the deck loads (the white flash).
+   Matching the deck's scheme keeps the iframe transparent; Marp decks follow the site theme themselves. */
+iframe[src^="/talks/"] {
+  color-scheme: light;
+  background: transparent;
+}
+
 #nprogress {
   pointer-events: none;
 }
