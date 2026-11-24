@@ -20,6 +20,7 @@ import { getFormattedDate } from "@/utils/date";
 import { composeImageSizeClasses } from "@/utils/image";
 import SplatImage from "@/components/SplatImage.astro";
 import SlideDock from "@/components/SlideDock.vue";
+import { engineForUrl } from "../../../../scripts/talks.mjs";
 
 export async function getStaticPaths() {
   const languages = getActiveLanguages();
@@ -186,6 +187,7 @@ const t = useTranslate(lang);
     <SlideDock
       client:only="vue"
       src={slides.src}
+      engine={engineForUrl(slides.src) ?? "html"}
       byHeading={slides.byHeading}
       labels={{
         label: t("slideDock.label"),

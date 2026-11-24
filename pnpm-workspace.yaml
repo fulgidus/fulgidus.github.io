@@ -1,3 +1,6 @@
+packages:
+  - talks
+
 allowBuilds:
   esbuild: true
   sharp: true
