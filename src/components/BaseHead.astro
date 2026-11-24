@@ -300,10 +300,6 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd({
   }
   document.addEventListener('astro:page-load', initAnchorLinks);
 </script>
-<script
-  defer
-  src="https://cloud.umami.is/script.js"
-  data-website-id="e4492488-53e1-4115-8b3b-f07c527d973b"></script>
 <script is:inline define:vars={{ isProd: import.meta.env.PROD }}>
   // Service Worker registration — production only
   if (isProd && 'serviceWorker' in navigator) {
