@@ -6,6 +6,7 @@ imageAlt: I loghi di Astro and VueJS circondati da bandiere nazionali a caso
 imageSize: md
 pubDate: 2024-11-27T09:02:49
 tags:
+  - made-with-ai
   - astro
   - vuejs
   - ssr

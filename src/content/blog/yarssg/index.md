@@ -6,6 +6,7 @@ imageAlt: Cover
 imageSize: md
 pubDate: 2025-03-21T09:52:49
 tags:
+  - made-with-ai
   - rust
   - web-development
   - tutorial

@@ -6,6 +6,7 @@ imageAlt: "Architettura ibrida di ZigNet che combina compilatore Zig e LLM"
 imageSize: md
 pubDate: 2025-11-01T10:30:00
 tags:
+- made-with-ai
 - zig
 - mcp
 - ai

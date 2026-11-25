@@ -6,6 +6,7 @@ imageAlt: "A futuristic cityscape at night with neon lights, symbolizing innovat
 imageSize: md
 pubDate: 2024-11-22T19:08:13
 tags:
+  - made-with-ai
   - made-with-obsidian
   - bundler
   - rust

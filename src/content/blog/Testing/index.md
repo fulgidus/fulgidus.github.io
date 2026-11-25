@@ -6,6 +6,7 @@ imageAlt: "A laptop with code editor windows open, a magnifying glass symbolizin
 imageSize: md
 pubDate: 2024-11-21T21:20:46
 tags:
+  - made-with-ai
   - testing
   - qa
   - development-patterns

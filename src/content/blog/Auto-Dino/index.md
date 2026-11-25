@@ -6,6 +6,7 @@ imageAlt: A stylized illustration of a Dino facing an obstacle
 imageSize: md
 pubDate: 2025-04-12T08:50:33
 tags:
+  - made-with-ai
   - rust
   - typescript
   - web-development

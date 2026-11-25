@@ -4,6 +4,7 @@ description: Un componente Vue.js 3 per Astro che protegge gli indirizzi e-mail 
 pubDate: 2024-11-19T22:26:47
 image: "../../Address-obfuscator/hero-2.png"
 tags:
+  - made-with-ai
   - made-with-obsidian
   - astro
   - vuejs

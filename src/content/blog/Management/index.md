@@ -4,6 +4,7 @@ description: "A veteran developer's perspective on middle management in tech con
 pubDate: 2024-11-30T22:26:47
 image: ./mdm.jpeg
 tags:
+  - made-with-ai
   - made-with-obsidian
   - best-practices
   - development-patterns

@@ -6,6 +6,7 @@ imageAlt: A stylized illustration of a person typing on a keyboard with a lightb
 imageSize: md
 pubDate: 2024-12-17T22:50:33
 tags:
+  - made-with-ai
   - made-with-obsidian
   - best-practices
   - tutorial
