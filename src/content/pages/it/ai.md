@@ -46,5 +46,5 @@ Molti dei vecchi post di questo blog non sono "halal": li trovi marcati con [#ma
 
 Vogliono trasformare lo scultore, il falegname, l'orologiaio che eravamo in un operaio generalista, un cuoco di linea, un ingranaggio facile da minacciare perché facile da sostituire?  
 Benissimo. Se le mie skill non interessano, le riservo ai miei progetti personali e alla mia vita privata.  
-L'anima, l'amore e la perizia con cui costruivo, immaginavo e creavo, d'ora in poi, non sono più in vendita salvo eccezioni o generosissima compensazione.
+L'anima, l'amore e la perizia con cui costruivo, immaginavo e creavo, d'ora in poi, non sono più in vendita salvo eccezioni decise caso-pre-caso.
 
