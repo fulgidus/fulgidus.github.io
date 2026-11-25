@@ -64,7 +64,7 @@ function marpDark(md) {
 
 // Injected in the Marp deck page: follows the site theme (same localStorage key as the site's
 // useDark, else prefers-color-scheme), before the first paint and live when the theme changes.
-const MARP_THEME_SYNC = `<style>html.site-dark,html.site-dark body{background:#0d1117!important}</style>
+const MARP_THEME_SYNC = `<style>html.site-dark,html.site-dark body{background:#1a1b26!important}</style>
 <script>(function(){
 var d=document.documentElement;
 function dark(){var s=null;try{s=localStorage.getItem('vueuse-color-scheme')}catch(e){}

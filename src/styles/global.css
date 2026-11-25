@@ -1,7 +1,7 @@
 html.dark .astro-code,
 html.dark .astro-code span {
   color: var(--shiki-dark) !important;
-  background-color: #161b22 !important;
+  background-color: #16161e !important;
   font-style: var(--shiki-dark-font-style) !important;
   font-weight: var(--shiki-dark-font-weight) !important;
   text-decoration: var(--shiki-dark-text-decoration) !important;
@@ -81,21 +81,21 @@ html.dark::view-transition-new(root) {
   overflow: hidden;
   z-index: 9999;
   padding: 0.75rem 1.5rem;
-  background: var(--skip-bg, #0d1117);
-  color: var(--skip-fg, #eef5fc);
+  background: var(--skip-bg, #1a1b26);
+  color: var(--skip-fg, #eef1f8);
   font-weight: 700;
   text-decoration: none;
   border-radius: 0 0 0.5rem 0;
 }
 html:not(.dark) .skip-to-content {
-  --skip-bg: #eef5fc;
-  --skip-fg: #0d1117;
-  border: 2px solid #0d1117;
+  --skip-bg: #eef1f8;
+  --skip-fg: #1a1b26;
+  border: 2px solid #1a1b26;
 }
 html.dark .skip-to-content {
-  --skip-bg: #0d1117;
-  --skip-fg: #eef5fc;
-  border: 2px solid #eef5fc;
+  --skip-bg: #1a1b26;
+  --skip-fg: #eef1f8;
+  border: 2px solid #eef1f8;
 }
 .skip-to-content:focus {
   position: fixed;
@@ -108,17 +108,17 @@ html.dark .skip-to-content {
 }
 
 /* Reading progress bar gradient — theme-aware
- * Light: violet-600 → purple-500 (high contrast on #eef5fc background)
- * Dark:  violet-400 → violet-300 (lighter shades for visibility on #0d1117 background)
+ * Light: deep blue → teal (high contrast on #eef1f8 background)
+ * Dark:  Tokyo Night-style blue → cyan (visible on #1a1b26 background)
  * These variables are consumed by ReadingProgress.vue's scoped gradient.
  */
 html:not(.dark) {
-  --reading-progress-from: #7c3aed;
-  --reading-progress-to: #a855f7;
+  --reading-progress-from: #2a56b0;
+  --reading-progress-to: #0b6f8f;
 }
 html.dark {
-  --reading-progress-from: #a78bfa;
-  --reading-progress-to: #c4b5fd;
+  --reading-progress-from: #7aa2f7;
+  --reading-progress-to: #7dcfff;
 }
 
 /* Global :focus-visible styles for keyboard navigation */
@@ -130,8 +130,8 @@ html.dark {
 
 /* Ensure focus ring is visible in both themes */
 html:not(.dark) :focus-visible {
-  outline-color: #380541;
+  outline-color: #2a56b0;
 }
 html.dark :focus-visible {
-  outline-color: #c9a0d0;
+  outline-color: #7dcfff;
 }

@@ -58,10 +58,10 @@ onUnmounted(() => {
   height: 100%;
   background: linear-gradient(
     90deg,
-    var(--reading-progress-from, #7c3aed),
-    var(--reading-progress-to, #a855f7)
+    var(--reading-progress-from, #2a56b0),
+    var(--reading-progress-to, #0b6f8f)
   );
-  box-shadow: 0 0 6px var(--reading-progress-to, #a855f7);
+  box-shadow: 0 0 6px var(--reading-progress-to, #0b6f8f);
   transition: width 0.1s linear;
   will-change: width;
 }

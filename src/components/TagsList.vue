@@ -32,10 +32,10 @@ const sorted = props.tags.toSorted();
             <span v-if="i === 0 && !props.verbose && !noDot">·&nbsp;</span>
             <span v-if="tag === 'made-with-ai'">
                 <a v-if="props.link" :href="`/tags/${tag}`" data-astro-prefetch>
-                    <span class="bg-violet-700 text-white font-800 px-1 rounded">#{{ tag }}</span>
+                    <span class="bg-hex-2a56b0 text-white font-800 px-1 rounded">#{{ tag }}</span>
                 </a>
                 <template v-else>
-                    <span class="bg-violet-700 text-white font-800 px-1 rounded">#{{ tag }}</span>
+                    <span class="bg-hex-2a56b0 text-white font-800 px-1 rounded">#{{ tag }}</span>
                 </template>
             </span>
             <span v-else>

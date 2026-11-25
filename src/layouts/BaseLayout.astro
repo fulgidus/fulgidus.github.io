@@ -37,8 +37,8 @@ const pageTranslations = await getPageTranslations(Astro.url, postSlug);
   <head>
     {/* Theme before anything else: the dark class and the page background are set before the first paint, without waiting for the stylesheets, so a dark page never shows the browser's white canvas (full loads, Safari/Firefox without paint holding, view transitions). The same sync runs on every client-side navigation here, not only while the header's ThemeToggle is mounted. Reads the same localStorage key that @vueuse/core useDark() uses. */}
     <style is:inline>
-      html { background-color: #eef5fc; color-scheme: light; }
-      html.dark { background-color: #0d1117; color-scheme: dark; }
+      html { background-color: #eef1f8; color-scheme: light; }
+      html.dark { background-color: #1a1b26; color-scheme: dark; }
     </style>
     <script is:inline>
       (function () {
