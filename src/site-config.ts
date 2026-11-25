@@ -127,6 +127,10 @@ export const siteConfig = {
                 text: 'footer.uses',
                 href: '/uses',
             },
+            {
+                text: 'footer.ai',
+                href: '/ai',
+            },
         ],
     },
 
