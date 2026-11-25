@@ -164,22 +164,22 @@ async function renderOgPng(post: { title: string; description?: string; pubDate?
         : ''
 
     const templateHtml = `
-        <div style="display: flex; flex-direction: column; width: 100%; height: 100%; background: linear-gradient(135deg, #1a0525 0%, #2d1b4e 50%, #1a0525 100%); padding: 60px; font-family: Inter, sans-serif;">
+        <div style="display: flex; flex-direction: column; width: 100%; height: 100%; background: linear-gradient(135deg, #16161e 0%, #24283b 50%, #16161e 100%); padding: 60px; font-family: Inter, sans-serif;">
             <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
                 <div style="display: flex; flex-direction: column;">
                     <div style="display: flex; align-items: center; margin-bottom: 32px;">
-                        <span style="color: #a78bfa; font-size: 24px; font-weight: 700;">${siteConfig.title}</span>
+                        <span style="color: #7aa2f7; font-size: 24px; font-weight: 700;">${siteConfig.title}</span>
                     </div>
                     <h1 style="color: #ffffff; font-size: 52px; font-weight: 800; line-height: 1.15; margin: 0; max-width: 90%;">${title}</h1>
-                    ${truncatedDescription ? `<p style="color: #c4b5fd; font-size: 22px; margin-top: 20px; line-height: 1.4; max-width: 85%; opacity: 0.85;">${truncatedDescription}</p>` : ''}
+                    ${truncatedDescription ? `<p style="color: #c0caf5; font-size: 22px; margin-top: 20px; line-height: 1.4; max-width: 85%; opacity: 0.85;">${truncatedDescription}</p>` : ''}
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                     <div style="display: flex; align-items: center; gap: 16px;">
                         <span style="color: #9ca3af; font-size: 18px;">${siteConfig.author}</span>
                         ${formattedDate ? `<span style="color: #6b7280; font-size: 18px;">\u00B7</span><span style="color: #9ca3af; font-size: 18px;">${formattedDate}</span>` : ''}
                     </div>
-                    <div style="display: flex; align-items: center; background: rgba(167, 139, 250, 0.15); border: 1px solid rgba(167, 139, 250, 0.4); border-radius: 8px; padding: 8px 20px;">
-                        <span style="color: #a78bfa; font-size: 18px; font-weight: 700;">${ctaText}</span>
+                    <div style="display: flex; align-items: center; background: rgba(122, 162, 247, 0.15); border: 1px solid rgba(122, 162, 247, 0.4); border-radius: 8px; padding: 8px 20px;">
+                        <span style="color: #7aa2f7; font-size: 18px; font-weight: 700;">${ctaText}</span>
                     </div>
                 </div>
             </div>

@@ -422,8 +422,8 @@ watch(() => props.headings, () => {
 
 .toc-link--active {
   opacity: 1;
-  border-left-color: var(--toc-active-color, #7c3aed);
-  color: var(--toc-active-color, #7c3aed);
+  border-left-color: var(--toc-active-color, #2a56b0);
+  color: var(--toc-active-color, #2a56b0);
   font-weight: 500;
 }
 
@@ -453,11 +453,11 @@ watch(() => props.headings, () => {
 
 /* Theme-aware active color */
 :root {
-  --toc-active-color: #7c3aed;
+  --toc-active-color: #2a56b0;
 }
 
 :global(html.dark) .toc-link--active {
-  --toc-active-color: #a78bfa;
+  --toc-active-color: #7aa2f7;
 }
 
 /* Scrollbar styling for long ToCs */

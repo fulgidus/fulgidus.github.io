@@ -1,8 +1,8 @@
 /*!
  * Custom Marp theme matching fulgidus.github.io design system.
  *
- * Light mode (default): bg #eef5fc, text #555555, brand #380541
- * Dark mode (.invert):  bg #0d1117, text #bbbbbb, brand #9b7ba3
+ * Light mode (default): bg #eef1f8, text #4a5072, brand #1f3d7a
+ * Dark mode (.invert):  bg #1a1b26, text #a9b1d6, brand #7aa2f7
  *
  * Fonts: Inter (titles), Roboto (body), Fira Code (code)
  * Registered with marp-core via themeSet.add() in MarpSlides.astro.
@@ -27,8 +27,8 @@ section {
     justify-content: flex-start;
 
     /* Light mode colors */
-    background-color: #eef5fc;
-    color: #555555;
+    background-color: #eef1f8;
+    color: #4a5072;
 
     /* Typography */
     font-family: 'Roboto', system-ui, -apple-system, sans-serif;
@@ -41,8 +41,8 @@ section {
 /* ── Dark mode (.invert) ────────────────────────────────────── */
 
 section.invert {
-    background-color: #0d1117;
-    color: #bbbbbb;
+    background-color: #1a1b26;
+    color: #a9b1d6;
 }
 
 /* ── Pagination ─────────────────────────────────────────────── */
@@ -64,7 +64,7 @@ section h1 {
     font-family: 'Inter', 'Roboto', sans-serif;
     font-weight: 800;
     font-size: 2.2em;
-    color: #380541;
+    color: #1f3d7a;
     margin-bottom: 0.4em;
     line-height: 1.15;
     letter-spacing: -0.02em;
@@ -74,11 +74,11 @@ section h2 {
     font-family: 'Inter', 'Roboto', sans-serif;
     font-weight: 600;
     font-size: 1.6em;
-    color: #380541;
+    color: #1f3d7a;
     margin-bottom: 0.5em;
     line-height: 1.25;
     letter-spacing: -0.01em;
-    border-bottom: 2px solid rgba(56, 5, 65, 0.15);
+    border-bottom: 2px solid rgba(31, 61, 122, 0.15);
     padding-bottom: 0.3em;
 }
 
@@ -86,7 +86,7 @@ section h3 {
     font-family: 'Inter', 'Roboto', sans-serif;
     font-weight: 600;
     font-size: 1.3em;
-    color: #555555;
+    color: #4a5072;
     margin-bottom: 0.4em;
     line-height: 1.35;
     opacity: 0.85;
@@ -96,7 +96,7 @@ section h4 {
     font-family: 'Inter', 'Roboto', sans-serif;
     font-weight: 600;
     font-size: 1.1em;
-    color: #555555;
+    color: #4a5072;
     margin-bottom: 0.3em;
     line-height: 1.4;
 }
@@ -115,11 +115,11 @@ section h6 {
 /* Dark mode headings */
 section.invert h1,
 section.invert h2 {
-    color: #9b7ba3;
+    color: #7aa2f7;
 }
 
 section.invert h2 {
-    border-bottom-color: rgba(155, 123, 163, 0.25);
+    border-bottom-color: rgba(122, 162, 247, 0.25);
 }
 
 section.invert h3,
@@ -135,23 +135,23 @@ section.invert h6 {
 /* ── Links ──────────────────────────────────────────────────── */
 
 section a {
-    color: #380541;
+    color: #1f3d7a;
     text-decoration: none;
-    border-bottom: 2px solid rgba(56, 5, 65, 0.5);
+    border-bottom: 2px solid rgba(31, 61, 122, 0.5);
     transition: border-color 0.2s ease;
 }
 
 section a:hover {
-    border-bottom-color: #380541;
+    border-bottom-color: #1f3d7a;
 }
 
 section.invert a {
-    color: #9b7ba3;
-    border-bottom-color: rgba(155, 123, 163, 0.5);
+    color: #7aa2f7;
+    border-bottom-color: rgba(122, 162, 247, 0.5);
 }
 
 section.invert a:hover {
-    border-bottom-color: #9b7ba3;
+    border-bottom-color: #7aa2f7;
 }
 
 /* ── Lists ──────────────────────────────────────────────────── */
@@ -168,20 +168,20 @@ section li {
 }
 
 section ul > li::marker {
-    color: #380541;
+    color: #1f3d7a;
 }
 
 section ol > li::marker {
-    color: #380541;
+    color: #1f3d7a;
     font-weight: 500;
 }
 
 section.invert ul > li::marker {
-    color: #9b7ba3;
+    color: #7aa2f7;
 }
 
 section.invert ol > li::marker {
-    color: #9b7ba3;
+    color: #7aa2f7;
 }
 
 /* ── Code ───────────────────────────────────────────────────── */
@@ -189,16 +189,16 @@ section.invert ol > li::marker {
 section code {
     font-family: 'Fira Code', 'Fira Mono', 'Consolas', monospace;
     font-size: 0.85em;
-    background-color: rgba(56, 5, 65, 0.08);
-    color: #380541;
+    background-color: rgba(31, 61, 122, 0.08);
+    color: #1f3d7a;
     padding: 0.15em 0.4em;
     border-radius: 4px;
     font-variant-ligatures: contextual;
 }
 
 section.invert code {
-    background-color: rgba(155, 123, 163, 0.15);
-    color: #c9a0d0;
+    background-color: rgba(122, 162, 247, 0.15);
+    color: #7dcfff;
 }
 
 section pre {
@@ -219,14 +219,14 @@ section pre code {
 }
 
 section.invert pre code {
-    background-color: #161b22;
+    background-color: #16161e;
     color: #e6edf3;
 }
 
 /* ── Blockquotes ────────────────────────────────────────────── */
 
 section blockquote {
-    border-left: 4px solid #380541;
+    border-left: 4px solid #1f3d7a;
     margin: 0.8em 0;
     padding: 0.5em 0 0.5em 1.2em;
     color: #666666;
@@ -234,7 +234,7 @@ section blockquote {
 }
 
 section.invert blockquote {
-    border-left-color: #9b7ba3;
+    border-left-color: #7aa2f7;
     color: #999999;
 }
 
@@ -248,12 +248,12 @@ section table {
 }
 
 section table th {
-    background-color: rgba(56, 5, 65, 0.08);
-    color: #380541;
+    background-color: rgba(31, 61, 122, 0.08);
+    color: #1f3d7a;
     font-weight: 600;
     text-align: left;
     padding: 0.6em 0.8em;
-    border-bottom: 2px solid rgba(56, 5, 65, 0.2);
+    border-bottom: 2px solid rgba(31, 61, 122, 0.2);
 }
 
 section table td {
@@ -266,9 +266,9 @@ section table tr:last-child td {
 }
 
 section.invert table th {
-    background-color: rgba(155, 123, 163, 0.12);
-    color: #9b7ba3;
-    border-bottom-color: rgba(155, 123, 163, 0.3);
+    background-color: rgba(122, 162, 247, 0.12);
+    color: #7aa2f7;
+    border-bottom-color: rgba(122, 162, 247, 0.3);
 }
 
 section.invert table td {
@@ -355,8 +355,8 @@ section.lead.invert h2 {
 /* ── Highlight class (accent background) ────────────────────── */
 
 section.highlight {
-    background-color: #380541;
-    color: #f0e8f2;
+    background-color: #1f3d7a;
+    color: #e8eefc;
 }
 
 section.highlight h1,
@@ -366,18 +366,18 @@ section.highlight h2 {
 }
 
 section.highlight a {
-    color: #c9a0d0;
-    border-bottom-color: rgba(201, 160, 208, 0.5);
+    color: #7dcfff;
+    border-bottom-color: rgba(125, 207, 255, 0.5);
 }
 
 section.highlight code {
     background-color: rgba(255, 255, 255, 0.15);
-    color: #e8d5ed;
+    color: #dbe6ff;
 }
 
 section.highlight ul > li::marker,
 section.highlight ol > li::marker {
-    color: #c9a0d0;
+    color: #7dcfff;
 }
 
 section.highlight strong {
@@ -385,12 +385,12 @@ section.highlight strong {
 }
 
 section.highlight blockquote {
-    border-left-color: #c9a0d0;
-    color: #d0c0d5;
+    border-left-color: #7dcfff;
+    color: #c8d3f5;
 }
 
 section.highlight footer {
-    color: #c0a0c8;
+    color: #a9c4f5;
     background: rgba(0, 0, 0, 0.15);
     border-top-color: rgba(255, 255, 255, 0.1);
 }
@@ -404,11 +404,11 @@ section .katex {
 /* ── Selection ──────────────────────────────────────────────── */
 
 section ::selection {
-    background-color: rgba(56, 5, 65, 0.2);
+    background-color: rgba(31, 61, 122, 0.2);
     color: inherit;
 }
 
 section.invert ::selection {
-    background-color: rgba(155, 123, 163, 0.3);
+    background-color: rgba(122, 162, 247, 0.3);
     color: inherit;
 }

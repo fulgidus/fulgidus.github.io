@@ -195,7 +195,7 @@ onUnmounted(() => {
 }
 .dark .sd-holder {
   /* dark backdrop while the deck loads or fades, instead of a white flash */
-  background: #0d1117;
+  background: #1a1b26;
   border-radius: 0.5rem;
 }
 .sd-stage iframe {
@@ -232,15 +232,15 @@ onUnmounted(() => {
   justify-content: center;
 }
 .sd-stage.sd-docked {
-  background: #eef5fc;
-  color: #555;
+  background: #eef1f8;
+  color: #4a5072;
   box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.25);
   border-radius: 0.5rem;
   overflow: hidden;
 }
 .dark .sd-stage.sd-docked {
-  background: #0d1117;
-  color: #bbb;
+  background: #1a1b26;
+  color: #a9b1d6;
 }
 .sd-stage.sd-docked .sd-head {
   display: flex;
