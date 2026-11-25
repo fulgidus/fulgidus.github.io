@@ -2,7 +2,7 @@
 title: "Everything Should Be Typed"
 description: "Slides of my TorinoJS talk of May 12, 2026 on branded types and validation in TypeScript (in Italian)."
 pubDate: 2026-05-12T19:00:00
-tags: [talks, torinojs, typescript]
+tags: [made-with-ai, talks, torinojs, typescript]
 draft: false
 lang: en
 unlisted: true

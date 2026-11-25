@@ -2,7 +2,7 @@
 title: "La Fine delle Maledette Date: Benvenuto, Temporal"
 description: "Le slide del mio talk a TorinoJS del 9 febbraio 2026 su Temporal, la nuova API per date e orari di JavaScript."
 pubDate: 2026-02-09T19:00:00
-tags: [talks, torinojs, javascript, temporal]
+tags: [made-with-ai, talks, torinojs, javascript, temporal]
 draft: false
 lang: it
 translationOf: "talks/temporal"

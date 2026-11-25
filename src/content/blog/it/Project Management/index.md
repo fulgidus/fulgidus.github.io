@@ -6,6 +6,7 @@ imageAlt: Un project manager seduto alla scrivania che gestisce un progetto
 imageSize: md
 pubDate: 2024-12-09T21:20:01
 tags:
+    - made-with-ai
     - made-with-obsidian
     - best-practices
     - professional-development

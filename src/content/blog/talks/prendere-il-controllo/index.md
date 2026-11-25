@@ -2,7 +2,7 @@
 title: "Prendere il controllo - Un'immersione rapida in Template Literal, Generatori, e Proxy"
 description: "Slides of my TorinoJS talk of January 12, 2026 on template literals, generators and Proxy in JavaScript (in Italian)."
 pubDate: 2026-01-12T19:00:00
-tags: [talks, torinojs, javascript]
+tags: [made-with-ai, talks, torinojs, javascript]
 draft: false
 lang: en
 unlisted: true

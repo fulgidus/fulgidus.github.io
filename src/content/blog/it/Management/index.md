@@ -4,6 +4,7 @@ description: "La prospettiva di uno sviluppatore esperto sulla gestione nelle so
 pubDate: 2024-11-30T22:26:47
 image: ../../Management/mdm.jpeg
 tags:
+  - made-with-ai
   - made-with-obsidian
   - best-practices
   - development-patterns

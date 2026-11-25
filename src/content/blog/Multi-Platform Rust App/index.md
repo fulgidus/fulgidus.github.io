@@ -6,6 +6,7 @@ imageAlt: "A clean and minimalistic vector illustration representing multi-platf
 imageSize: "md"
 pubDate: 2024-03-29
 tags:
+  - made-with-ai
   - made-with-obsidian
   - rust
   - leptos

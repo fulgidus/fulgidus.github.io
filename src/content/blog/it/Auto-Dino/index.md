@@ -6,6 +6,7 @@ imageAlt: Una stilizzazione di un Dino che salta un ostacolo
 imageSize: md
 pubDate: 2025-04-12T08:50:33
 tags:
+  - made-with-ai
   - rust
   - typescript
   - web-development

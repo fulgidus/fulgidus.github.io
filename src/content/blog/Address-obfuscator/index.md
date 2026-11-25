@@ -4,6 +4,7 @@ description: A Vue.js 3 Component for Astro that Protects Email Addresses from A
 pubDate: 2024-11-19T22:26:47
 image: ./hero-2.png
 tags:
+  - made-with-ai
   - made-with-obsidian
   - astro
   - vuejs

@@ -2,7 +2,7 @@
 title: "Everything Should Be Typed"
 description: "Le slide del mio talk a TorinoJS del 12 maggio 2026 su branded types e validazione in TypeScript."
 pubDate: 2026-05-12T19:00:00
-tags: [talks, torinojs, typescript]
+tags: [made-with-ai, talks, torinojs, typescript]
 draft: false
 lang: it
 translationOf: "talks/everything-should-be-typed"

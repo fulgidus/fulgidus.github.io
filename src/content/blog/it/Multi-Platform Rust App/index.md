@@ -6,6 +6,7 @@ imageAlt: "Un'illustrazione vettoriale pulita e minimalista che rappresenta lo s
 imageSize: "md"
 pubDate: 2024-03-29
 tags:
+  - made-with-ai
   - made-with-obsidian
   - rust
   - leptos
